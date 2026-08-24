@@ -510,21 +510,21 @@
         <div class="input-group">
           <label for="heightInput">Рост (Р)</label>
           <div class="input-wrapper">
-            <input type="number" id="heightInput" value="158" step="1" min="100" max="230">
+            <input type="number" id="heightInput" value="163" step="1" min="100" max="230">
           </div>
         </div>
 
         <div class="input-group">
           <label for="bustInput">Грудь (ОГ)</label>
           <div class="input-wrapper">
-            <input type="number" id="bustInput" value="88" step="1" min="60" max="180">
+            <input type="number" id="bustInput" value="84" step="1" min="60" max="180">
           </div>
         </div>
 
         <div class="input-group">
           <label for="hipsInput">Бедра (ОБ)</label>
           <div class="input-wrapper">
-            <input type="number" id="hipsInput" value="98" step="1" min="60" max="200">
+            <input type="number" id="hipsInput" value="94" step="1" min="60" max="200">
           </div>
         </div>
 
@@ -534,11 +534,11 @@
       <div class="params-summary">
         <div class="param-box">
           <div class="param-label">k_рост</div>
-          <div class="param-val" id="kHeightVal">-1.00</div>
+          <div class="param-val" id="kHeightVal">-0.17</div>
         </div>
         <div class="param-box">
           <div class="param-label">k_разм</div>
-          <div class="param-val" id="kSizeVal">0.00</div>
+          <div class="param-val" id="kSizeVal">-1.00</div>
         </div>
         <div class="param-box">
           <div class="param-label">Полнотная группа</div>
@@ -547,10 +547,10 @@
       </div>
 
       <div class="formula-info">
-        <strong>Формула Grasser 3D Full-Universal:</strong><br>
+        <strong>Формула Grasser 3D Final v3.1:</strong><br>
         Полнота = ((ОБ - ОГ) + 2) / 4 $	o$ определяет динамическую базу (0–5 группа).<br>
         Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
-        <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом порога ОГ &gt; 108 см.</em>
+        <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом полноты и порога ОГ &gt; 108 см.</em>
       </div>
     </div>
 
@@ -603,19 +603,41 @@
   <div id="toast" class="toast">Скопировано в буфер!</div>
 
   <script>
-    // 23 Universal features with base tables for groups 0, 1, 2, 3, 4, 5
+    // 23 Universal features with updated formulas from Grasser_Universal_Calculator_3D_Final_v3_1.xlsx
     const measurementsData = [
       { code: "P", name: "Рост", bases: [164, 164, 164, 164, 164, 164], dH: 6.0, dB: 6.0 },
       { code: "Сш", name: "Полуобхват шеи", bases: [17.4, 17.4, 17.4, 17.4, 17.4, 17.4], dH: 0.0, dB: 0.4 },
       { code: "Сг1", name: "Полуобхват груди первый", bases: [42.0, 42.2, 42.4, 42.6, 42.8, 43.0], dH: 0.2, dB: 1.6 },
       { code: "Сг2", name: "Полуобхват груди второй", bases: [45.7, 45.9, 46.1, 46.3, 46.5, 46.7], dH: 0.0, dB: 2.0 },
       { code: "Сг3", name: "Полуобхват груди третий", bases: [44.0, 44.0, 44.0, 44.0, 44.0, 44.0], dH: 0.0, dB: 2.0 },
-      { code: "Ст", name: "Полуобхват талии", bases: [32.6, 33.2, 33.8, 34.4, 35.0, 35.6], dH: -0.1, dynamicB: true, dB: (og, kB) => (og <= 108 ? kB * 2.0 : 10.0 + (kB - 5.0) * 2.5), stepB: (og) => (og > 108 ? 2.5 : 2.0) },
+      { 
+        code: "Ст", 
+        name: "Полуобхват талии", 
+        bases: [32.6, 33.2, 33.8, 34.4, 35.0, 35.6], 
+        dH: -0.1, 
+        dynamicB: true, 
+        calcShiftB: (og, kB, groupIndex) => (og <= 108 ? kB * 2.0 : 10.0 + (kB - 5.0) * 2.5), 
+        stepB: (og, groupIndex) => (og > 108 ? 2.5 : 2.0) 
+      },
       { code: "Сб", name: "Полуобхват бедер с учетом выступа живота", bases: [43.0, 45.0, 47.0, 49.0, 51.0, 53.0], dH: 0.0, dB: 2.0 },
       { code: "Шг", name: "Ширина груди", bases: [16.4, 16.4, 16.4, 16.4, 16.4, 16.4], dH: 0.2, dB: 0.4 },
       { code: "Дтс", name: "Длина спины до талии от высшей точки шва", bases: [40.2, 40.2, 40.2, 40.2, 40.2, 40.2], dH: 1.2, dB: 0.1 },
       { code: "Дтс2", name: "Длина спины до талии от точки основания шеи", bases: [42.9, 42.9, 42.9, 42.9, 42.9, 42.9], dH: 1.1, dB: 0.2 },
-      { code: "Дтп2", name: "Длина переда до талии от точки основания шеи", bases: [43.8, 43.6, 43.4, 43.2, 43.0, 42.8], dH: 1.0, dynamicB: true, dB: (og, kB) => (og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8), stepB: (og) => (og > 108 ? 0.8 : 0.7) },
+      { 
+        code: "Дтп2", 
+        name: "Длина переда до талии от точки основания шеи", 
+        bases: [43.8, 43.6, 43.4, 43.2, 43.0, 42.8], 
+        dH: 1.0, 
+        dynamicB: true, 
+        calcShiftB: (og, kB, groupIndex) => {
+          if (groupIndex === 0) {
+            return kB * 0.7;
+          } else {
+            return og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8;
+          }
+        }, 
+        stepB: (og, groupIndex) => (groupIndex >= 1 && og > 108 ? 0.8 : 0.7) 
+      },
       { code: "Вг2", name: "Высота груди от точки основания шеи", bases: [26.4, 26.6, 26.8, 27.0, 27.2, 27.4], dH: 0.4, dB: 0.9 },
       { code: "Впрз2", name: "Высота проймы сзади от точки основания шеи", bases: [21.1, 21.2, 21.3, 21.4, 21.5, 21.6], dH: 0.2, dB: 0.3 },
       { code: "Впк2", name: "Высота плеча косая от точки основания шеи", bases: [42.8, 43.0, 42.8, 42.8, 42.8, 43.9], dH: 0.8, dB: 0.4 },
@@ -648,15 +670,14 @@
     const measureTableContainer = document.getElementById('measureTableContainer');
 
     function calculate() {
-      const h = parseFloat(heightInput.value) || 164;
-      const og = parseFloat(bustInput.value) || 88;
-      const ob = parseFloat(hipsInput.value) || 98;
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
 
       const kH = (h - 164) / 6;
       const kB = (og - 88) / 4;
       const fullnessExact = ((ob - og) - (-2)) / 4;
       
-      // Median(0, 5, Math.round(fullnessExact))
       let fullnessGroupIndex = Math.round(fullnessExact);
       if (fullnessGroupIndex < 0) fullnessGroupIndex = 0;
       if (fullnessGroupIndex > 5) fullnessGroupIndex = 5;
@@ -684,8 +705,8 @@
         let deltaSizeLabel = '';
 
         if (item.dynamicB) {
-          shiftSize = item.dB(og, kB);
-          const step = item.stepB(og);
+          shiftSize = item.calcShiftB(og, kB, groupIndex);
+          const step = item.stepB(og, groupIndex);
           deltaSizeLabel = (step > 0 ? '+' : '') + step.toFixed(1);
         } else {
           shiftSize = item.dB * kB;
@@ -753,15 +774,15 @@
     }
 
     function saveState() {
-      localStorage.setItem('grass_calc_h', heightInput.value);
-      localStorage.setItem('grass_calc_og', bustInput.value);
-      localStorage.setItem('grass_calc_ob', hipsInput.value);
+      localStorage.setItem('grass_calc_h_v3_1', heightInput.value);
+      localStorage.setItem('grass_calc_og_v3_1', bustInput.value);
+      localStorage.setItem('grass_calc_ob_v3_1', hipsInput.value);
     }
 
     function loadState() {
-      if (localStorage.getItem('grass_calc_h')) heightInput.value = localStorage.getItem('grass_calc_h');
-      if (localStorage.getItem('grass_calc_og')) bustInput.value = localStorage.getItem('grass_calc_og');
-      if (localStorage.getItem('grass_calc_ob')) hipsInput.value = localStorage.getItem('grass_calc_ob');
+      if (localStorage.getItem('grass_calc_h_v3_1')) heightInput.value = localStorage.getItem('grass_calc_h_v3_1');
+      if (localStorage.getItem('grass_calc_og_v3_1')) bustInput.value = localStorage.getItem('grass_calc_og_v3_1');
+      if (localStorage.getItem('grass_calc_ob_v3_1')) hipsInput.value = localStorage.getItem('grass_calc_ob_v3_1');
     }
 
     [heightInput, bustInput, hipsInput].forEach(inp => {
@@ -769,9 +790,9 @@
     });
 
     searchInput.addEventListener('input', () => {
-      const h = parseFloat(heightInput.value) || 164;
-      const og = parseFloat(bustInput.value) || 88;
-      const ob = parseFloat(hipsInput.value) || 98;
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
       const kH = (h - 164) / 6;
       const kB = (og - 88) / 4;
       const fullnessExact = ((ob - og) - (-2)) / 4;
@@ -782,18 +803,18 @@
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
-      heightInput.value = 158;
-      bustInput.value = 88;
-      hipsInput.value = 98;
+      heightInput.value = 163;
+      bustInput.value = 84;
+      hipsInput.value = 94;
       searchInput.value = '';
       calculate();
-      showToast('Сброшено на 158-88-98');
+      showToast('Сброшено на 163-84-94');
     });
 
     document.getElementById('copyBtn').addEventListener('click', () => {
-      const h = parseFloat(heightInput.value) || 164;
-      const og = parseFloat(bustInput.value) || 88;
-      const ob = parseFloat(hipsInput.value) || 98;
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
       const kH = (h - 164) / 6;
       const kB = (og - 88) / 4;
       const fullnessExact = ((ob - og) - (-2)) / 4;
@@ -804,7 +825,7 @@
       let text = `ALËNA GRASS-CALC РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см (Полнота: ${groupIndex}-я гр.)\n\n`;
       measurementsData.forEach(item => {
         const baseVal = item.bases[groupIndex];
-        const shiftSize = item.dynamicB ? item.dB(og, kB) : item.dB * kB;
+        const shiftSize = item.dynamicB ? item.calcShiftB(og, kB, groupIndex) : item.dB * kB;
         const val = (baseVal + item.dH * kH + shiftSize).toFixed(2);
         text += `${item.code} (${item.name}): ${val} см\n`;
       });
