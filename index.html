@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#1e293b">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Grasser 3D">
@@ -18,11 +18,10 @@
       --card-border: #334155;
       --accent: #38bdf8;
       --accent-hover: #0ea5e9;
+      --accent-glow: rgba(56, 189, 248, 0.15);
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --input-bg: #090d16;
-      --badge-bg: #0369a1;
-      --badge-text: #e0f2fe;
       --row-hover: #243247;
       --row-alt: #172133;
       --success: #10b981;
@@ -39,7 +38,7 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.5;
+      line-height: 1.4;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -49,7 +48,7 @@
     header {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       border-bottom: 1px solid var(--card-border);
-      padding: 16px 20px;
+      padding: 14px 16px;
       position: sticky;
       top: 0;
       z-index: 50;
@@ -67,39 +66,38 @@
     .logo-area {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       background: linear-gradient(135deg, #38bdf8, #6366f1);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-weight: bold;
-      font-size: 18px;
+      font-size: 17px;
       box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
     }
 
     h1 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: #fff;
       letter-spacing: -0.02em;
     }
 
     .subtitle {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
     }
 
     .container {
       max-width: 900px;
-      margin: 20px auto;
-      padding: 0 16px;
+      margin: 14px auto;
+      padding: 0 12px;
       width: 100%;
     }
 
@@ -107,41 +105,42 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
 
     .card-title {
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 600;
       color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
     }
 
     .grid-inputs {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
     }
 
     .input-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     label {
-      font-size: 0.85rem;
+      font-size: 0.76rem;
       font-weight: 500;
       color: var(--text-muted);
       display: flex;
       justify-content: space-between;
+      white-space: nowrap;
     }
 
     .input-wrapper {
@@ -155,51 +154,46 @@
       background: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 1.25rem;
+      padding: 10px 8px;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #fff;
       outline: none;
       transition: all 0.2s ease;
+      text-align: center;
     }
 
     input[type="number"]:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-    }
-
-    .unit {
-      position: absolute;
-      right: 14px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      pointer-events: none;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
     }
 
     .params-summary {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-top: 16px;
-      padding-top: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
       border-top: 1px dashed var(--card-border);
     }
 
     .param-box {
       background: rgba(15, 23, 42, 0.6);
-      padding: 10px 14px;
+      padding: 8px 10px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
     }
 
     .param-label {
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       margin-bottom: 2px;
+      white-space: nowrap;
     }
 
     .param-val {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #fff;
     }
@@ -208,11 +202,21 @@
       color: var(--accent);
     }
 
+    .formula-info {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-top: 10px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+    }
+
     .actions-bar {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 12px;
       justify-content: space-between;
       align-items: center;
     }
@@ -221,11 +225,12 @@
       background: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 8px 12px;
+      padding: 8px 10px;
       color: #fff;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       outline: none;
-      min-width: 180px;
+      flex: 1;
+      min-width: 120px;
     }
 
     .search-input:focus {
@@ -234,7 +239,7 @@
 
     .btn-group {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
 
     button.btn {
@@ -242,19 +247,19 @@
       color: #fff;
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 0.85rem;
+      padding: 8px 10px;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       transition: all 0.15s ease;
+      white-space: nowrap;
     }
 
-    button.btn:hover {
-      background: var(--card-border);
-      border-color: var(--text-muted);
+    button.btn:active {
+      transform: scale(0.97);
     }
 
     button.btn-primary {
@@ -263,85 +268,166 @@
       border-color: var(--accent);
     }
 
-    button.btn-primary:hover {
-      background: var(--accent-hover);
+    /* === SMART MEASUREMENTS LIST / TABLE (NO HORIZONTAL SCROLL) === */
+    .measure-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .table-container {
-      overflow-x: auto;
-      border-radius: 8px;
+    .measure-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--row-alt);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      transition: background 0.15s ease;
+    }
+
+    .measure-row:nth-child(even) {
+      background: rgba(30, 41, 59, 0.7);
+    }
+
+    .measure-row:hover {
+      background: var(--row-hover);
+    }
+
+    .measure-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+      padding-right: 8px;
+    }
+
+    .measure-code-badge {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 4px 6px;
+      min-width: 52px;
+      text-align: center;
+      flex-shrink: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .measure-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .measure-name {
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .measure-details {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .measure-details span {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .measure-res-box {
+      text-align: right;
+      flex-shrink: 0;
+      padding-left: 6px;
+    }
+
+    .measure-res-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .measure-res-unit {
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-left: 2px;
+    }
+
+    /* View Switcher */
+    .view-toggle {
+      display: inline-flex;
+      background: var(--input-bg);
       border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 2px;
+      font-size: 0.72rem;
     }
 
-    table {
+    .view-toggle button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .view-toggle button.active {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .table-view-mode {
+      display: none;
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
-      font-size: 0.88rem;
+      font-size: 0.78rem;
     }
 
-    th {
+    .table-view-mode th {
       background: #152033;
-      padding: 12px 14px;
+      padding: 8px 6px;
       color: var(--text-muted);
       font-weight: 600;
+      font-size: 0.68rem;
       text-transform: uppercase;
-      font-size: 0.72rem;
-      letter-spacing: 0.05em;
       border-bottom: 1px solid var(--card-border);
-      white-space: nowrap;
     }
 
-    td {
-      padding: 10px 14px;
+    .table-view-mode td {
+      padding: 8px 6px;
       border-bottom: 1px solid rgba(51, 65, 85, 0.4);
       color: #cbd5e1;
     }
 
-    tr:nth-child(even) td {
-      background: var(--row-alt);
-    }
-
-    tr:hover td {
-      background: var(--row-hover);
-    }
-
-    .tag-code {
-      display: inline-block;
-      font-weight: 700;
-      color: var(--accent);
-      background: rgba(56, 189, 248, 0.12);
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-family: monospace;
-    }
-
-    .calc-res {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .delta-badge {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
     .toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
       background: var(--success);
       color: #042f2e;
-      padding: 10px 20px;
+      padding: 9px 18px;
       border-radius: 30px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.25s ease;
       z-index: 100;
+      white-space: nowrap;
     }
 
     .toast.show {
@@ -353,48 +439,38 @@
       background: linear-gradient(90deg, #1e293b, #0c4a6e);
       border: 1px solid var(--accent);
       border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 16px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
     }
 
     .pwa-banner.show {
       display: flex;
     }
 
-    .formula-info {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin-top: 14px;
-      background: rgba(15, 23, 42, 0.4);
-      padding: 12px;
-      border-radius: 8px;
-      border-left: 3px solid var(--accent);
-    }
-
-    @media (max-width: 600px) {
+    @media (min-width: 640px) {
+      .container {
+        margin: 20px auto;
+        padding: 0 16px;
+      }
+      .card {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
       .grid-inputs {
-        grid-template-columns: 1fr;
+        gap: 16px;
       }
-      .actions-bar {
-        flex-direction: column;
-        align-items: stretch;
+      input[type="number"] {
+        padding: 12px 14px;
+        font-size: 1.25rem;
       }
-      .btn-group {
-        justify-content: stretch;
+      .measure-name {
+        font-size: 0.92rem;
       }
-      .btn-group button {
-        flex: 1;
-        justify-content: center;
-      }
-      .search-input {
-        width: 100%;
-      }
-      th, td {
-        padding: 8px 10px;
+      .measure-res-val {
+        font-size: 1.25rem;
       }
     }
   </style>
@@ -410,8 +486,8 @@
           <div class="subtitle">Индивидуальный калькулятор признаков</div>
         </div>
       </div>
-      <div id="statusBadge" style="font-size: 0.75rem; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 4px 8px; border-radius: 6px;">
-        Офлайн готов
+      <div id="statusBadge" style="font-size: 0.72rem; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 3px 8px; border-radius: 6px;">
+        Офлайн
       </div>
     </div>
   </header>
@@ -421,47 +497,37 @@
     <!-- Install PWA Banner -->
     <div id="pwaBanner" class="pwa-banner">
       <div>
-        <div style="font-weight: 600; font-size: 0.9rem;">📱 Установить на телефон</div>
-        <div style="font-size: 0.75rem; color: #cbd5e1;">Работает без интернета как отдельное приложение</div>
+        <div style="font-weight: 600; font-size: 0.85rem;">📱 Установить на экран</div>
+        <div style="font-size: 0.7rem; color: #cbd5e1;">Работает автономно без интернета</div>
       </div>
       <button class="btn btn-primary" id="installBtn">Установить</button>
     </div>
 
     <!-- Inputs Card -->
     <div class="card">
-      <div class="card-title">1. Целевые параметры заказчика</div>
+      <div class="card-title">
+        <span>1. Параметры (см)</span>
+      </div>
       <div class="grid-inputs">
         
         <div class="input-group">
-          <label for="heightInput">
-            <span>Рост (Р)</span>
-            <span style="color: #64748b;">база 164</span>
-          </label>
+          <label for="heightInput">Рост (Р)</label>
           <div class="input-wrapper">
             <input type="number" id="heightInput" value="170" step="1" min="100" max="230">
-            <span class="unit">см</span>
           </div>
         </div>
 
         <div class="input-group">
-          <label for="bustInput">
-            <span>Обхват груди (ОГ)</span>
-            <span style="color: #64748b;">база 88</span>
-          </label>
+          <label for="bustInput">Грудь (ОГ)</label>
           <div class="input-wrapper">
             <input type="number" id="bustInput" value="92" step="1" min="60" max="180">
-            <span class="unit">см</span>
           </div>
         </div>
 
         <div class="input-group">
-          <label for="hipsInput">
-            <span>Обхват бедер (ОБ)</span>
-            <span style="color: #64748b;">для полноты</span>
-          </label>
+          <label for="hipsInput">Бедра (ОБ)</label>
           <div class="input-wrapper">
             <input type="number" id="hipsInput" value="102" step="1" min="60" max="200">
-            <span class="unit">см</span>
           </div>
         </div>
 
@@ -470,52 +536,63 @@
       <!-- Calculated shifts -->
       <div class="params-summary">
         <div class="param-box">
-          <div class="param-label">Сдвиг роста k_рост</div>
+          <div class="param-label">k_рост</div>
           <div class="param-val" id="kHeightVal">+1.00</div>
         </div>
         <div class="param-box">
-          <div class="param-label">Сдвиг разм. k_разм</div>
+          <div class="param-label">k_разм</div>
           <div class="param-val" id="kSizeVal">+1.00</div>
         </div>
         <div class="param-box">
-          <div class="param-label">Полнотная группа</div>
-          <div class="param-val accent" id="fullnessGroupVal">3-я группа</div>
+          <div class="param-label">Полнота</div>
+          <div class="param-val accent" id="fullnessGroupVal">3-я гр.</div>
         </div>
       </div>
 
       <div class="formula-info">
-        <strong>Формула Grasser:</strong> Итог = База (164-88) + (k_рост × ΔР) + (k_разм × ΔОГ).<br>
-        Полнота = ((ОБ - ОГ) + 2) / 4. Шаг роста = 6 см, шаг размера = 4 см.<br>
-        <em>Динамические приращения: для Ст (ΔОГ = 2.5 при ОГ &gt; 108) и для Дтп2 (ΔОГ = 0.8 при ОГ &gt; 108).</em>
+        <strong>Формула:</strong> Итог = База + (k_рост × ΔР) + (k_разм × ΔОГ).<br>
+        <em>Динамические шаги: Ст (ΔОГ=2.5 при ОГ&gt;108), Дтп2 (ΔОГ=0.8 при ОГ&gt;108).</em>
       </div>
     </div>
 
-    <!-- Table Card -->
+    <!-- Results Card -->
     <div class="card">
-      <div class="card-title">2. Таблица расчетных признаков</div>
+      <div class="card-title">
+        <span>2. Результаты (23 мерки)</span>
+        <div class="view-toggle">
+          <button id="viewCardsBtn" class="active">Список</button>
+          <button id="viewTableBtn">Таблица</button>
+        </div>
+      </div>
       
       <div class="actions-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по коду или названию...">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск мерки или кода...">
         <div class="btn-group">
-          <button class="btn" id="copyBtn">📋 Скопировать</button>
-          <button class="btn" id="resetBtn">↺ Сброс (170-92-102)</button>
+          <button class="btn" id="copyBtn">📋 Копия</button>
+          <button class="btn" id="resetBtn">↺ Сброс</button>
         </div>
       </div>
 
-      <div class="table-container">
-        <table>
+      <!-- Compact Mobile-Optimized List (Fits 100% width, no horizontal scroll) -->
+      <div id="measureCardsContainer" class="measure-list">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Classical Compact Table View (Optional toggle) -->
+      <div id="measureTableContainer" style="display: none; overflow-x: auto;">
+        <table class="table-view-mode" style="display: table;">
           <thead>
             <tr>
-              <th style="width: 80px;">Код</th>
-              <th>Наименование признака</th>
-              <th style="text-align: right; width: 70px;">База</th>
-              <th style="text-align: right; width: 70px;">ΔР</th>
-              <th style="text-align: right; width: 70px;">ΔОГ</th>
-              <th style="text-align: right; width: 90px; color: var(--accent);">ИТОГ</th>
+              <th>Код</th>
+              <th>Признак</th>
+              <th style="text-align: right;">База</th>
+              <th style="text-align: right;">ΔР</th>
+              <th style="text-align: right;">ΔОГ</th>
+              <th style="text-align: right; color: var(--accent);">ИТОГ</th>
             </tr>
           </thead>
           <tbody id="tableBody">
-            <!-- Populated via JS -->
+            <!-- Rendered via JS -->
           </tbody>
         </table>
       </div>
@@ -524,10 +601,9 @@
 
   </div>
 
-  <div id="toast" class="toast">Значения скопированы в буфер!</div>
+  <div id="toast" class="toast">Скопировано в буфер!</div>
 
   <script>
-    // Updated 23 items based on Grasser Universal Calculator 3D Updated
     const measurementsData = [
       { code: "P", name: "Рост", base: 164.0, dH: 6.0, dB: (og) => 6.0 },
       { code: "Сш", name: "Полуобхват шеи", base: 17.4, dH: 0.0, dB: (og) => 0.4 },
@@ -535,23 +611,23 @@
       { code: "Сг2", name: "Полуобхват груди второй", base: 46.3, dH: 0.0, dB: (og) => 2.0 },
       { code: "Сг3", name: "Полуобхват груди третий", base: 44.0, dH: 0.0, dB: (og) => 2.0 },
       { code: "Ст", name: "Полуобхват талии", base: 34.4, dH: -0.1, dB: (og) => (og > 108 ? 2.5 : 2.0) },
-      { code: "Сб", name: "Полуобхват бедер с учетом выступа живота", base: 49.0, dH: 0.0, dB: (og) => 2.0 },
+      { code: "Сб", name: "Полуобхват бедер (с учетом живота)", base: 49.0, dH: 0.0, dB: (og) => 2.0 },
       { code: "Шг", name: "Ширина груди", base: 16.4, dH: 0.2, dB: (og) => 0.4 },
-      { code: "Дтс", name: "Длина спины до талии от высшей точки шва", base: 40.2, dH: 1.2, dB: (og) => 0.1 },
-      { code: "Дтс2", name: "Длина спины до талии от точки основания шеи", base: 42.9, dH: 1.1, dB: (og) => 0.2 },
-      { code: "Дтп2", name: "Длина переда до талии от точки основания шеи", base: 43.2, dH: 1.0, dB: (og) => (og > 108 ? 0.8 : 0.7) },
-      { code: "Вг2", name: "Высота груди от точки основания шеи", base: 27.0, dH: 0.4, dB: (og) => 0.9 },
-      { code: "Впрз2", name: "Высота проймы сзади от точки основания шеи", base: 21.4, dH: 0.2, dB: (og) => 0.3 },
-      { code: "Впк2", name: "Высота плеча косая от точки основания шеи", base: 42.8, dH: 0.8, dB: (og) => 0.4 },
+      { code: "Дтс", name: "Длина спины до талии (от высшей точки)", base: 40.2, dH: 1.2, dB: (og) => 0.1 },
+      { code: "Дтс2", name: "Длина спины до талии (от шеи)", base: 42.9, dH: 1.1, dB: (og) => 0.2 },
+      { code: "Дтп2", name: "Длина переда до талии (от шеи)", base: 43.2, dH: 1.0, dB: (og) => (og > 108 ? 0.8 : 0.7) },
+      { code: "Вг2", name: "Высота груди (от шеи)", base: 27.0, dH: 0.4, dB: (og) => 0.9 },
+      { code: "Впрз2", name: "Высота проймы сзади (от шеи)", base: 21.4, dH: 0.2, dB: (og) => 0.3 },
+      { code: "Впк2", name: "Высота плеча косая (от шеи)", base: 42.8, dH: 0.8, dB: (og) => 0.4 },
       { code: "Шс", name: "Ширина спины", base: 17.2, dH: 0.0, dB: (og) => 0.5 },
       { code: "Шп", name: "Ширина плечевого ската", base: 13.1, dH: 0.3, dB: (og) => 0.1 },
-      { code: "Др.зап.", name: "Длина рукава до сочленения кисти с предплечьем", base: 55.8, dH: 2.2, dB: (og) => 0.2 },
+      { code: "Др.зап.", name: "Длина рукава до сочленения кисти", base: 55.8, dH: 2.2, dB: (og) => 0.2 },
       { code: "Оп", name: "Обхват плеча", base: 28.2, dH: 0.0, dB: (og) => 1.4 },
       { code: "Озап", name: "Обхват запястья", base: 15.7, dH: 0.0, dB: (og) => 0.3 },
       { code: "dпзр", name: "Переднезадний диаметр руки", base: 10.1, dH: 0.0, dB: (og) => 0.6 },
-      { code: "Дсб", name: "Длина ноги по боковой поверхности от талии", base: 106.0, dH: 4.5, dB: (og) => 0.1 },
-      { code: "Дсп", name: "Длина ноги по передней поверхности от талии", base: 104.4, dH: 4.4, dB: (og) => 0.1 },
-      { code: "Дтк", name: "Длина от линии талии до коленной точки", base: 59.0, dH: 2.5, dB: (og) => 0.1 }
+      { code: "Дсб", name: "Длина ноги по боку от талии", base: 106.0, dH: 4.5, dB: (og) => 0.1 },
+      { code: "Дсп", name: "Длина ноги спереди от талии", base: 104.4, dH: 4.4, dB: (og) => 0.1 },
+      { code: "Дтк", name: "Длина от талии до коленной точки", base: 59.0, dH: 2.5, dB: (og) => 0.1 }
     ];
 
     const heightInput = document.getElementById('heightInput');
@@ -562,8 +638,14 @@
     const kHeightVal = document.getElementById('kHeightVal');
     const kSizeVal = document.getElementById('kSizeVal');
     const fullnessGroupVal = document.getElementById('fullnessGroupVal');
+    const cardsContainer = document.getElementById('measureCardsContainer');
     const tableBody = document.getElementById('tableBody');
     const toast = document.getElementById('toast');
+
+    const viewCardsBtn = document.getElementById('viewCardsBtn');
+    const viewTableBtn = document.getElementById('viewTableBtn');
+    const measureCardsContainer = document.getElementById('measureCardsContainer');
+    const measureTableContainer = document.getElementById('measureTableContainer');
 
     function calculate() {
       const h = parseFloat(heightInput.value) || 164;
@@ -578,14 +660,15 @@
       kSizeVal.textContent = (kB >= 0 ? '+' : '') + kB.toFixed(2);
       
       const fullnessRound = Math.round(fullness);
-      fullnessGroupVal.textContent = `${fullness.toFixed(1)} (${fullnessRound}-я группа)`;
+      fullnessGroupVal.textContent = `${fullnessRound}-я (${fullness.toFixed(1)})`;
 
-      renderTable(kH, kB, og);
+      renderViews(kH, kB, og);
       saveState();
     }
 
-    function renderTable(kH, kB, og) {
+    function renderViews(kH, kB, og) {
       const filter = searchInput.value.toLowerCase().trim();
+      cardsContainer.innerHTML = '';
       tableBody.innerHTML = '';
 
       measurementsData.forEach(item => {
@@ -595,36 +678,74 @@
 
         const deltaSize = typeof item.dB === 'function' ? item.dB(og) : item.dB;
         const res = item.base + (item.dH * kH) + (deltaSize * kB);
+        const resStr = res.toFixed(2);
+
+        // 1. Mobile-friendly List Row
+        const row = document.createElement('div');
+        row.className = 'measure-row';
+        row.innerHTML = `
+          <div class="measure-main">
+            <div class="measure-code-badge">${item.code}</div>
+            <div class="measure-info">
+              <div class="measure-name">${item.name}</div>
+              <div class="measure-details">
+                <span>База: ${item.base.toFixed(1)}</span>
+                <span>ΔР: ${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</span>
+                <span>ΔОГ: ${deltaSize > 0 ? '+' : ''}${deltaSize.toFixed(1)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="measure-res-box">
+            <span class="measure-res-val">${resStr}</span><span class="measure-res-unit">см</span>
+          </div>
+        `;
+        cardsContainer.appendChild(row);
+
+        // 2. Table Row
         const tr = document.createElement('tr');
-        
         tr.innerHTML = `
-          <td><span class="tag-code">${item.code}</span></td>
+          <td><strong style="color:var(--accent);">${item.code}</strong></td>
           <td>${item.name}</td>
-          <td style="text-align: right;" class="delta-badge">${item.base.toFixed(1)}</td>
-          <td style="text-align: right;" class="delta-badge">${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</td>
-          <td style="text-align: right;" class="delta-badge">${deltaSize > 0 ? '+' : ''}${deltaSize.toFixed(1)}</td>
-          <td style="text-align: right;" class="calc-res">${res.toFixed(2)}</td>
+          <td style="text-align: right;">${item.base.toFixed(1)}</td>
+          <td style="text-align: right;">${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</td>
+          <td style="text-align: right;">${deltaSize > 0 ? '+' : ''}${deltaSize.toFixed(1)}</td>
+          <td style="text-align: right; font-weight: 700; color: #fff;">${resStr}</td>
         `;
         tableBody.appendChild(tr);
       });
     }
 
+    // View toggle handlers
+    viewCardsBtn.addEventListener('click', () => {
+      viewCardsBtn.classList.add('active');
+      viewTableBtn.classList.remove('active');
+      measureCardsContainer.style.display = 'flex';
+      measureTableContainer.style.display = 'none';
+    });
+
+    viewTableBtn.addEventListener('click', () => {
+      viewTableBtn.classList.add('active');
+      viewCardsBtn.classList.remove('active');
+      measureCardsContainer.style.display = 'none';
+      measureTableContainer.style.display = 'block';
+    });
+
     function showToast(msg) {
       toast.textContent = msg;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2500);
+      setTimeout(() => toast.classList.remove('show'), 2200);
     }
 
     function saveState() {
-      localStorage.setItem('grasser_h_v2', heightInput.value);
-      localStorage.setItem('grasser_og_v2', bustInput.value);
-      localStorage.setItem('grasser_ob_v2', hipsInput.value);
+      localStorage.setItem('grasser_h_v3', heightInput.value);
+      localStorage.setItem('grasser_og_v3', bustInput.value);
+      localStorage.setItem('grasser_ob_v3', hipsInput.value);
     }
 
     function loadState() {
-      if (localStorage.getItem('grasser_h_v2')) heightInput.value = localStorage.getItem('grasser_h_v2');
-      if (localStorage.getItem('grasser_og_v2')) bustInput.value = localStorage.getItem('grasser_og_v2');
-      if (localStorage.getItem('grasser_ob_v2')) hipsInput.value = localStorage.getItem('grasser_ob_v2');
+      if (localStorage.getItem('grasser_h_v3')) heightInput.value = localStorage.getItem('grasser_h_v3');
+      if (localStorage.getItem('grasser_og_v3')) bustInput.value = localStorage.getItem('grasser_og_v3');
+      if (localStorage.getItem('grasser_ob_v3')) hipsInput.value = localStorage.getItem('grasser_ob_v3');
     }
 
     [heightInput, bustInput, hipsInput].forEach(inp => {
@@ -634,7 +755,7 @@
     searchInput.addEventListener('input', () => {
       const h = parseFloat(heightInput.value) || 164;
       const og = parseFloat(bustInput.value) || 88;
-      renderTable((h - 164) / 6, (og - 88) / 4, og);
+      renderViews((h - 164) / 6, (og - 88) / 4, og);
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
@@ -643,7 +764,7 @@
       hipsInput.value = 102;
       searchInput.value = '';
       calculate();
-      showToast('Параметры сброшены (170-92-102)');
+      showToast('Сброшено на 170-92-102');
     });
 
     document.getElementById('copyBtn').addEventListener('click', () => {
@@ -661,7 +782,7 @@
       });
 
       navigator.clipboard.writeText(text).then(() => {
-        showToast('Все 23 параметра скопированы в буфер!');
+        showToast('Все 23 мерки скопированы!');
       }).catch(() => {
         showToast('Ошибка копирования');
       });
@@ -671,7 +792,7 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => {
-          console.log('SW registration skipped or error:', err);
+          console.log('SW registration error:', err);
         });
       });
     }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grasser-pwa-v2';
+const CACHE_NAME = 'grasser-pwa-v3';
 const ASSETS = [
   './',
   './index.html',
