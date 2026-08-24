@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1e293b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Grasser 3D">
+  <link rel="manifest" href="manifest.json">
+  <title>Grasser 3D Калькулятор размерных признаков</title>
+  <link rel="icon" type="image/svg+xml" href="icons/icon-512.svg">
+  <link rel="apple-touch-icon" href="icons/icon-512.svg">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --input-bg: #090d16;
+      --badge-bg: #0369a1;
+      --badge-text: #e0f2fe;
+      --row-hover: #243247;
+      --row-alt: #172133;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+
+    .header-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 16px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .unit {
+      position: absolute;
+      right: 14px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .params-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--card-border);
+    }
+
+    .param-box {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .param-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .param-val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .param-val.accent {
+      color: var(--accent);
+    }
+
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-input {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 180px;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    button.btn {
+      background: var(--card-bg);
+      color: #fff;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    button.btn:hover {
+      background: var(--card-border);
+      border-color: var(--text-muted);
+    }
+
+    button.btn-primary {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+
+    button.btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: #152033;
+      padding: 12px 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--card-border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      color: #cbd5e1;
+    }
+
+    tr:nth-child(even) td {
+      background: var(--row-alt);
+    }
+
+    tr:hover td {
+      background: var(--row-hover);
+    }
+
+    .tag-code {
+      display: inline-block;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: monospace;
+    }
+
+    .calc-res {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .delta-badge {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--success);
+      color: #042f2e;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .pwa-banner {
+      display: none;
+      background: linear-gradient(90deg, #1e293b, #0c4a6e);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pwa-banner.show {
+      display: flex;
+    }
+
+    .formula-info {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-top: 14px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      .grid-inputs {
+        grid-template-columns: 1fr;
+      }
+      .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn-group {
+        justify-content: stretch;
+      }
+      .btn-group button {
+        flex: 1;
+        justify-content: center;
+      }
+      .search-input {
+        width: 100%;
+      }
+      th, td {
+        padding: 8px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <div class="logo-area">
+        <div class="logo-icon">📐</div>
+        <div>
+          <h1>GRASSER 3D</h1>
+          <div class="subtitle">Индивидуальный калькулятор признаков</div>
+        </div>
+      </div>
+      <div id="statusBadge" style="font-size: 0.75rem; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 4px 8px; border-radius: 6px;">
+        Офлайн готов
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Install PWA Banner -->
+    <div id="pwaBanner" class="pwa-banner">
+      <div>
+        <div style="font-weight: 600; font-size: 0.9rem;">📱 Установить на телефон</div>
+        <div style="font-size: 0.75rem; color: #cbd5e1;">Работает без интернета как отдельное приложение</div>
+      </div>
+      <button class="btn btn-primary" id="installBtn">Установить</button>
+    </div>
+
+    <!-- Inputs Card -->
+    <div class="card">
+      <div class="card-title">1. Целевые параметры заказчика</div>
+      <div class="grid-inputs">
+        
+        <div class="input-group">
+          <label for="heightInput">
+            <span>Рост (Р)</span>
+            <span style="color: #64748b;">база 164</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" id="heightInput" value="170" step="1" min="100" max="230">
+            <span class="unit">см</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="bustInput">
+            <span>Обхват груди (ОГ)</span>
+            <span style="color: #64748b;">база 88</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" id="bustInput" value="92" step="1" min="60" max="180">
+            <span class="unit">см</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="hipsInput">
+            <span>Обхват бедер (ОБ)</span>
+            <span style="color: #64748b;">для полноты</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" id="hipsInput" value="102" step="1" min="60" max="200">
+            <span class="unit">см</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Calculated shifts -->
+      <div class="params-summary">
+        <div class="param-box">
+          <div class="param-label">Сдвиг роста k_рост</div>
+          <div class="param-val" id="kHeightVal">+1.00</div>
+        </div>
+        <div class="param-box">
+          <div class="param-label">Сдвиг разм. k_разм</div>
+          <div class="param-val" id="kSizeVal">+1.00</div>
+        </div>
+        <div class="param-box">
+          <div class="param-label">Полнотная группа</div>
+          <div class="param-val accent" id="fullnessGroupVal">3-я группа</div>
+        </div>
+      </div>
+
+      <div class="formula-info">
+        <strong>Формула Grasser:</strong> Итог = База (164-88) + (k_рост × ΔР) + (k_разм × ΔОГ).<br>
+        Полнота = ((ОБ - ОГ) + 2) / 4. Шаг роста = 6 см, шаг размера = 4 см.<br>
+        <em>Динамические приращения: для Ст (ΔОГ = 2.5 при ОГ &gt; 108) и для Дтп2 (ΔОГ = 0.8 при ОГ &gt; 108).</em>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card">
+      <div class="card-title">2. Таблица расчетных признаков</div>
+      
+      <div class="actions-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по коду или названию...">
+        <div class="btn-group">
+          <button class="btn" id="copyBtn">📋 Скопировать</button>
+          <button class="btn" id="resetBtn">↺ Сброс (170-92-102)</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 80px;">Код</th>
+              <th>Наименование признака</th>
+              <th style="text-align: right; width: 70px;">База</th>
+              <th style="text-align: right; width: 70px;">ΔР</th>
+              <th style="text-align: right; width: 70px;">ΔОГ</th>
+              <th style="text-align: right; width: 90px; color: var(--accent);">ИТОГ</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast">Значения скопированы в буфер!</div>
+
+  <script>
+    // Updated 23 items based on Grasser Universal Calculator 3D Updated
+    const measurementsData = [
+      { code: "P", name: "Рост", base: 164.0, dH: 6.0, dB: (og) => 6.0 },
+      { code: "Сш", name: "Полуобхват шеи", base: 17.4, dH: 0.0, dB: (og) => 0.4 },
+      { code: "Сг1", name: "Полуобхват груди первый", base: 42.6, dH: 0.2, dB: (og) => 1.6 },
+      { code: "Сг2", name: "Полуобхват груди второй", base: 46.3, dH: 0.0, dB: (og) => 2.0 },
+      { code: "Сг3", name: "Полуобхват груди третий", base: 44.0, dH: 0.0, dB: (og) => 2.0 },
+      { code: "Ст", name: "Полуобхват талии", base: 34.4, dH: -0.1, dB: (og) => (og > 108 ? 2.5 : 2.0) },
+      { code: "Сб", name: "Полуобхват бедер с учетом выступа живота", base: 49.0, dH: 0.0, dB: (og) => 2.0 },
+      { code: "Шг", name: "Ширина груди", base: 16.4, dH: 0.2, dB: (og) => 0.4 },
+      { code: "Дтс", name: "Длина спины до талии от высшей точки шва", base: 40.2, dH: 1.2, dB: (og) => 0.1 },
+      { code: "Дтс2", name: "Длина спины до талии от точки основания шеи", base: 42.9, dH: 1.1, dB: (og) => 0.2 },
+      { code: "Дтп2", name: "Длина переда до талии от точки основания шеи", base: 43.2, dH: 1.0, dB: (og) => (og > 108 ? 0.8 : 0.7) },
+      { code: "Вг2", name: "Высота груди от точки основания шеи", base: 27.0, dH: 0.4, dB: (og) => 0.9 },
+      { code: "Впрз2", name: "Высота проймы сзади от точки основания шеи", base: 21.4, dH: 0.2, dB: (og) => 0.3 },
+      { code: "Впк2", name: "Высота плеча косая от точки основания шеи", base: 42.8, dH: 0.8, dB: (og) => 0.4 },
+      { code: "Шс", name: "Ширина спины", base: 17.2, dH: 0.0, dB: (og) => 0.5 },
+      { code: "Шп", name: "Ширина плечевого ската", base: 13.1, dH: 0.3, dB: (og) => 0.1 },
+      { code: "Др.зап.", name: "Длина рукава до сочленения кисти с предплечьем", base: 55.8, dH: 2.2, dB: (og) => 0.2 },
+      { code: "Оп", name: "Обхват плеча", base: 28.2, dH: 0.0, dB: (og) => 1.4 },
+      { code: "Озап", name: "Обхват запястья", base: 15.7, dH: 0.0, dB: (og) => 0.3 },
+      { code: "dпзр", name: "Переднезадний диаметр руки", base: 10.1, dH: 0.0, dB: (og) => 0.6 },
+      { code: "Дсб", name: "Длина ноги по боковой поверхности от талии", base: 106.0, dH: 4.5, dB: (og) => 0.1 },
+      { code: "Дсп", name: "Длина ноги по передней поверхности от талии", base: 104.4, dH: 4.4, dB: (og) => 0.1 },
+      { code: "Дтк", name: "Длина от линии талии до коленной точки", base: 59.0, dH: 2.5, dB: (og) => 0.1 }
+    ];
+
+    const heightInput = document.getElementById('heightInput');
+    const bustInput = document.getElementById('bustInput');
+    const hipsInput = document.getElementById('hipsInput');
+    const searchInput = document.getElementById('searchInput');
+
+    const kHeightVal = document.getElementById('kHeightVal');
+    const kSizeVal = document.getElementById('kSizeVal');
+    const fullnessGroupVal = document.getElementById('fullnessGroupVal');
+    const tableBody = document.getElementById('tableBody');
+    const toast = document.getElementById('toast');
+
+    function calculate() {
+      const h = parseFloat(heightInput.value) || 164;
+      const og = parseFloat(bustInput.value) || 88;
+      const ob = parseFloat(hipsInput.value) || 98;
+
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+      const fullness = ((ob - og) - (-2)) / 4;
+
+      kHeightVal.textContent = (kH >= 0 ? '+' : '') + kH.toFixed(2);
+      kSizeVal.textContent = (kB >= 0 ? '+' : '') + kB.toFixed(2);
+      
+      const fullnessRound = Math.round(fullness);
+      fullnessGroupVal.textContent = `${fullness.toFixed(1)} (${fullnessRound}-я группа)`;
+
+      renderTable(kH, kB, og);
+      saveState();
+    }
+
+    function renderTable(kH, kB, og) {
+      const filter = searchInput.value.toLowerCase().trim();
+      tableBody.innerHTML = '';
+
+      measurementsData.forEach(item => {
+        if (filter && !item.code.toLowerCase().includes(filter) && !item.name.toLowerCase().includes(filter)) {
+          return;
+        }
+
+        const deltaSize = typeof item.dB === 'function' ? item.dB(og) : item.dB;
+        const res = item.base + (item.dH * kH) + (deltaSize * kB);
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+          <td><span class="tag-code">${item.code}</span></td>
+          <td>${item.name}</td>
+          <td style="text-align: right;" class="delta-badge">${item.base.toFixed(1)}</td>
+          <td style="text-align: right;" class="delta-badge">${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</td>
+          <td style="text-align: right;" class="delta-badge">${deltaSize > 0 ? '+' : ''}${deltaSize.toFixed(1)}</td>
+          <td style="text-align: right;" class="calc-res">${res.toFixed(2)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function saveState() {
+      localStorage.setItem('grasser_h_v2', heightInput.value);
+      localStorage.setItem('grasser_og_v2', bustInput.value);
+      localStorage.setItem('grasser_ob_v2', hipsInput.value);
+    }
+
+    function loadState() {
+      if (localStorage.getItem('grasser_h_v2')) heightInput.value = localStorage.getItem('grasser_h_v2');
+      if (localStorage.getItem('grasser_og_v2')) bustInput.value = localStorage.getItem('grasser_og_v2');
+      if (localStorage.getItem('grasser_ob_v2')) hipsInput.value = localStorage.getItem('grasser_ob_v2');
+    }
+
+    [heightInput, bustInput, hipsInput].forEach(inp => {
+      inp.addEventListener('input', calculate);
+    });
+
+    searchInput.addEventListener('input', () => {
+      const h = parseFloat(heightInput.value) || 164;
+      const og = parseFloat(bustInput.value) || 88;
+      renderTable((h - 164) / 6, (og - 88) / 4, og);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      heightInput.value = 170;
+      bustInput.value = 92;
+      hipsInput.value = 102;
+      searchInput.value = '';
+      calculate();
+      showToast('Параметры сброшены (170-92-102)');
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const h = parseFloat(heightInput.value) || 164;
+      const og = parseFloat(bustInput.value) || 88;
+      const ob = parseFloat(hipsInput.value) || 98;
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+
+      let text = `GRASSER 3D РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см\n\n`;
+      measurementsData.forEach(item => {
+        const deltaSize = typeof item.dB === 'function' ? item.dB(og) : item.dB;
+        const val = (item.base + (item.dH * kH) + (deltaSize * kB)).toFixed(2);
+        text += `${item.code} (${item.name}): ${val} см\n`;
+      });
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Все 23 параметра скопированы в буфер!');
+      }).catch(() => {
+        showToast('Ошибка копирования');
+      });
+    });
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('SW registration skipped or error:', err);
+        });
+      });
+    }
+
+    // PWA Install prompt handling
+    let deferredPrompt;
+    const pwaBanner = document.getElementById('pwaBanner');
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaBanner.classList.add('show');
+    });
+
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            pwaBanner.classList.remove('show');
+          }
+          deferredPrompt = null;
+        });
+      }
+    });
+
+    // Init
+    loadState();
+    calculate();
+  </script>
+</body>
+</html>
