@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#0f172a" />
+  <rect x="20" y="20" width="472" height="472" rx="80" fill="url(#bgGrad)" stroke="#38bdf8" stroke-width="6" />
+  
+  <!-- Outer Triangle -->
+  <path d="M 112 350 L 400 350 L 112 85 Z" fill="none" stroke="url(#accentGrad)" stroke-width="26" stroke-linejoin="round" stroke-linecap="round" />
+  <!-- Inner Cutout -->
+  <path d="M 175 305 L 305 305 L 175 185 Z" fill="#0f172a" stroke="#38bdf8" stroke-width="12" stroke-linejoin="round" />
+  
+  <!-- Scale Markings -->
+  <line x1="112" y1="350" x2="112" y2="325" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  <line x1="153" y1="350" x2="153" y2="335" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <line x1="194" y1="350" x2="194" y2="325" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  <line x1="235" y1="350" x2="235" y2="335" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <line x1="276" y1="350" x2="276" y2="325" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  <line x1="317" y1="350" x2="317" y2="335" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <line x1="358" y1="350" x2="358" y2="325" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  <line x1="400" y1="350" x2="400" y2="325" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  
+  <!-- Title Text -->
+  <text x="256" y="425" fill="#f8fafc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" letter-spacing="1.5">ALËNA GRASS-CALC</text>
+</svg>

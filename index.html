@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Grasser 3D">
+  <meta name="apple-mobile-web-app-title" content="GRASS-CALC">
   <link rel="manifest" href="manifest.json">
-  <title>Grasser 3D Калькулятор размерных признаков</title>
-  <link rel="icon" type="image/svg+xml" href="icons/icon-512.svg">
-  <link rel="apple-touch-icon" href="icons/icon-512.svg">
+  <title>ALËNA GRASS-CALC | 3D Калькулятор признаков</title>
+  <link rel="icon" type="image/svg+xml" href="icon-512.svg">
+  <link rel="apple-touch-icon" href="icon-512.png">
   <style>
     :root {
       --bg: #0f172a;
@@ -18,7 +18,6 @@
       --card-border: #334155;
       --accent: #38bdf8;
       --accent-hover: #0ea5e9;
-      --accent-glow: rgba(56, 189, 248, 0.15);
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --input-bg: #090d16;
@@ -70,23 +69,23 @@
     }
 
     .logo-icon {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, #38bdf8, #6366f1);
-      border-radius: 8px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 17px;
+      font-size: 18px;
       box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
     }
 
     h1 {
       font-size: 1.05rem;
-      font-weight: 700;
+      font-weight: 800;
       color: #fff;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
     }
 
     .subtitle {
@@ -268,7 +267,6 @@
       border-color: var(--accent);
     }
 
-    /* === SMART MEASUREMENTS LIST / TABLE (NO HORIZONTAL SCROLL) === */
     .measure-list {
       display: flex;
       flex-direction: column;
@@ -365,7 +363,6 @@
       margin-left: 2px;
     }
 
-    /* View Switcher */
     .view-toggle {
       display: inline-flex;
       background: var(--input-bg);
@@ -482,8 +479,8 @@
       <div class="logo-area">
         <div class="logo-icon">📐</div>
         <div>
-          <h1>GRASSER 3D</h1>
-          <div class="subtitle">Индивидуальный калькулятор признаков</div>
+          <h1>ALËNA GRASS-CALC</h1>
+          <div class="subtitle">Индивидуальный 3D-калькулятор размерных признаков</div>
         </div>
       </div>
       <div id="statusBadge" style="font-size: 0.72rem; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 3px 8px; border-radius: 6px;">
@@ -498,7 +495,7 @@
     <div id="pwaBanner" class="pwa-banner">
       <div>
         <div style="font-weight: 600; font-size: 0.85rem;">📱 Установить на экран</div>
-        <div style="font-size: 0.7rem; color: #cbd5e1;">Работает автономно без интернета</div>
+        <div style="font-size: 0.7rem; color: #cbd5e1;">Работает автономно без рамок браузера</div>
       </div>
       <button class="btn btn-primary" id="installBtn">Установить</button>
     </div>
@@ -513,21 +510,21 @@
         <div class="input-group">
           <label for="heightInput">Рост (Р)</label>
           <div class="input-wrapper">
-            <input type="number" id="heightInput" value="170" step="1" min="100" max="230">
+            <input type="number" id="heightInput" value="158" step="1" min="100" max="230">
           </div>
         </div>
 
         <div class="input-group">
           <label for="bustInput">Грудь (ОГ)</label>
           <div class="input-wrapper">
-            <input type="number" id="bustInput" value="92" step="1" min="60" max="180">
+            <input type="number" id="bustInput" value="88" step="1" min="60" max="180">
           </div>
         </div>
 
         <div class="input-group">
           <label for="hipsInput">Бедра (ОБ)</label>
           <div class="input-wrapper">
-            <input type="number" id="hipsInput" value="102" step="1" min="60" max="200">
+            <input type="number" id="hipsInput" value="98" step="1" min="60" max="200">
           </div>
         </div>
 
@@ -537,21 +534,23 @@
       <div class="params-summary">
         <div class="param-box">
           <div class="param-label">k_рост</div>
-          <div class="param-val" id="kHeightVal">+1.00</div>
+          <div class="param-val" id="kHeightVal">-1.00</div>
         </div>
         <div class="param-box">
           <div class="param-label">k_разм</div>
-          <div class="param-val" id="kSizeVal">+1.00</div>
+          <div class="param-val" id="kSizeVal">0.00</div>
         </div>
         <div class="param-box">
-          <div class="param-label">Полнота</div>
-          <div class="param-val accent" id="fullnessGroupVal">3-я гр.</div>
+          <div class="param-label">Полнотная группа</div>
+          <div class="param-val accent" id="fullnessGroupVal">3-я группа</div>
         </div>
       </div>
 
       <div class="formula-info">
-        <strong>Формула:</strong> Итог = База + (k_рост × ΔР) + (k_разм × ΔОГ).<br>
-        <em>Динамические шаги: Ст (ΔОГ=2.5 при ОГ&gt;108), Дтп2 (ΔОГ=0.8 при ОГ&gt;108).</em>
+        <strong>Формула Grasser 3D Full-Universal:</strong><br>
+        Полнота = ((ОБ - ОГ) + 2) / 4 $	o$ определяет динамическую базу (0–5 группа).<br>
+        Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
+        <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом порога ОГ &gt; 108 см.</em>
       </div>
     </div>
 
@@ -573,12 +572,12 @@
         </div>
       </div>
 
-      <!-- Compact Mobile-Optimized List (Fits 100% width, no horizontal scroll) -->
+      <!-- Mobile-Optimized List (No horizontal scroll) -->
       <div id="measureCardsContainer" class="measure-list">
         <!-- Rendered via JS -->
       </div>
 
-      <!-- Classical Compact Table View (Optional toggle) -->
+      <!-- Table View -->
       <div id="measureTableContainer" style="display: none; overflow-x: auto;">
         <table class="table-view-mode" style="display: table;">
           <thead>
@@ -604,30 +603,31 @@
   <div id="toast" class="toast">Скопировано в буфер!</div>
 
   <script>
+    // 23 Universal features with base tables for groups 0, 1, 2, 3, 4, 5
     const measurementsData = [
-      { code: "P", name: "Рост", base: 164.0, dH: 6.0, dB: (og) => 6.0 },
-      { code: "Сш", name: "Полуобхват шеи", base: 17.4, dH: 0.0, dB: (og) => 0.4 },
-      { code: "Сг1", name: "Полуобхват груди первый", base: 42.6, dH: 0.2, dB: (og) => 1.6 },
-      { code: "Сг2", name: "Полуобхват груди второй", base: 46.3, dH: 0.0, dB: (og) => 2.0 },
-      { code: "Сг3", name: "Полуобхват груди третий", base: 44.0, dH: 0.0, dB: (og) => 2.0 },
-      { code: "Ст", name: "Полуобхват талии", base: 34.4, dH: -0.1, dB: (og) => (og > 108 ? 2.5 : 2.0) },
-      { code: "Сб", name: "Полуобхват бедер (с учетом живота)", base: 49.0, dH: 0.0, dB: (og) => 2.0 },
-      { code: "Шг", name: "Ширина груди", base: 16.4, dH: 0.2, dB: (og) => 0.4 },
-      { code: "Дтс", name: "Длина спины до талии (от высшей точки)", base: 40.2, dH: 1.2, dB: (og) => 0.1 },
-      { code: "Дтс2", name: "Длина спины до талии (от шеи)", base: 42.9, dH: 1.1, dB: (og) => 0.2 },
-      { code: "Дтп2", name: "Длина переда до талии (от шеи)", base: 43.2, dH: 1.0, dB: (og) => (og > 108 ? 0.8 : 0.7) },
-      { code: "Вг2", name: "Высота груди (от шеи)", base: 27.0, dH: 0.4, dB: (og) => 0.9 },
-      { code: "Впрз2", name: "Высота проймы сзади (от шеи)", base: 21.4, dH: 0.2, dB: (og) => 0.3 },
-      { code: "Впк2", name: "Высота плеча косая (от шеи)", base: 42.8, dH: 0.8, dB: (og) => 0.4 },
-      { code: "Шс", name: "Ширина спины", base: 17.2, dH: 0.0, dB: (og) => 0.5 },
-      { code: "Шп", name: "Ширина плечевого ската", base: 13.1, dH: 0.3, dB: (og) => 0.1 },
-      { code: "Др.зап.", name: "Длина рукава до сочленения кисти", base: 55.8, dH: 2.2, dB: (og) => 0.2 },
-      { code: "Оп", name: "Обхват плеча", base: 28.2, dH: 0.0, dB: (og) => 1.4 },
-      { code: "Озап", name: "Обхват запястья", base: 15.7, dH: 0.0, dB: (og) => 0.3 },
-      { code: "dпзр", name: "Переднезадний диаметр руки", base: 10.1, dH: 0.0, dB: (og) => 0.6 },
-      { code: "Дсб", name: "Длина ноги по боку от талии", base: 106.0, dH: 4.5, dB: (og) => 0.1 },
-      { code: "Дсп", name: "Длина ноги спереди от талии", base: 104.4, dH: 4.4, dB: (og) => 0.1 },
-      { code: "Дтк", name: "Длина от талии до коленной точки", base: 59.0, dH: 2.5, dB: (og) => 0.1 }
+      { code: "P", name: "Рост", bases: [164, 164, 164, 164, 164, 164], dH: 6.0, dB: 6.0 },
+      { code: "Сш", name: "Полуобхват шеи", bases: [17.4, 17.4, 17.4, 17.4, 17.4, 17.4], dH: 0.0, dB: 0.4 },
+      { code: "Сг1", name: "Полуобхват груди первый", bases: [42.0, 42.2, 42.4, 42.6, 42.8, 43.0], dH: 0.2, dB: 1.6 },
+      { code: "Сг2", name: "Полуобхват груди второй", bases: [45.7, 45.9, 46.1, 46.3, 46.5, 46.7], dH: 0.0, dB: 2.0 },
+      { code: "Сг3", name: "Полуобхват груди третий", bases: [44.0, 44.0, 44.0, 44.0, 44.0, 44.0], dH: 0.0, dB: 2.0 },
+      { code: "Ст", name: "Полуобхват талии", bases: [32.6, 33.2, 33.8, 34.4, 35.0, 35.6], dH: -0.1, dynamicB: true, dB: (og, kB) => (og <= 108 ? kB * 2.0 : 10.0 + (kB - 5.0) * 2.5), stepB: (og) => (og > 108 ? 2.5 : 2.0) },
+      { code: "Сб", name: "Полуобхват бедер с учетом выступа живота", bases: [43.0, 45.0, 47.0, 49.0, 51.0, 53.0], dH: 0.0, dB: 2.0 },
+      { code: "Шг", name: "Ширина груди", bases: [16.4, 16.4, 16.4, 16.4, 16.4, 16.4], dH: 0.2, dB: 0.4 },
+      { code: "Дтс", name: "Длина спины до талии от высшей точки шва", bases: [40.2, 40.2, 40.2, 40.2, 40.2, 40.2], dH: 1.2, dB: 0.1 },
+      { code: "Дтс2", name: "Длина спины до талии от точки основания шеи", bases: [42.9, 42.9, 42.9, 42.9, 42.9, 42.9], dH: 1.1, dB: 0.2 },
+      { code: "Дтп2", name: "Длина переда до талии от точки основания шеи", bases: [43.8, 43.6, 43.4, 43.2, 43.0, 42.8], dH: 1.0, dynamicB: true, dB: (og, kB) => (og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8), stepB: (og) => (og > 108 ? 0.8 : 0.7) },
+      { code: "Вг2", name: "Высота груди от точки основания шеи", bases: [26.4, 26.6, 26.8, 27.0, 27.2, 27.4], dH: 0.4, dB: 0.9 },
+      { code: "Впрз2", name: "Высота проймы сзади от точки основания шеи", bases: [21.1, 21.2, 21.3, 21.4, 21.5, 21.6], dH: 0.2, dB: 0.3 },
+      { code: "Впк2", name: "Высота плеча косая от точки основания шеи", bases: [42.8, 43.0, 42.8, 42.8, 42.8, 43.9], dH: 0.8, dB: 0.4 },
+      { code: "Шс", name: "Ширина спины", bases: [17.2, 17.2, 17.2, 17.2, 17.2, 17.2], dH: 0.0, dB: 0.5 },
+      { code: "Шп", name: "Ширина плечевого ската", bases: [13.1, 13.1, 13.1, 13.1, 13.1, 13.1], dH: 0.3, dB: 0.1 },
+      { code: "Др.зап.", name: "Длина рукава до сочленения кисти с предплечьем", bases: [55.8, 55.8, 55.8, 55.8, 55.8, 55.8], dH: 2.2, dB: 0.2 },
+      { code: "Оп", name: "Обхват плеча", bases: [25.8, 26.6, 27.4, 28.2, 29.0, 29.8], dH: 0.0, dB: 1.4 },
+      { code: "Озап", name: "Обхват запястья", bases: [14.8, 15.3, 15.5, 15.7, 15.9, 16.1], dH: 0.0, dB: 0.3 },
+      { code: "dпзр", name: "Переднезадний диаметр руки", bases: [9.5, 9.7, 9.9, 10.1, 10.3, 10.5], dH: 0.0, dB: 0.6 },
+      { code: "Дсб", name: "Длина ноги по боковой поверхности от талии", bases: [105.4, 105.6, 105.8, 106.0, 106.2, 106.4], dH: 4.5, dB: 0.1 },
+      { code: "Дсп", name: "Длина ноги по передней поверхности от талии", bases: [103.8, 104.0, 104.2, 104.4, 104.6, 104.8], dH: 4.4, dB: 0.1 },
+      { code: "Дтк", name: "Длина от линии талии до коленной точки", bases: [58.4, 58.6, 58.8, 59.0, 59.2, 59.4], dH: 2.5, dB: 0.1 }
     ];
 
     const heightInput = document.getElementById('heightInput');
@@ -654,19 +654,22 @@
 
       const kH = (h - 164) / 6;
       const kB = (og - 88) / 4;
-      const fullness = ((ob - og) - (-2)) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      
+      // Median(0, 5, Math.round(fullnessExact))
+      let fullnessGroupIndex = Math.round(fullnessExact);
+      if (fullnessGroupIndex < 0) fullnessGroupIndex = 0;
+      if (fullnessGroupIndex > 5) fullnessGroupIndex = 5;
 
       kHeightVal.textContent = (kH >= 0 ? '+' : '') + kH.toFixed(2);
       kSizeVal.textContent = (kB >= 0 ? '+' : '') + kB.toFixed(2);
-      
-      const fullnessRound = Math.round(fullness);
-      fullnessGroupVal.textContent = `${fullnessRound}-я (${fullness.toFixed(1)})`;
+      fullnessGroupVal.textContent = `${fullnessGroupIndex}-я группа (${fullnessExact.toFixed(1)})`;
 
-      renderViews(kH, kB, og);
+      renderViews(kH, kB, og, fullnessGroupIndex);
       saveState();
     }
 
-    function renderViews(kH, kB, og) {
+    function renderViews(kH, kB, og, groupIndex) {
       const filter = searchInput.value.toLowerCase().trim();
       cardsContainer.innerHTML = '';
       tableBody.innerHTML = '';
@@ -676,11 +679,24 @@
           return;
         }
 
-        const deltaSize = typeof item.dB === 'function' ? item.dB(og) : item.dB;
-        const res = item.base + (item.dH * kH) + (deltaSize * kB);
+        const baseVal = item.bases[groupIndex];
+        let shiftSize = 0;
+        let deltaSizeLabel = '';
+
+        if (item.dynamicB) {
+          shiftSize = item.dB(og, kB);
+          const step = item.stepB(og);
+          deltaSizeLabel = (step > 0 ? '+' : '') + step.toFixed(1);
+        } else {
+          shiftSize = item.dB * kB;
+          deltaSizeLabel = (item.dB > 0 ? '+' : '') + item.dB.toFixed(1);
+        }
+
+        const shiftHeight = item.dH * kH;
+        const res = baseVal + shiftHeight + shiftSize;
         const resStr = res.toFixed(2);
 
-        // 1. Mobile-friendly List Row
+        // Mobile List Row
         const row = document.createElement('div');
         row.className = 'measure-row';
         row.innerHTML = `
@@ -689,9 +705,9 @@
             <div class="measure-info">
               <div class="measure-name">${item.name}</div>
               <div class="measure-details">
-                <span>База: ${item.base.toFixed(1)}</span>
+                <span>База: ${baseVal.toFixed(1)}</span>
                 <span>ΔР: ${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</span>
-                <span>ΔОГ: ${deltaSize > 0 ? '+' : ''}${deltaSize.toFixed(1)}</span>
+                <span>ΔОГ: ${deltaSizeLabel}</span>
               </div>
             </div>
           </div>
@@ -701,21 +717,21 @@
         `;
         cardsContainer.appendChild(row);
 
-        // 2. Table Row
+        // Table Row
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong style="color:var(--accent);">${item.code}</strong></td>
           <td>${item.name}</td>
-          <td style="text-align: right;">${item.base.toFixed(1)}</td>
+          <td style="text-align: right;">${baseVal.toFixed(1)}</td>
           <td style="text-align: right;">${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</td>
-          <td style="text-align: right;">${deltaSize > 0 ? '+' : ''}${deltaSize.toFixed(1)}</td>
+          <td style="text-align: right;">${deltaSizeLabel}</td>
           <td style="text-align: right; font-weight: 700; color: #fff;">${resStr}</td>
         `;
         tableBody.appendChild(tr);
       });
     }
 
-    // View toggle handlers
+    // Toggle views
     viewCardsBtn.addEventListener('click', () => {
       viewCardsBtn.classList.add('active');
       viewTableBtn.classList.remove('active');
@@ -737,15 +753,15 @@
     }
 
     function saveState() {
-      localStorage.setItem('grasser_h_v3', heightInput.value);
-      localStorage.setItem('grasser_og_v3', bustInput.value);
-      localStorage.setItem('grasser_ob_v3', hipsInput.value);
+      localStorage.setItem('grass_calc_h', heightInput.value);
+      localStorage.setItem('grass_calc_og', bustInput.value);
+      localStorage.setItem('grass_calc_ob', hipsInput.value);
     }
 
     function loadState() {
-      if (localStorage.getItem('grasser_h_v3')) heightInput.value = localStorage.getItem('grasser_h_v3');
-      if (localStorage.getItem('grasser_og_v3')) bustInput.value = localStorage.getItem('grasser_og_v3');
-      if (localStorage.getItem('grasser_ob_v3')) hipsInput.value = localStorage.getItem('grasser_ob_v3');
+      if (localStorage.getItem('grass_calc_h')) heightInput.value = localStorage.getItem('grass_calc_h');
+      if (localStorage.getItem('grass_calc_og')) bustInput.value = localStorage.getItem('grass_calc_og');
+      if (localStorage.getItem('grass_calc_ob')) hipsInput.value = localStorage.getItem('grass_calc_ob');
     }
 
     [heightInput, bustInput, hipsInput].forEach(inp => {
@@ -755,16 +771,23 @@
     searchInput.addEventListener('input', () => {
       const h = parseFloat(heightInput.value) || 164;
       const og = parseFloat(bustInput.value) || 88;
-      renderViews((h - 164) / 6, (og - 88) / 4, og);
+      const ob = parseFloat(hipsInput.value) || 98;
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      let groupIndex = Math.round(fullnessExact);
+      if (groupIndex < 0) groupIndex = 0;
+      if (groupIndex > 5) groupIndex = 5;
+      renderViews(kH, kB, og, groupIndex);
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
-      heightInput.value = 170;
-      bustInput.value = 92;
-      hipsInput.value = 102;
+      heightInput.value = 158;
+      bustInput.value = 88;
+      hipsInput.value = 98;
       searchInput.value = '';
       calculate();
-      showToast('Сброшено на 170-92-102');
+      showToast('Сброшено на 158-88-98');
     });
 
     document.getElementById('copyBtn').addEventListener('click', () => {
@@ -773,11 +796,16 @@
       const ob = parseFloat(hipsInput.value) || 98;
       const kH = (h - 164) / 6;
       const kB = (og - 88) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      let groupIndex = Math.round(fullnessExact);
+      if (groupIndex < 0) groupIndex = 0;
+      if (groupIndex > 5) groupIndex = 5;
 
-      let text = `GRASSER 3D РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см\n\n`;
+      let text = `ALËNA GRASS-CALC РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см (Полнота: ${groupIndex}-я гр.)\n\n`;
       measurementsData.forEach(item => {
-        const deltaSize = typeof item.dB === 'function' ? item.dB(og) : item.dB;
-        const val = (item.base + (item.dH * kH) + (deltaSize * kB)).toFixed(2);
+        const baseVal = item.bases[groupIndex];
+        const shiftSize = item.dynamicB ? item.dB(og, kB) : item.dB * kB;
+        const val = (baseVal + item.dH * kH + shiftSize).toFixed(2);
         text += `${item.code} (${item.name}): ${val} см\n`;
       });
 
@@ -797,7 +825,7 @@
       });
     }
 
-    // PWA Install prompt handling
+    // PWA Install prompt
     let deferredPrompt;
     const pwaBanner = document.getElementById('pwaBanner');
     const installBtn = document.getElementById('installBtn');

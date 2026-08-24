@@ -1,12 +1,14 @@
-const CACHE_NAME = 'grasser-pwa-v4';
+const CACHE_NAME = 'grass-calc-v6';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-192.svg',
-  './icons/icon-512.svg'
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png',
+  './icon-192.svg',
+  './icon-512.svg'
 ];
 
 self.addEventListener('install', (e) => {
