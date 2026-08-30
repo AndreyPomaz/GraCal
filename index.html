@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="GRASS-CALC">
+  <meta name="apple-mobile-web-app-title" content="ALËNA GRASS">
   <link rel="manifest" href="manifest.json">
-  <title>ALËNA GRASS-CALC | 3D Калькулятор и Дневник курса</title>
+  <title>ALËNA GRASS | 3D Калькулятор и Дневник курса</title>
   <link rel="icon" type="image/svg+xml" href="icon-512.svg">
   <link rel="apple-touch-icon" href="icon-512.png">
   <style>
@@ -258,24 +258,29 @@
       border-left: 3px solid var(--accent);
     }
 
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
     .actions-bar {
       display: flex;
+      flex-direction: column;
       gap: 8px;
       margin-bottom: 12px;
-      justify-content: space-between;
-      align-items: center;
+      width: 100%;
     }
 
     .search-input {
       background: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 9px 12px;
       color: #fff;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       outline: none;
-      flex: 1;
-      min-width: 120px;
+      width: 100%;
+      min-width: 0;
     }
 
     .search-input:focus {
@@ -285,6 +290,8 @@
     .btn-group {
       display: flex;
       gap: 6px;
+      width: 100%;
+      flex-wrap: wrap;
     }
 
     button.btn {
@@ -292,15 +299,39 @@
       color: #fff;
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 0.8rem;
+      padding: 8px 8px;
+      font-size: 0.76rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
       transition: all 0.15s ease;
       white-space: nowrap;
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    @media (min-width: 640px) {
+      .actions-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .search-input {
+        width: auto;
+        flex: 1;
+      }
+      .btn-group {
+        width: auto;
+        flex-wrap: nowrap;
+      }
+      button.btn {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+      }
     }
 
     button.btn:active {
@@ -768,7 +799,7 @@
       <div class="logo-area">
         <div class="logo-icon">📐</div>
         <div>
-          <h1>ALËNA GRASS-CALC</h1>
+          <h1>ALËNA GRASS</h1>
           <div class="subtitle">Индивидуальный калькулятор и дневник курса</div>
         </div>
       </div>
@@ -1594,7 +1625,7 @@
       if (groupIndex < 0) groupIndex = 0;
       if (groupIndex > 5) groupIndex = 5;
 
-      let text = `ALËNA GRASS-CALC РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см (Полнота: ${groupIndex}-я гр.)\n\n`;
+      let text = `ALËNA GRASS РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см (Полнота: ${groupIndex}-я гр.)\n\n`;
       measurementsData.forEach(item => {
         const baseVal = item.bases[groupIndex];
         const shiftSize = item.dynamicB ? item.calcShiftB(og, kB, groupIndex) : item.dB * kB;

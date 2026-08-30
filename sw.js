@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grass-calc-v8';
+const CACHE_NAME = 'grass-v10';
 const ASSETS = [
   './',
   './index.html',
