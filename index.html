@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="GRASS-CALC">
   <link rel="manifest" href="manifest.json">
-  <title>ALËNA GRASS-CALC | 3D Калькулятор признаков</title>
+  <title>ALËNA GRASS-CALC | 3D Калькулятор и Дневник курса</title>
   <link rel="icon" type="image/svg+xml" href="icon-512.svg">
   <link rel="apple-touch-icon" href="icon-512.png">
   <style>
@@ -24,6 +24,9 @@
       --row-hover: #243247;
       --row-alt: #172133;
       --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #a855f7;
     }
 
     * {
@@ -47,7 +50,7 @@
     header {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       border-bottom: 1px solid var(--card-border);
-      padding: 14px 16px;
+      padding: 12px 16px;
       position: sticky;
       top: 0;
       z-index: 50;
@@ -93,11 +96,53 @@
       color: var(--text-muted);
     }
 
-    .container {
+    /* Top Navigation Tabs */
+    .top-nav {
+      display: flex;
       max-width: 900px;
-      margin: 14px auto;
+      margin: 12px auto 0;
       padding: 0 12px;
       width: 100%;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 12px auto;
+      padding: 0 12px;
+      width: 100%;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
     }
 
     .card {
@@ -121,6 +166,7 @@
       justify-content: space-between;
     }
 
+    /* Input Grids */
     .grid-inputs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -267,6 +313,7 @@
       border-color: var(--accent);
     }
 
+    /* Measure List Rows */
     .measure-list {
       display: flex;
       flex-direction: column;
@@ -410,6 +457,250 @@
       color: #cbd5e1;
     }
 
+    /* === TRACKER / DIARY STYLES === */
+    .overall-progress-box {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .overall-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #090d16;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #10b981);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .info-badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .info-badge-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-badge-card.payment {
+      border-left: 3px solid var(--warning);
+    }
+
+    .info-badge-card.holiday {
+      border-left: 3px solid var(--purple);
+    }
+
+    .block-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .block-card.completed {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(19, 46, 39, 0.35);
+    }
+
+    .block-header {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      gap: 10px;
+    }
+
+    .block-header:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .block-title-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .block-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--success);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .block-title-text {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #f8fafc;
+      line-height: 1.3;
+    }
+
+    .block-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .block-status-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .deadline-badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .deadline-badge.urgent {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .deadline-badge.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .deadline-badge.normal {
+      background: rgba(56, 189, 248, 0.15);
+      color: #bae6fd;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .deadline-badge.done {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .chevron-icon {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .block-card.collapsed .chevron-icon {
+      transform: rotate(-90deg);
+    }
+
+    .block-body {
+      padding: 0 14px 12px;
+      border-top: 1px solid rgba(51, 65, 85, 0.4);
+    }
+
+    .block-card.collapsed .block-body {
+      display: none;
+    }
+
+    .block-note-banner {
+      font-size: 0.74rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin: 8px 0 10px;
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 3px solid var(--accent);
+      color: #cbd5e1;
+    }
+
+    .lessons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--row-alt);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lesson-item:hover {
+      background: var(--row-hover);
+    }
+
+    .lesson-item.done {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .lesson-checkbox {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--success);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .lesson-title {
+      font-size: 0.82rem;
+      color: #f1f5f9;
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .lesson-item.done .lesson-title {
+      text-decoration: line-through;
+      color: #64748b;
+    }
+
+    .test-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--purple);
+      background: rgba(168, 85, 247, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      flex-shrink: 0;
+    }
+
     .toast {
       position: fixed;
       bottom: 20px;
@@ -449,12 +740,10 @@
 
     @media (min-width: 640px) {
       .container {
-        margin: 20px auto;
-        padding: 0 16px;
+        margin: 16px auto;
       }
       .card {
         padding: 20px;
-        margin-bottom: 20px;
       }
       .grid-inputs {
         gap: 16px;
@@ -480,14 +769,20 @@
         <div class="logo-icon">📐</div>
         <div>
           <h1>ALËNA GRASS-CALC</h1>
-          <div class="subtitle">Индивидуальный 3D-калькулятор размерных признаков</div>
+          <div class="subtitle">Индивидуальный калькулятор и дневник курса</div>
         </div>
       </div>
       <div id="statusBadge" style="font-size: 0.72rem; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 3px 8px; border-radius: 6px;">
-        Офлайн
+        Офлайн готов
       </div>
     </div>
   </header>
+
+  <!-- Navigation Switcher -->
+  <div class="top-nav">
+    <button class="tab-btn active" id="tabBtnCalc">📐 3D Калькулятор</button>
+    <button class="tab-btn" id="tabBtnDiary">📚 Дневник курса <span id="navProgressBadge" style="font-size:0.7rem; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:10px;">0%</span></button>
+  </div>
 
   <div class="container">
     
@@ -500,110 +795,169 @@
       <button class="btn btn-primary" id="installBtn">Установить</button>
     </div>
 
-    <!-- Inputs Card -->
-    <div class="card">
-      <div class="card-title">
-        <span>1. Параметры (см)</span>
+    <!-- ==================== TAB 1: CALCULATOR ==================== -->
+    <div id="tabContentCalc" class="tab-content active">
+      
+      <!-- Inputs Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>1. Параметры (см)</span>
+        </div>
+        <div class="grid-inputs">
+          
+          <div class="input-group">
+            <label for="heightInput">Рост (Р)</label>
+            <div class="input-wrapper">
+              <input type="number" id="heightInput" value="163" step="1" min="100" max="230">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="bustInput">Грудь (ОГ)</label>
+            <div class="input-wrapper">
+              <input type="number" id="bustInput" value="84" step="1" min="60" max="180">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="hipsInput">Бедра (ОБ)</label>
+            <div class="input-wrapper">
+              <input type="number" id="hipsInput" value="94" step="1" min="60" max="200">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Calculated shifts -->
+        <div class="params-summary">
+          <div class="param-box">
+            <div class="param-label">k_рост</div>
+            <div class="param-val" id="kHeightVal">-0.17</div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">k_разм</div>
+            <div class="param-val" id="kSizeVal">-1.00</div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">Полнотная группа</div>
+            <div class="param-val accent" id="fullnessGroupVal">3-я группа</div>
+          </div>
+        </div>
+
+        <div class="formula-info">
+          <strong>Формула Grasser 3D Final v3.1:</strong><br>
+          Полнота = ((ОБ - ОГ) + 2) / 4 $	o$ определяет динамическую базу (0–5 группа).<br>
+          Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
+          <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом полноты и порога ОГ &gt; 108 см.</em>
+        </div>
       </div>
-      <div class="grid-inputs">
+
+      <!-- Results Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>2. Результаты (23 мерки)</span>
+          <div class="view-toggle">
+            <button id="viewCardsBtn" class="active">Список</button>
+            <button id="viewTableBtn">Таблица</button>
+          </div>
+        </div>
         
-        <div class="input-group">
-          <label for="heightInput">Рост (Р)</label>
-          <div class="input-wrapper">
-            <input type="number" id="heightInput" value="163" step="1" min="100" max="230">
+        <div class="actions-bar">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск мерки или кода...">
+          <div class="btn-group">
+            <button class="btn" id="copyBtn">📋 Копия</button>
+            <button class="btn" id="resetBtn">↺ Сброс</button>
           </div>
         </div>
 
-        <div class="input-group">
-          <label for="bustInput">Грудь (ОГ)</label>
-          <div class="input-wrapper">
-            <input type="number" id="bustInput" value="84" step="1" min="60" max="180">
-          </div>
+        <!-- Mobile-Optimized List -->
+        <div id="measureCardsContainer" class="measure-list"></div>
+
+        <!-- Table View -->
+        <div id="measureTableContainer" style="display: none; overflow-x: auto;">
+          <table class="table-view-mode" style="display: table;">
+            <thead>
+              <tr>
+                <th>Код</th>
+                <th>Признак</th>
+                <th style="text-align: right;">База</th>
+                <th style="text-align: right;">ΔР</th>
+                <th style="text-align: right;">ΔОГ</th>
+                <th style="text-align: right; color: var(--accent);">ИТОГ</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
         </div>
 
-        <div class="input-group">
-          <label for="hipsInput">Бедра (ОБ)</label>
-          <div class="input-wrapper">
-            <input type="number" id="hipsInput" value="94" step="1" min="60" max="200">
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Calculated shifts -->
-      <div class="params-summary">
-        <div class="param-box">
-          <div class="param-label">k_рост</div>
-          <div class="param-val" id="kHeightVal">-0.17</div>
-        </div>
-        <div class="param-box">
-          <div class="param-label">k_разм</div>
-          <div class="param-val" id="kSizeVal">-1.00</div>
-        </div>
-        <div class="param-box">
-          <div class="param-label">Полнотная группа</div>
-          <div class="param-val accent" id="fullnessGroupVal">3-я группа</div>
-        </div>
-      </div>
-
-      <div class="formula-info">
-        <strong>Формула Grasser 3D Final v3.1:</strong><br>
-        Полнота = ((ОБ - ОГ) + 2) / 4 $	o$ определяет динамическую базу (0–5 группа).<br>
-        Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
-        <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом полноты и порога ОГ &gt; 108 см.</em>
       </div>
     </div>
 
-    <!-- Results Card -->
-    <div class="card">
-      <div class="card-title">
-        <span>2. Результаты (23 мерки)</span>
-        <div class="view-toggle">
-          <button id="viewCardsBtn" class="active">Список</button>
-          <button id="viewTableBtn">Таблица</button>
-        </div>
-      </div>
+
+    <!-- ==================== TAB 2: COURSE DIARY / TRACKER ==================== -->
+    <div id="tabContentDiary" class="tab-content">
       
-      <div class="actions-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск мерки или кода...">
-        <div class="btn-group">
-          <button class="btn" id="copyBtn">📋 Копия</button>
-          <button class="btn" id="resetBtn">↺ Сброс</button>
+      <!-- Overall Progress Card -->
+      <div class="overall-progress-box">
+        <div class="overall-header">
+          <div>
+            <div style="font-weight: 800; font-size: 1rem; color: #fff;">ПРОГРЕСС КУРСА</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Курс «Закройщик-портной» • 19 блоков, 144 урока</div>
+          </div>
+          <div style="text-align: right;">
+            <div id="overallPercentText" style="font-size: 1.25rem; font-weight: 800; color: var(--accent);">0%</div>
+            <div id="overallCountText" style="font-size: 0.72rem; color: var(--text-muted);">0 / 144 уроков</div>
+          </div>
+        </div>
+
+        <div class="progress-bar-bg">
+          <div id="overallProgressBar" class="progress-bar-fill"></div>
+        </div>
+
+        <!-- Important Reminders Badges -->
+        <div class="info-badges-grid">
+          <div class="info-badge-card payment">
+            <span style="font-size:1.1rem;">💳</span>
+            <div>
+              <strong style="color:#fbbf24;">График оплат:</strong><br>
+              2 часть: 11.11.26 • 3 часть: 11.02.27 • 4 часть: до 11.05.27
+            </div>
+          </div>
+          <div class="info-badge-card holiday">
+            <span style="font-size:1.1rem;">🌴</span>
+            <div>
+              <strong style="color:#c084fc;">Каникулы и отдых:</strong><br>
+              31.12–10.01 (НГ) • 02.02–02.03 (Каникулы) • 08.03, 03.05, 10.05, 14.06
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Mobile-Optimized List (No horizontal scroll) -->
-      <div id="measureCardsContainer" class="measure-list">
-        <!-- Rendered via JS -->
+      <!-- Diary Actions Bar -->
+      <div class="actions-bar">
+        <input type="text" id="searchDiaryInput" class="search-input" placeholder="🔍 Поиск урока, темы или блока...">
+        <div class="btn-group">
+          <button class="btn" id="collapseAllBtn">Свернуть всё</button>
+          <button class="btn" id="expandAllBtn">Развернуть</button>
+          <button class="btn" id="resetDiaryBtn">↺ Сброс</button>
+        </div>
       </div>
 
-      <!-- Table View -->
-      <div id="measureTableContainer" style="display: none; overflow-x: auto;">
-        <table class="table-view-mode" style="display: table;">
-          <thead>
-            <tr>
-              <th>Код</th>
-              <th>Признак</th>
-              <th style="text-align: right;">База</th>
-              <th style="text-align: right;">ΔР</th>
-              <th style="text-align: right;">ΔОГ</th>
-              <th style="text-align: right; color: var(--accent);">ИТОГ</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <!-- Rendered via JS -->
-          </tbody>
-        </table>
+      <!-- Blocks Container -->
+      <div id="courseBlocksContainer">
+        <!-- Rendered via JS -->
       </div>
 
     </div>
 
   </div>
 
-  <div id="toast" class="toast">Скопировано в буфер!</div>
+  <div id="toast" class="toast">Сохранено!</div>
 
   <script>
-    // 23 Universal features with updated formulas from Grasser_Universal_Calculator_3D_Final_v3_1.xlsx
+    // ==========================================
+    // 1. DATA DEFINITIONS
+    // ==========================================
     const measurementsData = [
       { code: "P", name: "Рост", bases: [164, 164, 164, 164, 164, 164], dH: 6.0, dB: 6.0 },
       { code: "Сш", name: "Полуобхват шеи", bases: [17.4, 17.4, 17.4, 17.4, 17.4, 17.4], dH: 0.0, dB: 0.4 },
@@ -652,6 +1006,425 @@
       { code: "Дтк", name: "Длина от линии талии до коленной точки", bases: [58.4, 58.6, 58.8, 59.0, 59.2, 59.4], dH: 2.5, dB: 0.1 }
     ];
 
+    const courseBlocksData = [
+  {
+    "id": 1,
+    "title": "Антропометрия",
+    "duration": "2 недели",
+    "dates": "11.08.2026 – 25.08.2026",
+    "deadline": "2026-08-25",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 1. Введение",
+      "Урок 2. Общие сведения об одежде",
+      "Урок 3. Антропометрия и снятие размерных признаков",
+      "Урок 4. Анализ индивидуальных особенностей",
+      "Урок 5. Сравнительный анализ с типовыми размерными признаками"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Введение в конструирование",
+    "duration": "1 неделя",
+    "dates": "25.08.2026 – 01.09.2026",
+    "deadline": "2026-09-01",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 6. Введение в конструирование",
+      "7. ТЕСТ",
+      "Урок 8. Прибавки и припуски в одежде",
+      "9. ТЕСТ",
+      "Урок 10. Введение в материаловедение",
+      "11. ТЕСТ",
+      "Урок 12. Адресное проектирование одежды",
+      "13. ТЕСТ",
+      "Урок 14. Разработка чертежей конструкции прямой юбки",
+      "15. ТЕСТ"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Юбки. Макет прямой юбки. Моделирование. Тех. рисунок",
+    "duration": "3 недели",
+    "dates": "01.09.2026 – 22.09.2026",
+    "deadline": "2026-09-22",
+    "trDeadline": "22.09.2026",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 22.09.2026",
+    "lessons": [
+      "Урок 16. Технология. Ручные швы",
+      "Урок 17. Раскрой и сборка макета прямой юбки",
+      "18. ТЕСТ",
+      "Урок 19. Проведение примерки макета юбки. Дефекты посадки",
+      "Урок 20. Дефекты посадки юбки",
+      "Урок 21. Моделирование. Вытачки",
+      "Урок 22. Моделирование юбки-карандаш и конической юбки",
+      "Урок 23. Введение в технический рисунок. Прямая и коническая юбка"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Оборудование. Технология",
+    "duration": "2 недели",
+    "dates": "22.09.2026 – 06.10.2026",
+    "deadline": "2026-10-06",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 24. Оборудование",
+      "Урок 25. Оборудование для ВТО",
+      "Урок 26. Технология. Соединительные швы",
+      "Урок 27. Технология. Краевые, рельефные швы",
+      "Урок 28. Технология. ВТО. Вытачки, молния, пояс, шлица",
+      "Урок 29. Язык технологических схем",
+      "Урок 30. Конфекционирование. Наряд-заказ"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Пошив юбки на подкладке со шлицей. Моделирование юбок. Тех. рисунок",
+    "duration": "4 недели",
+    "dates": "06.10.2026 – 03.11.2026",
+    "deadline": "2026-11-03",
+    "trDeadline": "03.11.2026",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 03.11.2026",
+    "lessons": [
+      "Урок 31. Пошив юбки на подкладке со шлицей. Раскрой и примерка макета",
+      "Урок 32. Пошив юбки на подкладке со шлицей. Примерка изделия",
+      "Урок 33. Подкрой подкладки в юбке со шлицей",
+      "Урок 34. Технологическая последовательность пошива юбки на подкладке",
+      "Урок 35. Пошив юбки-карандаш. Часть 1",
+      "Урок 36. Пошив юбки-карандаш. Часть 2",
+      "Урок 37. Моделирование юбки. Вытачки. Сборка",
+      "Урок 38. Моделирование юбки. Складки. Подрезы. Кокетка",
+      "Урок 39. Моделирование юбки. Баска. Запах. Пояс",
+      "Урок 40. Проектирование карманов в шве",
+      "Урок 41. Технический рисунок. Модельные юбки"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Технология пошива. Юбки. Пошив макета модельной юбки",
+    "duration": "2 недели",
+    "dates": "03.11.2026 – 17.11.2026",
+    "deadline": "2026-11-17",
+    "trDeadline": null,
+    "payment": "11.11.2026 — Оплата 2 части",
+    "holidays": null,
+    "note": "💳 11.11.2026 — оплата 2 части",
+    "lessons": [
+      "Урок 42. Технология. Сборка. Складки",
+      "Урок 43. Технология. Обработка талии, низа",
+      "Урок 44. Технология. Карманы. Застежка. Разрез",
+      "Урок 45. Подкрой подкладки к юбкам",
+      "Урок 46. Технологические схемы в юбке",
+      "Урок 47. Пример пошива модельной юбки",
+      "Урок 48. Практика. Пошив модельной юбки"
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Брюки. Конструирование",
+    "duration": "2 недели",
+    "dates": "17.11.2026 – 01.12.2026",
+    "deadline": "2026-12-01",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 49. Введение в конструирование брюк. Снятие мерок",
+      "Урок 50. Построение БК брюк по методике Кочесовой",
+      "Урок 51. Построение БК брюк с учетом индивидуальных особенностей по методике Мюллер и сын",
+      "Урок 52. Раскрой и примерка макета базовой конструкции брюк",
+      "Урок 53. Дефекты посадки брюк"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Брюки. ВТО. Моделирование. Тех. рисунок. Технология классических брюк",
+    "duration": "3 недели",
+    "dates": "01.12.2026 – 22.12.2026",
+    "deadline": "2026-12-22",
+    "trDeadline": "15.12.2026",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 15.12.2026",
+    "lessons": [
+      "Урок 54. ВТО брюк",
+      "Урок 55. Брюки. Материаловедение",
+      "Урок 56. Производные детали брюк. Моделирование",
+      "Урок 57. Технический рисунок. Классические брюки",
+      "Урок 58. Технология пошива узлов брюк",
+      "Урок 59. Технология пошива узлов брюк. Карманы",
+      "Урок 60. Технологические схемы в классических брюках",
+      "Урок 61. Практика. Пошив классических брюк"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Модельные брюки. Моделирование. Тех. рисунок. Пошив макета",
+    "duration": "2 недели",
+    "dates": "22.12.2026 – 12.01.2027",
+    "deadline": "2027-01-12",
+    "trDeadline": "12.01.2027",
+    "payment": null,
+    "holidays": "31.12.2026 – 10.01.2027 — Новогодние выходные",
+    "note": "ТР — дедлайн 12.01.2027 | 🎄 31.12–10.01 выходные",
+    "lessons": [
+      "Урок 62. Моделирование брюк. Часть 1",
+      "Урок 63. Моделирование брюк. Часть 2",
+      "Урок 64. Технический рисунок. Модельные брюки",
+      "Урок 65. Технология пошива узлов модельных брюк",
+      "Урок 66. Практика. Пошив модельных брюк"
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Плечевое изделие с втачным рукавом. Конструирование. Макет",
+    "duration": "3 недели",
+    "dates": "12.01.2027 – 02.02.2027",
+    "deadline": "2027-02-02",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 67. Введение к блоку по плечевому изделию",
+      "Урок 68. Построение сетки чертежа БК плечевого изделия с втачным рукавом на индивидуальную фигуру",
+      "Урок 69. Построение БК плечевого изделия с втачным рукавом на индивидуальную фигуру",
+      "Урок 70. Раскрой и сборка макета БК плечевого изделия с втачным рукавом",
+      "Урок 71. Проведение примерки макета БК плечевого изделия с втачным рукавом",
+      "Урок 72. Дефекты посадки плечевого изделия",
+      "Урок 73. Дефекты посадки плечевого изделия",
+      "Урок 74. Дефекты посадки плечевого изделия"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Моделирование плечевого изделия. Застежки, воротники, подкладка. Тех. рисунок",
+    "duration": "2 недели (с учетом каникул)",
+    "dates": "02.02.2027 – 16.03.2027",
+    "deadline": "2027-03-16",
+    "trDeadline": "16.03.2027",
+    "payment": "11.02.2027 — Оплата 3 части",
+    "holidays": "02.02–02.03.2027 — Каникулы; 08.03.2027 — Выходной",
+    "note": "ТР дедлайн 16.03.27 | 🌴 02.02–02.03 каникулы | 💳 11.02 оплата 3 части | 08.03 выходной",
+    "lessons": [
+      "Урок 75. Основы моделирования плечевого изделия",
+      "Урок 76. Основы моделирования плечевого изделия",
+      "Урок 77. Моделирование рукава. Моделирование рукава в связке с проймой",
+      "Урок 78. Моделирование области застежки в плечевых изделиях",
+      "Урок 79. Обтачка и отложной воротник. Стояче-отложные воротники",
+      "Урок 80. Дефекты посадки отложных воротников",
+      "Урок 81. Подкрой подкладки",
+      "Урок 82. Технический рисунок. Платье с втачным рукавом",
+      "Урок 83. Прейскурант на индивидуальный пошив изделия"
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Технология. Пошив платья с втачным рукавом",
+    "duration": "2 недели",
+    "dates": "16.03.2027 – 30.03.2027",
+    "deadline": "2027-03-30",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 84. Технология пошива плечевого изделия. Соединение с подкладкой",
+      "Урок 85. Технология пошива плечевого изделия. Отложной воротник. Замкнутые манжеты",
+      "Урок 86. Технологические схемы в плечевом изделии с втачным рукавом",
+      "Урок 87. Конфекционирование. Платье с втачным рукавом",
+      "Урок 88. Практика. Пошив платья с втачным одношовным рукавом"
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Плечевое изделие с рубашечным рукавом. Конструирование. Макет. Моделирование",
+    "duration": "2 недели",
+    "dates": "30.03.2027 – 13.04.2027",
+    "deadline": "2027-04-13",
+    "trDeadline": "13.04.2027",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 13.04.2027",
+    "lessons": [
+      "Урок 89. Особенности построения изделия с рукавом рубашечного покроя",
+      "Урок 90. Дефекты посадки изделия с рубашечным рукавом",
+      "Урок 91. Моделирование изделий с рубашечным рукавом",
+      "Урок 92. Построение стояче-отложного воротника на отрезной стойке",
+      "Урок 93. Технический рисунок. Изделие с рубашечным рукавом"
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Пошив изделия с рубашечным рукавом",
+    "duration": "2 недели",
+    "dates": "13.04.2027 – 27.04.2027",
+    "deadline": "2027-04-27",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 94. Технология. Втачивание и обработка рубашечного рукава",
+      "Урок 95. Технология. Обработка кокеток",
+      "Урок 96. Технология. Обработка застежек и воротника",
+      "Урок 97. Технологические схемы в изделии с рубашечным рукавом",
+      "Урок 98. Конфекционирование. Рубашка",
+      "Урок 99. Практика. Пошив изделия с рубашечным рукавом",
+      "Урок 100. Пример пошива рубашки"
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Изделие с рукавом реглан. Изделие с цельнокроеным рукавом",
+    "duration": "2 недели",
+    "dates": "27.04.2027 – 11.05.2027",
+    "deadline": "2027-05-11",
+    "trDeadline": null,
+    "payment": "до 11.05.2027 — Оплата 4 части",
+    "holidays": "03.05, 10.05.2027 — Выходные",
+    "note": "💳 Оплата 4 части до 11.05.27 | 03.05, 10.05 выходные",
+    "lessons": [
+      "Урок 101. Построение БК плечевого изделия с рукавом реглан",
+      "Урок 102. Технология обработки рукава реглан",
+      "Урок 103. Проведение примерки макета БК изделия с рукавом реглан. Дефекты",
+      "Урок 104. Дефекты изделия с рукавом реглан",
+      "Урок 105. Моделирование рукава покроя реглан",
+      "Урок 106. Дефекты посадки в рукавах покроя полуреглан, реглан-погон, реглан-кокетка и реглан нулевой",
+      "Урок 107. Построение БК плечевого изделия с цельнокроеным рукавом",
+      "Урок 108. Моделирование цельнокроеного рукава",
+      "Урок 109. Дефекты посадки цельнокроеного рукава",
+      "Урок 110. Технология обработки цельнокроеного рукава"
+    ]
+  },
+  {
+    "id": 16,
+    "title": "Модельное платье или блузка",
+    "duration": "3 недели",
+    "dates": "11.05.2027 – 01.06.2027",
+    "deadline": "2027-06-01",
+    "trDeadline": "25.05.2027",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 25.05.2027",
+    "lessons": [
+      "Урок 111. Основные приемы фантазийного моделирования. Моделирование комбинезона",
+      "Урок 112. Технический рисунок. Модельные платья и блузки",
+      "Урок 113. Технология обработки узлов в модельных платьях и блузках",
+      "Урок 114. Технология обработки узлов в модельных платьях и блузках",
+      "Урок 115. Практика. Пошив модельного платья или блузки",
+      "Урок 116. Пример пошива платья. Выкройка №672",
+      "Урок 117. Пример пошива платья, крой по косой. Выкройка №900. Часть 1",
+      "Урок 118. Пример пошива платья, крой по косой. Выкройка №900. Часть 2",
+      "Урок 119. Пример пошива платья на подкладке. Выкройка №387",
+      "Урок 120. Пример пошива платья с пайетками. Выкройка №648",
+      "Урок 121. Пример пошива платья-комбинации из бархата. Выкройка №389",
+      "Урок 122. Пример моделирования и пошива блузки на основе базовых лекал"
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Жилет",
+    "duration": "2 недели",
+    "dates": "01.06.2027 – 15.06.2027",
+    "deadline": "2027-06-15",
+    "trDeadline": "08.06.2027",
+    "payment": null,
+    "holidays": "14.06.2027 — Выходной",
+    "note": "ТР — дедлайн 08.06.2027 | 14.06 выходной",
+    "lessons": [
+      "Урок 123. Делопроизводство",
+      "Урок 124. Построение БК жилета. Сборка на примерку. Проведение примерки",
+      "Урок 125. Технический рисунок. Жилет",
+      "Урок 126. Пошив жилета"
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Жакет",
+    "duration": "5 недель",
+    "dates": "15.06.2027 – 20.07.2027",
+    "deadline": "2027-07-20",
+    "trDeadline": "20.07.2027",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн до 20.07.2027",
+    "lessons": [
+      "Урок 127. Выбор прибавок. Заполнение файла с исходными данными. Предварительный расчет конструкции жакета на подкладке",
+      "Урок 128. Построение БК типового жакета на подкладке",
+      "Урок 129. Моделирование разных типов классического жакета с учетом индивидуальных и модельных особенностей",
+      "Урок 130. Проектирование производных деталей жакета на подкладке. Сборка макета на примерку. Проведение примерки макета",
+      "Урок 131. Дефекты посадки в жакете и их устранение. Часть 1",
+      "Урок 132. Дефекты посадки в жакете и их устранение. Часть 2",
+      "Урок 133. Технический рисунок. Жакет",
+      "Урок 134. Раскрой, сборка на примерку и проведение примерки жакета",
+      "Урок 135. Построение деталей притачной подкладки",
+      "Урок 136. Пошив жакета",
+      "Урок 137. Пошив жакета",
+      "Урок 138. Пошив жакета после второй примерки",
+      "Урок 139. Обработка карманов",
+      "Урок 140. Дополнительный урок по ВТО",
+      "Урок 141. Проектирование других форм воротников"
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Аттестационное изделие. Ремонт и восстановление изделий",
+    "duration": "5 недель",
+    "dates": "20.07.2027 – 24.08.2027",
+    "deadline": "2027-08-24",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": "13.09.2027 — завершающий день работы куратора",
+    "lessons": [
+      "Урок 142. Аттестационное изделие и защита",
+      "Урок 143. Технический рисунок. Аттестационное изделие",
+      "Урок 144. Ремонт и восстановление изделий"
+    ]
+  }
+];
+
+    // ==========================================
+    // 2. TABS SWITCHER
+    // ==========================================
+    const tabBtnCalc = document.getElementById('tabBtnCalc');
+    const tabBtnDiary = document.getElementById('tabBtnDiary');
+    const tabContentCalc = document.getElementById('tabContentCalc');
+    const tabContentDiary = document.getElementById('tabContentDiary');
+
+    tabBtnCalc.addEventListener('click', () => {
+      tabBtnCalc.classList.add('active');
+      tabBtnDiary.classList.remove('active');
+      tabContentCalc.classList.add('active');
+      tabContentDiary.classList.remove('active');
+    });
+
+    tabBtnDiary.addEventListener('click', () => {
+      tabBtnDiary.classList.add('active');
+      tabBtnCalc.classList.remove('active');
+      tabContentDiary.classList.add('active');
+      tabContentCalc.classList.remove('active');
+    });
+
+    // ==========================================
+    // 3. CALCULATOR LOGIC
+    // ==========================================
     const heightInput = document.getElementById('heightInput');
     const bustInput = document.getElementById('bustInput');
     const hipsInput = document.getElementById('hipsInput');
@@ -686,11 +1459,11 @@
       kSizeVal.textContent = (kB >= 0 ? '+' : '') + kB.toFixed(2);
       fullnessGroupVal.textContent = `${fullnessGroupIndex}-я группа (${fullnessExact.toFixed(1)})`;
 
-      renderViews(kH, kB, og, fullnessGroupIndex);
-      saveState();
+      renderCalculatorViews(kH, kB, og, fullnessGroupIndex);
+      saveCalcState();
     }
 
-    function renderViews(kH, kB, og, groupIndex) {
+    function renderCalculatorViews(kH, kB, og, groupIndex) {
       const filter = searchInput.value.toLowerCase().trim();
       cardsContainer.innerHTML = '';
       tableBody.innerHTML = '';
@@ -752,7 +1525,6 @@
       });
     }
 
-    // Toggle views
     viewCardsBtn.addEventListener('click', () => {
       viewCardsBtn.classList.add('active');
       viewTableBtn.classList.remove('active');
@@ -773,13 +1545,13 @@
       setTimeout(() => toast.classList.remove('show'), 2200);
     }
 
-    function saveState() {
+    function saveCalcState() {
       localStorage.setItem('grass_calc_h_v3_1', heightInput.value);
       localStorage.setItem('grass_calc_og_v3_1', bustInput.value);
       localStorage.setItem('grass_calc_ob_v3_1', hipsInput.value);
     }
 
-    function loadState() {
+    function loadCalcState() {
       if (localStorage.getItem('grass_calc_h_v3_1')) heightInput.value = localStorage.getItem('grass_calc_h_v3_1');
       if (localStorage.getItem('grass_calc_og_v3_1')) bustInput.value = localStorage.getItem('grass_calc_og_v3_1');
       if (localStorage.getItem('grass_calc_ob_v3_1')) hipsInput.value = localStorage.getItem('grass_calc_ob_v3_1');
@@ -799,7 +1571,7 @@
       let groupIndex = Math.round(fullnessExact);
       if (groupIndex < 0) groupIndex = 0;
       if (groupIndex > 5) groupIndex = 5;
-      renderViews(kH, kB, og, groupIndex);
+      renderCalculatorViews(kH, kB, og, groupIndex);
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
@@ -837,7 +1609,240 @@
       });
     });
 
-    // PWA Service Worker Registration
+    // ==========================================
+    // 4. DIARY & TRACKER LOGIC
+    // ==========================================
+    const courseBlocksContainer = document.getElementById('courseBlocksContainer');
+    const searchDiaryInput = document.getElementById('searchDiaryInput');
+    const overallProgressBar = document.getElementById('overallProgressBar');
+    const overallPercentText = document.getElementById('overallPercentText');
+    const overallCountText = document.getElementById('overallCountText');
+    const navProgressBadge = document.getElementById('navProgressBadge');
+
+    // Storage keys
+    const LESSONS_STORAGE_KEY = 'alena_grass_lessons_status_v1';
+    const COLLAPSED_STORAGE_KEY = 'alena_grass_collapsed_blocks_v1';
+
+    let lessonsState = {};
+    let collapsedState = {};
+
+    function loadDiaryState() {
+      try {
+        const savedLessons = localStorage.getItem(LESSONS_STORAGE_KEY);
+        if (savedLessons) lessonsState = JSON.parse(savedLessons);
+
+        const savedCollapsed = localStorage.getItem(COLLAPSED_STORAGE_KEY);
+        if (savedCollapsed) collapsedState = JSON.parse(savedCollapsed);
+      } catch (e) {
+        console.error('Error loading diary state', e);
+      }
+    }
+
+    function saveDiaryState() {
+      localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+      localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+    }
+
+    function calculateDeadlineBadge(deadlineStr, isBlockDone) {
+      if (isBlockDone) {
+        return { text: '✔ Завершен', class: 'done' };
+      }
+
+      if (!deadlineStr) {
+        return { text: 'В процессе', class: 'normal' };
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const targetDate = new Date(deadlineStr);
+      targetDate.setHours(0, 0, 0, 0);
+
+      const diffTime = targetDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        return { text: `⚠️ Просрочен (${Math.abs(diffDays)} дн.)`, class: 'urgent' };
+      } else if (diffDays === 0) {
+        return { text: '🔥 Дедлайн сегодня!', class: 'urgent' };
+      } else if (diffDays <= 3) {
+        return { text: `⏳ Осталось ${diffDays} дн.!`, class: 'warning' };
+      } else {
+        return { text: `⏳ ${diffDays} дн. до дедлайна`, class: 'normal' };
+      }
+    }
+
+    function renderDiary() {
+      const filter = searchDiaryInput.value.toLowerCase().trim();
+      courseBlocksContainer.innerHTML = '';
+
+      let totalLessonsCount = 0;
+      let completedLessonsCount = 0;
+
+      courseBlocksData.forEach(block => {
+        const blockLessons = block.lessons;
+        const totalInBlock = blockLessons.length;
+        let doneInBlock = 0;
+
+        blockLessons.forEach((_, idx) => {
+          const lessonKey = `b${block.id}_l${idx}`;
+          if (lessonsState[lessonKey]) {
+            doneInBlock++;
+          }
+        });
+
+        totalLessonsCount += totalInBlock;
+        completedLessonsCount += doneInBlock;
+
+        const isBlockCompleted = (doneInBlock === totalInBlock && totalInBlock > 0);
+        const percentInBlock = totalInBlock > 0 ? Math.round((doneInBlock / totalInBlock) * 100) : 0;
+
+        // Check if block matches filter
+        const blockMatches = !filter || 
+          block.title.toLowerCase().includes(filter) ||
+          (block.note && block.note.toLowerCase().includes(filter)) ||
+          blockLessons.some(l => l.toLowerCase().includes(filter));
+
+        if (!blockMatches) {
+          return;
+        }
+
+        const isCollapsed = collapsedState[block.id] !== undefined ? collapsedState[block.id] : (isBlockCompleted);
+
+        // Build Block Card Element
+        const blockCard = document.createElement('div');
+        blockCard.className = `block-card ${isBlockCompleted ? 'completed' : ''} ${isCollapsed ? 'collapsed' : ''}`;
+        blockCard.id = `blockCard_${block.id}`;
+
+        const badgeInfo = calculateDeadlineBadge(block.deadline, isBlockCompleted);
+
+        // Block Header
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'block-header';
+        
+        headerDiv.innerHTML = `
+          <div class="block-title-area">
+            <input type="checkbox" class="block-checkbox" id="blockCb_${block.id}" ${isBlockCompleted ? 'checked' : ''} title="Отметить весь блок">
+            <div>
+              <div class="block-title-text">БЛОК ${block.id}. ${block.title}</div>
+              <div class="block-meta">
+                <span>📅 ${block.dates} (${block.duration})</span>
+                <span>• Прогресс: ${doneInBlock}/${totalInBlock} (${percentInBlock}%)</span>
+              </div>
+            </div>
+          </div>
+          <div class="block-status-area">
+            <span class="deadline-badge ${badgeInfo.class}">${badgeInfo.text}</span>
+            <span class="chevron-icon">▼</span>
+          </div>
+        `;
+
+        // Block Checkbox Listener (Toggles all lessons in block)
+        const blockCb = headerDiv.querySelector(`#blockCb_${block.id}`);
+        blockCb.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetState = blockCb.checked;
+          blockLessons.forEach((_, idx) => {
+            lessonsState[`b${block.id}_l${idx}`] = targetState;
+          });
+          saveDiaryState();
+          renderDiary();
+          showToast(targetState ? `Блок ${block.id} завершен!` : `Блок ${block.id} открыт заново`);
+        });
+
+        // Block Header Click (Toggle Collapse)
+        headerDiv.addEventListener('click', () => {
+          blockCard.classList.toggle('collapsed');
+          collapsedState[block.id] = blockCard.classList.contains('collapsed');
+          saveDiaryState();
+        });
+
+        // Block Body
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'block-body';
+
+        if (block.note) {
+          const noteDiv = document.createElement('div');
+          noteDiv.className = 'block-note-banner';
+          noteDiv.innerHTML = `📌 <strong>Важно:</strong> ${block.note}`;
+          bodyDiv.appendChild(noteDiv);
+        }
+
+        const lessonsListDiv = document.createElement('div');
+        lessonsListDiv.className = 'lessons-list';
+
+        blockLessons.forEach((lessonText, idx) => {
+          const lessonKey = `b${block.id}_l${idx}`;
+          const isDone = !!lessonsState[lessonKey];
+          const isTest = lessonText.toLowerCase().includes('тест');
+
+          if (filter && !lessonText.toLowerCase().includes(filter) && !block.title.toLowerCase().includes(filter)) {
+            return;
+          }
+
+          const lessonItem = document.createElement('div');
+          lessonItem.className = `lesson-item ${isDone ? 'done' : ''}`;
+          lessonItem.innerHTML = `
+            <input type="checkbox" class="lesson-checkbox" id="lcb_${lessonKey}" ${isDone ? 'checked' : ''}>
+            <span class="lesson-title">${lessonText}</span>
+            ${isTest ? '<span class="test-badge">ТЕСТ</span>' : ''}
+          `;
+
+          // Checkbox click
+          const lcb = lessonItem.querySelector(`#lcb_${lessonKey}`);
+          lessonItem.addEventListener('click', (e) => {
+            if (e.target !== lcb) {
+              lcb.checked = !lcb.checked;
+            }
+            lessonsState[lessonKey] = lcb.checked;
+            saveDiaryState();
+            renderDiary();
+          });
+
+          lessonsListDiv.appendChild(lessonItem);
+        });
+
+        bodyDiv.appendChild(lessonsListDiv);
+        blockCard.appendChild(headerDiv);
+        blockCard.appendChild(bodyDiv);
+        courseBlocksContainer.appendChild(blockCard);
+      });
+
+      // Update Overall Summary
+      const overallPercent = totalLessonsCount > 0 ? Math.round((completedLessonsCount / totalLessonsCount) * 100) : 0;
+      overallProgressBar.style.width = `${overallPercent}%`;
+      overallPercentText.textContent = `${overallPercent}%`;
+      overallCountText.textContent = `${completedLessonsCount} / ${totalLessonsCount} уроков`;
+      navProgressBadge.textContent = `${overallPercent}%`;
+    }
+
+    // Diary Search & Controls
+    searchDiaryInput.addEventListener('input', renderDiary);
+
+    document.getElementById('collapseAllBtn').addEventListener('click', () => {
+      courseBlocksData.forEach(b => collapsedState[b.id] = true);
+      saveDiaryState();
+      renderDiary();
+    });
+
+    document.getElementById('expandAllBtn').addEventListener('click', () => {
+      courseBlocksData.forEach(b => collapsedState[b.id] = false);
+      saveDiaryState();
+      renderDiary();
+    });
+
+    document.getElementById('resetDiaryBtn').addEventListener('click', () => {
+      if (confirm('Сбросить все отметки выполнения уроков?')) {
+        lessonsState = {};
+        collapsedState = {};
+        saveDiaryState();
+        renderDiary();
+        showToast('Прогресс уроков сброшен');
+      }
+    });
+
+    // ==========================================
+    // 5. PWA SERVICE WORKER & INITIALIZATION
+    // ==========================================
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => {
@@ -846,7 +1851,6 @@
       });
     }
 
-    // PWA Install prompt
     let deferredPrompt;
     const pwaBanner = document.getElementById('pwaBanner');
     const installBtn = document.getElementById('installBtn');
@@ -869,9 +1873,11 @@
       }
     });
 
-    // Init
-    loadState();
+    // Init All
+    loadCalcState();
     calculate();
+    loadDiaryState();
+    renderDiary();
   </script>
 </body>
 </html>

@@ -2,7 +2,7 @@
   "id": "./",
   "name": "ALËNA GRASS-CALC",
   "short_name": "GRASS-CALC",
-  "description": "Индивидуальный 3D-калькулятор размерных признаков",
+  "description": "Индивидуальный 3D-калькулятор размерных признаков и дневник курса",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
