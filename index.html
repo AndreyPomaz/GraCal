@@ -880,24 +880,14 @@
 
         <div class="formula-info">
           <strong>Формула Grasser Final v3.1:</strong><br>
-          Полнота = ((ОБ - ОГ) + 2) / 4 $	o$ определяет динамическую базу (0–5 группа).<br>
+          Полнота = ((ОБ - ОГ) + 2) / 4 → определяет динамическую базу (0–5 группа).<br>
           Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
           <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом полноты и порога ОГ &gt; 108 см.</em>
         </div>
       </div>
 
       
-      <!-- Saved Calculations & History Card -->
-      <div class="card" id="savedCalcsCard">
-        <div class="card-title">
-          <span>📂 Сохраненные расчеты <span id="savedCountBadge" style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:var(--accent); padding:2px 8px; border-radius:10px;">0</span></span>
-          <button class="btn btn-primary" id="openSaveModalBtn" style="padding:6px 12px; font-size:0.78rem;">💾 Сохранить текущий</button>
-        </div>
-        
-        <div id="savedCalcsList" style="display:flex; flex-direction:column; gap:8px;">
-          <!-- Rendered via JS -->
-        </div>
-      </div>
+      
 
       <!-- Results Card -->
       <div class="card">
@@ -938,6 +928,19 @@
         </div>
 
       </div>
+
+      <!-- Saved Calculations & History Card (Moved below results) -->
+      <div class="card" id="savedCalcsCard">
+        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <span>📂 Сохраненные расчеты <span id="savedCountBadge" style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:var(--accent); padding:2px 8px; border-radius:10px;">0</span></span>
+          <button class="btn btn-primary" id="openSaveModalBtn" style="padding:6px 12px; font-size:0.78rem; flex:0 0 auto; width:auto;">💾 Сохранить расчет</button>
+        </div>
+        
+        <div id="savedCalcsList" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
     </div>
 
 
@@ -1759,7 +1762,7 @@
       if (savedCalcsState.length === 0) {
         savedCalcsList.innerHTML = `
           <div style="text-align:center; padding:16px 10px; color:var(--text-muted); font-size:0.8rem; background:var(--row-alt); border-radius:8px; border:1px dashed var(--card-border);">
-            У вас пока нет сохраненных расчетов. Нажмите «💾 Сохранить текущий», чтобы сохранить мерки клиента.
+            У вас пока нет сохраненных расчетов. Нажмите «💾 Сохранить расчет», чтобы сохранить мерки клиента.
           </div>
         `;
         return;

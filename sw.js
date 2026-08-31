@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grass-v13-saved-calcs';
+const CACHE_NAME = 'grass-v14-layout';
 const ASSETS = [
   './',
   './index.html',
