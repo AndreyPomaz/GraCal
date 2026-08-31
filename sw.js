@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grass-v14-layout';
+const CACHE_NAME = 'grass-v15-sync-fix';
 const ASSETS = [
   './',
   './index.html',
@@ -32,7 +32,7 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.url.includes('kvdb.io')) {
+  if (e.request.url.includes('kvdb.io') || e.request.url.includes('jsonbin')) {
     e.respondWith(fetch(e.request));
     return;
   }

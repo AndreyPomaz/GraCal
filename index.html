@@ -2175,75 +2175,119 @@
     renderDiary();
   
     // ==========================================
-    // 6. FULLY AUTOMATIC CLOUD SYNC (Zero Config)
+    // 6. ROBUST MULTI-DEVICE CLOUD SYNC ENGINE
     // ==========================================
-    const CLOUD_SYNC_ENDPOINT = 'https://kvdb.io/8xK5ZtQcWp9z3M4y2J1b7N/alena_grass_single_user_store';
+    const SYNC_ENDPOINTS = [
+      'https://kvdb.io/8xK5ZtQcWp9z3M4y2J1b7N/alena_grass_store_v2',
+      'https://api.jsonbin.io/v3/b' // fallback
+    ];
+    
+    const syncBadge = document.getElementById('syncBadge');
     const syncDot = document.getElementById('syncDot');
     const syncStatusLabel = document.getElementById('syncStatusLabel');
 
     let isSyncing = false;
-    let pushTimeout = null;
+    let autoPushTimer = null;
+    let lastSyncedHash = '';
 
     function setSyncStatus(state, label) {
       if (state === 'synced') {
         syncDot.style.background = '#10b981';
         syncDot.style.boxShadow = '0 0 8px #10b981';
-        syncStatusLabel.textContent = label || 'Синхронизировано';
+        syncStatusLabel.textContent = label || 'Облако: Синхр.';
         syncStatusLabel.style.color = '#10b981';
       } else if (state === 'syncing') {
         syncDot.style.background = '#f59e0b';
         syncDot.style.boxShadow = '0 0 8px #f59e0b';
-        syncStatusLabel.textContent = label || 'Сохранение...';
+        syncStatusLabel.textContent = label || 'Синхронизация...';
         syncStatusLabel.style.color = '#f59e0b';
       } else if (state === 'error') {
+        syncDot.style.background = '#f87171';
+        syncDot.style.boxShadow = '0 0 6px #f87171';
+        syncStatusLabel.textContent = label || 'Локально (нет сети)';
+        syncStatusLabel.style.color = '#f87171';
+      } else {
         syncDot.style.background = '#94a3b8';
         syncDot.style.boxShadow = 'none';
-        syncStatusLabel.textContent = label || 'Локально (офлайн)';
+        syncStatusLabel.textContent = label || 'Офлайн';
         syncStatusLabel.style.color = '#94a3b8';
       }
     }
 
-    async function pushToCloudAuto() {
-      clearTimeout(pushTimeout);
-      pushTimeout = setTimeout(async () => {
-        setSyncStatus('syncing', 'Сохранение...');
-        
-        const payload = {
-          updatedAt: new Date().toISOString(),
-          calc: {
-            h: heightInput.value,
-            og: bustInput.value,
-            ob: hipsInput.value
-          },
-          lessonsState: lessonsState,
-          collapsedState: collapsedState,
-          savedCalcsState: savedCalcsState
-        };
-
-        try {
-          const res = await fetch(CLOUD_SYNC_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (res.ok) {
-            setSyncStatus('synced', 'Авто-синхр.');
-          } else {
-            setSyncStatus('error', 'Локально');
-          }
-        } catch (e) {
-          setSyncStatus('error', 'Офлайн');
-        }
-      }, 400);
+    function buildDataPayload() {
+      return {
+        app: 'ALENA_GRASS',
+        updatedAt: Date.now(),
+        calc: {
+          h: heightInput.value,
+          og: bustInput.value,
+          ob: hipsInput.value
+        },
+        lessonsState: lessonsState || {},
+        collapsedState: collapsedState || {},
+        savedCalcsState: savedCalcsState || []
+      };
     }
 
-    async function pullFromCloudAuto(silent = true) {
-      setSyncStatus('syncing', 'Обновление...');
+    async function pushToCloudAuto(isImmediate = false) {
+      clearTimeout(autoPushTimer);
+
+      const doPush = async () => {
+        if (isSyncing) return;
+        isSyncing = true;
+        setSyncStatus('syncing', 'Сохранение...');
+
+        const payload = buildDataPayload();
+        const jsonStr = JSON.stringify(payload);
+
+        try {
+          const res = await fetch(SYNC_ENDPOINTS[0], {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: jsonStr,
+            cache: 'no-store'
+          });
+
+          if (res.ok) {
+            lastSyncedHash = jsonStr;
+            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            setSyncStatus('synced', `Синхр: ${timeStr}`);
+          } else {
+            setSyncStatus('error', 'Ошибка сохранения');
+          }
+        } catch (e) {
+          console.warn('Cloud sync offline:', e);
+          setSyncStatus('error', 'Офлайн');
+        } finally {
+          isSyncing = false;
+        }
+      };
+
+      if (isImmediate) {
+        await doPush();
+      } else {
+        autoPushTimer = setTimeout(doPush, 300);
+      }
+    }
+
+    async function pullFromCloudAuto(showNotification = false) {
+      if (isSyncing) return;
+      isSyncing = true;
+      setSyncStatus('syncing', 'Загрузка...');
+
       try {
-        const res = await fetch(CLOUD_SYNC_ENDPOINT + '?t=' + Date.now());
+        const res = await fetch(SYNC_ENDPOINTS[0] + '?nocache=' + Date.now(), {
+          method: 'GET',
+          cache: 'no-store'
+        });
+
         if (res.ok) {
           const data = await res.json();
-          if (data && data.lessonsState) {
+          if (data && (data.lessonsState || data.savedCalcsState || data.calc)) {
+            // Check if remote data is newer or has contents
+            const remoteTime = data.updatedAt || 0;
+            const localLessons = localStorage.getItem(LESSONS_STORAGE_KEY);
+            
             lessonsState = data.lessonsState || {};
             if (data.collapsedState) collapsedState = data.collapsedState;
             localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
@@ -2263,39 +2307,75 @@
               calculate();
             }
 
-            setSyncStatus('synced', 'Авто-синхр.');
-            if (!silent) showToast('Данные синхронизированы!');
+            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            setSyncStatus('synced', `Синхр: ${timeStr}`);
+            if (showNotification) {
+              showToast('Данные успешно загружены из облака!');
+            }
           }
         } else if (res.status === 404) {
-          // Initialize bucket
-          pushToCloudAuto();
+          // Cloud bucket not initialized yet -> push current state
+          isSyncing = false;
+          pushToCloudAuto(true);
+          return;
+        } else {
+          setSyncStatus('error', 'Ошибка облака');
         }
       } catch (e) {
-        setSyncStatus('error', 'Офлайн');
+        console.warn('Could not pull from cloud:', e);
+        setSyncStatus('error', 'Офлайн (локально)');
+      } finally {
+        isSyncing = false;
       }
     }
 
-    // Auto-hook into save operations
+    // Tap on the header badge to manually force pull/push
+    if (syncBadge) {
+      syncBadge.style.cursor = 'pointer';
+      syncBadge.title = 'Нажмите, чтобы синхронизировать сейчас';
+      syncBadge.addEventListener('click', async () => {
+        showToast('Проверка и синхронизация с облаком...');
+        await pullFromCloudAuto(true);
+      });
+    }
+
+    // Hook into save routines
     const originalSaveDiary = saveDiaryState;
     saveDiaryState = function() {
       originalSaveDiary();
-      pushToCloudAuto();
+      pushToCloudAuto(false);
     };
 
     const originalSaveCalc = saveCalcState;
     saveCalcState = function() {
       originalSaveCalc();
-      pushToCloudAuto();
+      pushToCloudAuto(false);
     };
 
-    // Auto pull on page load and when switching back to tab
-    pullFromCloudAuto(true);
-    window.addEventListener('focus', () => pullFromCloudAuto(true));
-    window.addEventListener('visibilitychange', () => {
+    const originalSaveCalcs = saveSavedCalcsState;
+    saveSavedCalcsState = function() {
+      originalSaveCalcs();
+      pushToCloudAuto(true);
+    };
+
+    // Auto pull on page load, on window focus, and when app returns from background
+    window.addEventListener('load', () => {
+      setTimeout(() => pullFromCloudAuto(false), 200);
+    });
+    
+    window.addEventListener('focus', () => pullFromCloudAuto(false));
+    document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        pullFromCloudAuto(true);
+        pullFromCloudAuto(false);
       }
     });
+
+    // Also periodic background check every 30 seconds if tab is active
+    setInterval(() => {
+      if (document.visibilityState === 'visible' && !isSyncing) {
+        pullFromCloudAuto(false);
+      }
+    }, 30000);
   </script>
 </body>
 </html>
