@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grass-v15-sync-fix';
+const CACHE_NAME = 'grass-v17-live-sync';
 const ASSETS = [
   './',
   './index.html',
@@ -32,7 +32,8 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.url.includes('kvdb.io') || e.request.url.includes('jsonbin')) {
+  // Always fetch live data for cloud endpoints, bypass service worker cache
+  if (e.request.url.includes('jsonblob.com') || e.request.url.includes('kvdb.io') || e.request.url.includes('api')) {
     e.respondWith(fetch(e.request));
     return;
   }

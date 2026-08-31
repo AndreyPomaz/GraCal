@@ -1028,6 +1028,50 @@
       </div>
     </div>
 
+  
+    <!-- Cloud Sync Settings Modal -->
+    <div id="syncSettingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; padding:16px;">
+      <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:440px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">☁️ Статус синхронизации</h3>
+          <button id="closeSyncSettingsBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
+
+        <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:8px; border:1px solid #334155; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:4px;">
+            <span style="color:#94a3b8;">Состояние:</span>
+            <span id="modalSyncStatus" style="font-weight:700; color:#10b981;">🟢 Синхронизировано</span>
+          </div>
+          <div style="font-size:0.72rem; color:#64748b;" id="modalLastSyncTime">Последняя проверка: только что</div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <button class="btn btn-primary" id="modalForcePullBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📥 Загрузить из облака</button>
+          <button class="btn" id="modalForcePushBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📤 Отправить в облако</button>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label style="font-size:0.74rem; color:#94a3b8; margin-bottom:4px; display:block;">Ваш персональный ID синхронизации:</label>
+          <input type="text" id="customSyncIdInput" placeholder="alena_grass_store_v1" style="width:100%; background:#090d16; border:1px solid #334155; border-radius:8px; padding:8px 10px; color:#fff; font-size:0.85rem; outline:none;">
+          <div style="font-size:0.68rem; color:#64748b; margin-top:4px;">Одинаковый на всех ваших устройствах (по умолчанию уже настроен).</div>
+        </div>
+
+        <div style="display:flex; gap:6px; margin-bottom:12px;">
+          <button class="btn" id="saveCustomIdBtn" style="flex:1; justify-content:center; font-size:0.75rem;">💾 Применить ID</button>
+          <button class="btn" id="resetCustomIdBtn" style="justify-content:center; font-size:0.75rem;">↺ Сбросить ID</button>
+        </div>
+
+        <div style="border-top:1px dashed #334155; padding-top:12px;">
+          <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px;">Резервная копия в файл:</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn" id="exportBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📥 Скачать бэкап</button>
+            <button class="btn" id="importBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📤 Загрузить файл</button>
+            <input type="file" id="modalBackupFileInput" accept=".json" style="display:none;">
+          </div>
+        </div>
+      </div>
+    </div>
+
   <div id="toast" class="toast">Сохранено!</div>
 
   <script>
@@ -2174,47 +2218,78 @@
     loadDiaryState();
     renderDiary();
   
-    // ==========================================
-    // 6. ROBUST MULTI-DEVICE CLOUD SYNC ENGINE
-    // ==========================================
-    const SYNC_ENDPOINTS = [
-      'https://kvdb.io/8xK5ZtQcWp9z3M4y2J1b7N/alena_grass_store_v2',
-      'https://api.jsonbin.io/v3/b' // fallback
-    ];
     
+    
+    // ==========================================
+    // 6. ROCK-SOLID MULTI-BACKEND CLOUD SYNC
+    // ==========================================
+    // Using reliable public CORS JSON store endpoints
+    const BLOB_STORE_ID_KEY = 'alena_grass_blob_id_v2';
+    const DEFAULT_BLOB_ID = '1344671408889159680'; // Pre-initialized shared single-user blob
+
     const syncBadge = document.getElementById('syncBadge');
     const syncDot = document.getElementById('syncDot');
     const syncStatusLabel = document.getElementById('syncStatusLabel');
 
-    let isSyncing = false;
-    let autoPushTimer = null;
-    let lastSyncedHash = '';
+    const syncSettingsModal = document.getElementById('syncSettingsModal');
+    const closeSyncSettingsBtn = document.getElementById('closeSyncSettingsBtn');
+    const modalSyncStatus = document.getElementById('modalSyncStatus');
+    const modalLastSyncTime = document.getElementById('modalLastSyncTime');
+    const modalForcePullBtn = document.getElementById('modalForcePullBtn');
+    const modalForcePushBtn = document.getElementById('modalForcePushBtn');
+    const customSyncIdInput = document.getElementById('customSyncIdInput');
+    const saveCustomIdBtn = document.getElementById('saveCustomIdBtn');
+    const resetCustomIdBtn = document.getElementById('resetCustomIdBtn');
+    const exportBackupFileBtn = document.getElementById('exportBackupFileBtn');
+    const importBackupFileBtn = document.getElementById('importBackupFileBtn');
+    const modalBackupFileInput = document.getElementById('modalBackupFileInput');
 
-    function setSyncStatus(state, label) {
+    let isSyncInProgress = false;
+    let pushDebounceTimer = null;
+
+    function getBlobId() {
+      return localStorage.getItem(BLOB_STORE_ID_KEY) || DEFAULT_BLOB_ID;
+    }
+
+    function getBlobUrl() {
+      return 'https://jsonblob.com/api/jsonBlob/' + getBlobId();
+    }
+
+    function setVisualStatus(state, label) {
       if (state === 'synced') {
         syncDot.style.background = '#10b981';
         syncDot.style.boxShadow = '0 0 8px #10b981';
         syncStatusLabel.textContent = label || 'Облако: Синхр.';
         syncStatusLabel.style.color = '#10b981';
+        if (modalSyncStatus) {
+          modalSyncStatus.textContent = '🟢 ' + (label || 'Синхронизировано');
+          modalSyncStatus.style.color = '#10b981';
+        }
       } else if (state === 'syncing') {
         syncDot.style.background = '#f59e0b';
         syncDot.style.boxShadow = '0 0 8px #f59e0b';
         syncStatusLabel.textContent = label || 'Синхронизация...';
         syncStatusLabel.style.color = '#f59e0b';
+        if (modalSyncStatus) {
+          modalSyncStatus.textContent = '🟡 ' + (label || 'Синхронизация...');
+          modalSyncStatus.style.color = '#f59e0b';
+        }
       } else if (state === 'error') {
         syncDot.style.background = '#f87171';
         syncDot.style.boxShadow = '0 0 6px #f87171';
-        syncStatusLabel.textContent = label || 'Локально (нет сети)';
-        syncStatusLabel.style.color = '#f87171';
-      } else {
-        syncDot.style.background = '#94a3b8';
-        syncDot.style.boxShadow = 'none';
         syncStatusLabel.textContent = label || 'Офлайн';
-        syncStatusLabel.style.color = '#94a3b8';
+        syncStatusLabel.style.color = '#f87171';
+        if (modalSyncStatus) {
+          modalSyncStatus.textContent = '⚪ ' + (label || 'Офлайн (локально)');
+          modalSyncStatus.style.color = '#94a3b8';
+        }
+      }
+      if (modalLastSyncTime) {
+        modalLastSyncTime.textContent = 'Время: ' + new Date().toLocaleTimeString('ru-RU');
       }
     }
 
-    function buildDataPayload() {
+    function collectAppData() {
       return {
         app: 'ALENA_GRASS',
         updatedAt: Date.now(),
@@ -2229,65 +2304,83 @@
       };
     }
 
-    async function pushToCloudAuto(isImmediate = false) {
-      clearTimeout(autoPushTimer);
+    async function pushToCloud(isImmediate = false) {
+      clearTimeout(pushDebounceTimer);
 
-      const doPush = async () => {
-        if (isSyncing) return;
-        isSyncing = true;
-        setSyncStatus('syncing', 'Сохранение...');
+      const execPush = async () => {
+        if (isSyncInProgress) return;
+        isSyncInProgress = true;
+        setVisualStatus('syncing', 'Сохранение...');
 
-        const payload = buildDataPayload();
+        const payload = collectAppData();
         const jsonStr = JSON.stringify(payload);
 
         try {
-          const res = await fetch(SYNC_ENDPOINTS[0], {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: jsonStr,
-            cache: 'no-store'
+          // Send PUT to jsonblob
+          let res = await fetch(getBlobUrl(), {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: jsonStr
           });
 
+          // If blob was not found (404), create a new one via POST
+          if (res.status === 404) {
+            res = await fetch('https://jsonblob.com/api/jsonBlob', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: jsonStr
+            });
+            const location = res.headers.get('Location') || res.headers.get('location');
+            if (location) {
+              const newId = location.split('/').pop();
+              if (newId) {
+                localStorage.setItem(BLOB_STORE_ID_KEY, newId);
+              }
+            }
+          }
+
           if (res.ok) {
-            lastSyncedHash = jsonStr;
             const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            setSyncStatus('synced', `Синхр: ${timeStr}`);
+            setVisualStatus('synced', `Синхр: ${timeStr}`);
           } else {
-            setSyncStatus('error', 'Ошибка сохранения');
+            setVisualStatus('error', 'Локально');
           }
         } catch (e) {
-          console.warn('Cloud sync offline:', e);
-          setSyncStatus('error', 'Офлайн');
+          console.warn('Network offline during push:', e);
+          setVisualStatus('error', 'Офлайн');
         } finally {
-          isSyncing = false;
+          isSyncInProgress = false;
         }
       };
 
       if (isImmediate) {
-        await doPush();
+        await execPush();
       } else {
-        autoPushTimer = setTimeout(doPush, 300);
+        pushDebounceTimer = setTimeout(execPush, 400);
       }
     }
 
-    async function pullFromCloudAuto(showNotification = false) {
-      if (isSyncing) return;
-      isSyncing = true;
-      setSyncStatus('syncing', 'Загрузка...');
+    async function pullFromCloud(showNotice = false) {
+      if (isSyncInProgress) return;
+      isSyncInProgress = true;
+      setVisualStatus('syncing', 'Загрузка...');
 
       try {
-        const res = await fetch(SYNC_ENDPOINTS[0] + '?nocache=' + Date.now(), {
+        const res = await fetch(getBlobUrl(), {
           method: 'GET',
+          headers: { 'Accept': 'application/json' },
           cache: 'no-store'
         });
 
         if (res.ok) {
           const data = await res.json();
           if (data && (data.lessonsState || data.savedCalcsState || data.calc)) {
-            // Check if remote data is newer or has contents
-            const remoteTime = data.updatedAt || 0;
-            const localLessons = localStorage.getItem(LESSONS_STORAGE_KEY);
-            
             lessonsState = data.lessonsState || {};
             if (data.collapsedState) collapsedState = data.collapsedState;
             localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
@@ -2308,74 +2401,166 @@
             }
 
             const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            setSyncStatus('synced', `Синхр: ${timeStr}`);
-            if (showNotification) {
+            setVisualStatus('synced', `Синхр: ${timeStr}`);
+            if (showNotice) {
               showToast('Данные успешно загружены из облака!');
             }
           }
         } else if (res.status === 404) {
-          // Cloud bucket not initialized yet -> push current state
-          isSyncing = false;
-          pushToCloudAuto(true);
+          // Not created yet -> push local data to create it
+          isSyncInProgress = false;
+          pushToCloud(true);
           return;
         } else {
-          setSyncStatus('error', 'Ошибка облака');
+          setVisualStatus('error', 'Локально');
         }
       } catch (e) {
         console.warn('Could not pull from cloud:', e);
-        setSyncStatus('error', 'Офлайн (локально)');
+        setVisualStatus('error', 'Офлайн (локально)');
       } finally {
-        isSyncing = false;
+        isSyncInProgress = false;
       }
     }
 
-    // Tap on the header badge to manually force pull/push
+    // Modal Events
     if (syncBadge) {
       syncBadge.style.cursor = 'pointer';
-      syncBadge.title = 'Нажмите, чтобы синхронизировать сейчас';
-      syncBadge.addEventListener('click', async () => {
-        showToast('Проверка и синхронизация с облаком...');
-        await pullFromCloudAuto(true);
+      syncBadge.addEventListener('click', () => {
+        customSyncIdInput.value = getBlobId();
+        syncSettingsModal.style.display = 'flex';
       });
     }
 
-    // Hook into save routines
+    if (closeSyncSettingsBtn) {
+      closeSyncSettingsBtn.addEventListener('click', () => {
+        syncSettingsModal.style.display = 'none';
+      });
+    }
+
+    syncSettingsModal.addEventListener('click', (e) => {
+      if (e.target === syncSettingsModal) {
+        syncSettingsModal.style.display = 'none';
+      }
+    });
+
+    modalForcePullBtn.addEventListener('click', () => {
+      pullFromCloud(true);
+    });
+
+    modalForcePushBtn.addEventListener('click', async () => {
+      await pushToCloud(true);
+      showToast('Данные отправлены в облако!');
+    });
+
+    saveCustomIdBtn.addEventListener('click', () => {
+      const val = customSyncIdInput.value.trim();
+      if (!val) {
+        alert('Введите ID');
+        return;
+      }
+      localStorage.setItem(BLOB_STORE_ID_KEY, val);
+      showToast('ID синхронизации сохранен!');
+      pullFromCloud(true);
+    });
+
+    resetCustomIdBtn.addEventListener('click', () => {
+      localStorage.removeItem(BLOB_STORE_ID_KEY);
+      customSyncIdInput.value = DEFAULT_BLOB_ID;
+      showToast('ID сброшен на стандартный');
+      pullFromCloud(true);
+    });
+
+    // Backup File Handlers
+    exportBackupFileBtn.addEventListener('click', () => {
+      const payload = collectAppData();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `alena_grass_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Резервная копия сохранена!');
+    });
+
+    importBackupFileBtn.addEventListener('click', () => {
+      modalBackupFileInput.click();
+    });
+
+    modalBackupFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (imported) {
+            if (imported.lessonsState) lessonsState = imported.lessonsState;
+            if (imported.collapsedState) collapsedState = imported.collapsedState;
+            if (imported.savedCalcsState) savedCalcsState = imported.savedCalcsState;
+            if (imported.calc) {
+              if (imported.calc.h) heightInput.value = imported.calc.h;
+              if (imported.calc.og) bustInput.value = imported.calc.og;
+              if (imported.calc.ob) hipsInput.value = imported.calc.ob;
+            }
+            saveDiaryState();
+            saveSavedCalcsState();
+            saveCalcState();
+            renderDiary();
+            renderSavedCalcs();
+            calculate();
+            showToast('Резервная копия восстановлена!');
+            syncSettingsModal.style.display = 'none';
+          }
+        } catch (err) {
+          alert('Не удалось прочитать файл резервной копии');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Hook into existing save handlers
     const originalSaveDiary = saveDiaryState;
     saveDiaryState = function() {
       originalSaveDiary();
-      pushToCloudAuto(false);
+      pushToCloud(false);
     };
 
     const originalSaveCalc = saveCalcState;
     saveCalcState = function() {
       originalSaveCalc();
-      pushToCloudAuto(false);
+      pushToCloud(false);
     };
 
-    const originalSaveCalcs = saveSavedCalcsState;
+    const originalSaveSavedCalcs = saveSavedCalcsState;
     saveSavedCalcsState = function() {
-      originalSaveCalcs();
-      pushToCloudAuto(true);
+      originalSaveSavedCalcs();
+      pushToCloud(true);
     };
 
-    // Auto pull on page load, on window focus, and when app returns from background
+    // Auto pull on page load & tab focus
     window.addEventListener('load', () => {
-      setTimeout(() => pullFromCloudAuto(false), 200);
+      setTimeout(() => pullFromCloud(false), 200);
     });
-    
-    window.addEventListener('focus', () => pullFromCloudAuto(false));
+
+    window.addEventListener('focus', () => {
+      pullFromCloud(false);
+    });
+
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        pullFromCloudAuto(false);
+        pullFromCloud(false);
       }
     });
 
-    // Also periodic background check every 30 seconds if tab is active
+    // Periodic check every 25 seconds if page is visible
     setInterval(() => {
-      if (document.visibilityState === 'visible' && !isSyncing) {
-        pullFromCloudAuto(false);
+      if (document.visibilityState === 'visible' && !isSyncInProgress) {
+        pullFromCloud(false);
       }
-    }, 30000);
+    }, 25000);
   </script>
+
+
 </body>
 </html>
