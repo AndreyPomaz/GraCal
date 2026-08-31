@@ -2221,11 +2221,10 @@
     
     
     // ==========================================
-    // 6. ROCK-SOLID MULTI-BACKEND CLOUD SYNC
+    // 6. ROCK-SOLID CLOUD SYNC & QR TRANSFER
     // ==========================================
-    // Using reliable public CORS JSON store endpoints
-    const BLOB_STORE_ID_KEY = 'alena_grass_blob_id_v2';
-    const DEFAULT_BLOB_ID = '1344671408889159680'; // Pre-initialized shared single-user blob
+    // Free, open, zero-CORS Firebase REST endpoint
+    const SYNC_FIREBASE_URL = 'https://alena-grass-store-default-rtdb.firebaseio.com/user_data.json';
 
     const syncBadge = document.getElementById('syncBadge');
     const syncDot = document.getElementById('syncDot');
@@ -2246,14 +2245,6 @@
 
     let isSyncInProgress = false;
     let pushDebounceTimer = null;
-
-    function getBlobId() {
-      return localStorage.getItem(BLOB_STORE_ID_KEY) || DEFAULT_BLOB_ID;
-    }
-
-    function getBlobUrl() {
-      return 'https://jsonblob.com/api/jsonBlob/' + getBlobId();
-    }
 
     function setVisualStatus(state, label) {
       if (state === 'synced') {
@@ -2277,10 +2268,10 @@
       } else if (state === 'error') {
         syncDot.style.background = '#f87171';
         syncDot.style.boxShadow = '0 0 6px #f87171';
-        syncStatusLabel.textContent = label || 'Офлайн';
+        syncStatusLabel.textContent = label || 'Офлайн (локально)';
         syncStatusLabel.style.color = '#f87171';
         if (modalSyncStatus) {
-          modalSyncStatus.textContent = '⚪ ' + (label || 'Офлайн (локально)');
+          modalSyncStatus.textContent = '⚪ ' + (label || 'Офлайн (сохранено на устройстве)');
           modalSyncStatus.style.color = '#94a3b8';
         }
       }
@@ -2316,34 +2307,11 @@
         const jsonStr = JSON.stringify(payload);
 
         try {
-          // Send PUT to jsonblob
-          let res = await fetch(getBlobUrl(), {
+          const res = await fetch(SYNC_FIREBASE_URL, {
             method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: jsonStr
           });
-
-          // If blob was not found (404), create a new one via POST
-          if (res.status === 404) {
-            res = await fetch('https://jsonblob.com/api/jsonBlob', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              },
-              body: jsonStr
-            });
-            const location = res.headers.get('Location') || res.headers.get('location');
-            if (location) {
-              const newId = location.split('/').pop();
-              if (newId) {
-                localStorage.setItem(BLOB_STORE_ID_KEY, newId);
-              }
-            }
-          }
 
           if (res.ok) {
             const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
@@ -2372,19 +2340,22 @@
       setVisualStatus('syncing', 'Загрузка...');
 
       try {
-        const res = await fetch(getBlobUrl(), {
+        const res = await fetch(SYNC_FIREBASE_URL + '?t=' + Date.now(), {
           method: 'GET',
-          headers: { 'Accept': 'application/json' },
           cache: 'no-store'
         });
 
         if (res.ok) {
           const data = await res.json();
           if (data && (data.lessonsState || data.savedCalcsState || data.calc)) {
-            lessonsState = data.lessonsState || {};
-            if (data.collapsedState) collapsedState = data.collapsedState;
-            localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
-            localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+            if (data.lessonsState) {
+              lessonsState = data.lessonsState;
+              localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+            }
+            if (data.collapsedState) {
+              collapsedState = data.collapsedState;
+              localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+            }
             renderDiary();
 
             if (data.savedCalcsState) {
@@ -2406,11 +2377,6 @@
               showToast('Данные успешно загружены из облака!');
             }
           }
-        } else if (res.status === 404) {
-          // Not created yet -> push local data to create it
-          isSyncInProgress = false;
-          pushToCloud(true);
-          return;
         } else {
           setVisualStatus('error', 'Локально');
         }
@@ -2426,7 +2392,6 @@
     if (syncBadge) {
       syncBadge.style.cursor = 'pointer';
       syncBadge.addEventListener('click', () => {
-        customSyncIdInput.value = getBlobId();
         syncSettingsModal.style.display = 'flex';
       });
     }
@@ -2450,24 +2415,6 @@
     modalForcePushBtn.addEventListener('click', async () => {
       await pushToCloud(true);
       showToast('Данные отправлены в облако!');
-    });
-
-    saveCustomIdBtn.addEventListener('click', () => {
-      const val = customSyncIdInput.value.trim();
-      if (!val) {
-        alert('Введите ID');
-        return;
-      }
-      localStorage.setItem(BLOB_STORE_ID_KEY, val);
-      showToast('ID синхронизации сохранен!');
-      pullFromCloud(true);
-    });
-
-    resetCustomIdBtn.addEventListener('click', () => {
-      localStorage.removeItem(BLOB_STORE_ID_KEY);
-      customSyncIdInput.value = DEFAULT_BLOB_ID;
-      showToast('ID сброшен на стандартный');
-      pullFromCloud(true);
     });
 
     // Backup File Handlers
@@ -2553,12 +2500,12 @@
       }
     });
 
-    // Periodic check every 25 seconds if page is visible
+    // Periodic check every 20 seconds if page is visible
     setInterval(() => {
       if (document.visibilityState === 'visible' && !isSyncInProgress) {
         pullFromCloud(false);
       }
-    }, 25000);
+    }, 20000);
   </script>
 
 
