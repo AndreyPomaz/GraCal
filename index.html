@@ -2221,11 +2221,13 @@
     
     
     
+    
     // ==========================================
-    // 6. ROCK-SOLID FIREBASE REST AUTO-SYNC
+    // 6. GITHUB GIST DIRECT AUTO-SYNC ENGINE
     // ==========================================
-    // Direct Google Firebase Realtime Database REST API (100% CORS & browser support)
-    const FIREBASE_SYNC_ENDPOINT = 'https://grass-calc-sync-default-rtdb.firebaseio.com/user_data.json';
+    const GIST_ID = 'a87b5387d00b76fdfaee4beeac842434';
+    const GIST_TOKEN = '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';
+    const GIST_FILENAME = 'sync.json';
 
     const syncBadge = document.getElementById('syncBadge');
     const syncDot = document.getElementById('syncDot');
@@ -2248,10 +2250,10 @@
       if (state === 'synced') {
         syncDot.style.background = '#10b981';
         syncDot.style.boxShadow = '0 0 8px #10b981';
-        syncStatusLabel.textContent = label || 'Облако: Синхр.';
+        syncStatusLabel.textContent = label || 'GitHub: Синхр.';
         syncStatusLabel.style.color = '#10b981';
         if (modalSyncStatus) {
-          modalSyncStatus.textContent = '🟢 ' + (label || 'Синхронизировано');
+          modalSyncStatus.textContent = '🟢 ' + (label || 'Синхронизировано через GitHub');
           modalSyncStatus.style.color = '#10b981';
         }
       } else if (state === 'syncing') {
@@ -2260,7 +2262,7 @@
         syncStatusLabel.textContent = label || 'Синхронизация...';
         syncStatusLabel.style.color = '#f59e0b';
         if (modalSyncStatus) {
-          modalSyncStatus.textContent = '🟡 ' + (label || 'Синхронизация...');
+          modalSyncStatus.textContent = '🟡 ' + (label || 'Синхронизация с GitHub...');
           modalSyncStatus.style.color = '#f59e0b';
         }
       } else if (state === 'error') {
@@ -2302,20 +2304,30 @@
         setVisualStatus('syncing', 'Сохранение...');
 
         const payload = collectAppData();
-        const jsonStr = JSON.stringify(payload);
+        const jsonStr = JSON.stringify(payload, null, 2);
 
         try {
-          const res = await fetch(FIREBASE_SYNC_ENDPOINT, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: jsonStr
+          const res = await fetch('https://api.github.com/gists/' + GIST_ID, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': 'token ' + GIST_TOKEN,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              files: {
+                [GIST_FILENAME]: {
+                  content: jsonStr
+                }
+              }
+            })
           });
 
           if (res.ok) {
             const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            setVisualStatus('synced', `Синхр: ${timeStr}`);
+            setVisualStatus('synced', 'GitHub: ' + timeStr);
           } else {
-            setVisualStatus('error', 'Локально');
+            setVisualStatus('error', 'Ошибка GitHub');
           }
         } catch (e) {
           console.warn('Network offline during push:', e);
@@ -2328,7 +2340,7 @@
       if (isImmediate) {
         await execPush();
       } else {
-        pushDebounceTimer = setTimeout(execPush, 350);
+        pushDebounceTimer = setTimeout(execPush, 400);
       }
     }
 
@@ -2338,48 +2350,62 @@
       setVisualStatus('syncing', 'Загрузка...');
 
       try {
-        const res = await fetch(FIREBASE_SYNC_ENDPOINT + '?t=' + Date.now(), {
+        const res = await fetch('https://api.github.com/gists/' + GIST_ID + '?t=' + Date.now(), {
           method: 'GET',
+          headers: {
+            'Authorization': 'token ' + GIST_TOKEN,
+            'Accept': 'application/vnd.github.v3+json'
+          },
           cache: 'no-store'
         });
 
         if (res.ok) {
-          const data = await res.json();
-          if (data && typeof data === 'object') {
-            if (data.lessonsState) {
-              lessonsState = data.lessonsState;
-              localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
-            }
-            if (data.collapsedState) {
-              collapsedState = data.collapsedState;
-              localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
-            }
-            renderDiary();
-
-            if (data.savedCalcsState) {
-              savedCalcsState = data.savedCalcsState;
-              localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
-              renderSavedCalcs();
+          const gistData = await res.json();
+          const fileObj = gistData.files && gistData.files[GIST_FILENAME];
+          if (fileObj && fileObj.content) {
+            let data;
+            try {
+              data = JSON.parse(fileObj.content);
+            } catch (err) {
+              console.warn('Gist JSON parse error', err);
             }
 
-            if (data.calc) {
-              if (data.calc.h) heightInput.value = data.calc.h;
-              if (data.calc.og) bustInput.value = data.calc.og;
-              if (data.calc.ob) hipsInput.value = data.calc.ob;
-              calculate();
-            }
+            if (data && typeof data === 'object') {
+              if (data.lessonsState) {
+                lessonsState = data.lessonsState;
+                localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+              }
+              if (data.collapsedState) {
+                collapsedState = data.collapsedState;
+                localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+              }
+              renderDiary();
 
-            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            setVisualStatus('synced', `Синхр: ${timeStr}`);
-            if (showNotice) {
-              showToast('Данные успешно загружены из облака!');
+              if (data.savedCalcsState) {
+                savedCalcsState = data.savedCalcsState;
+                localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+                renderSavedCalcs();
+              }
+
+              if (data.calc) {
+                if (data.calc.h) heightInput.value = data.calc.h;
+                if (data.calc.og) bustInput.value = data.calc.og;
+                if (data.calc.ob) hipsInput.value = data.calc.ob;
+                calculate();
+              }
+
+              const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+              setVisualStatus('synced', 'GitHub: ' + timeStr);
+              if (showNotice) {
+                showToast('Данные успешно загружены из Gist!');
+              }
             }
           }
         } else {
           setVisualStatus('error', 'Локально');
         }
       } catch (e) {
-        console.warn('Could not pull from cloud:', e);
+        console.warn('Could not pull from Gist:', e);
         setVisualStatus('error', 'Офлайн (локально)');
       } finally {
         isSyncInProgress = false;
@@ -2412,7 +2438,7 @@
 
     modalForcePushBtn.addEventListener('click', async () => {
       await pushToCloud(true);
-      showToast('Данные отправлены в облако!');
+      showToast('Данные отправлены в GitHub Gist!');
     });
 
     // Backup File Handlers
