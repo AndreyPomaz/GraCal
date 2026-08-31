@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grass-v18-sync-fixed';
+const CACHE_NAME = 'grass-v19-firebase-sync';
 const ASSETS = [
   './',
   './index.html',
@@ -32,7 +32,6 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Always fetch live data for cloud endpoints, bypass service worker cache
   if (e.request.url.includes('firebaseio.com') || e.request.url.includes('jsonblob') || e.request.url.includes('kvdb.io')) {
     e.respondWith(fetch(e.request));
     return;

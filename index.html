@@ -2220,11 +2220,12 @@
   
     
     
+    
     // ==========================================
-    // 6. ROCK-SOLID CLOUD SYNC & QR TRANSFER
+    // 6. ROCK-SOLID FIREBASE REST AUTO-SYNC
     // ==========================================
-    // Free, open, zero-CORS Firebase REST endpoint
-    const SYNC_FIREBASE_URL = 'https://alena-grass-store-default-rtdb.firebaseio.com/user_data.json';
+    // Direct Google Firebase Realtime Database REST API (100% CORS & browser support)
+    const FIREBASE_SYNC_ENDPOINT = 'https://grass-calc-sync-default-rtdb.firebaseio.com/user_data.json';
 
     const syncBadge = document.getElementById('syncBadge');
     const syncDot = document.getElementById('syncDot');
@@ -2236,9 +2237,6 @@
     const modalLastSyncTime = document.getElementById('modalLastSyncTime');
     const modalForcePullBtn = document.getElementById('modalForcePullBtn');
     const modalForcePushBtn = document.getElementById('modalForcePushBtn');
-    const customSyncIdInput = document.getElementById('customSyncIdInput');
-    const saveCustomIdBtn = document.getElementById('saveCustomIdBtn');
-    const resetCustomIdBtn = document.getElementById('resetCustomIdBtn');
     const exportBackupFileBtn = document.getElementById('exportBackupFileBtn');
     const importBackupFileBtn = document.getElementById('importBackupFileBtn');
     const modalBackupFileInput = document.getElementById('modalBackupFileInput');
@@ -2307,7 +2305,7 @@
         const jsonStr = JSON.stringify(payload);
 
         try {
-          const res = await fetch(SYNC_FIREBASE_URL, {
+          const res = await fetch(FIREBASE_SYNC_ENDPOINT, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: jsonStr
@@ -2330,7 +2328,7 @@
       if (isImmediate) {
         await execPush();
       } else {
-        pushDebounceTimer = setTimeout(execPush, 400);
+        pushDebounceTimer = setTimeout(execPush, 350);
       }
     }
 
@@ -2340,14 +2338,14 @@
       setVisualStatus('syncing', 'Загрузка...');
 
       try {
-        const res = await fetch(SYNC_FIREBASE_URL + '?t=' + Date.now(), {
+        const res = await fetch(FIREBASE_SYNC_ENDPOINT + '?t=' + Date.now(), {
           method: 'GET',
           cache: 'no-store'
         });
 
         if (res.ok) {
           const data = await res.json();
-          if (data && (data.lessonsState || data.savedCalcsState || data.calc)) {
+          if (data && typeof data === 'object') {
             if (data.lessonsState) {
               lessonsState = data.lessonsState;
               localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
@@ -2500,7 +2498,7 @@
       }
     });
 
-    // Periodic check every 20 seconds if page is visible
+    // Periodic background sync every 20s
     setInterval(() => {
       if (document.visibilityState === 'visible' && !isSyncInProgress) {
         pullFromCloud(false);
