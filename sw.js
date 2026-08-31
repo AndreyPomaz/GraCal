@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grass-v10';
+const CACHE_NAME = 'grass-v13-saved-calcs';
 const ASSETS = [
   './',
   './index.html',
@@ -32,6 +32,10 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  if (e.request.url.includes('kvdb.io')) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then((response) => {
       return response || fetch(e.request);

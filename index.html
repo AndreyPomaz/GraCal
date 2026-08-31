@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ALËNA GRASS">
   <link rel="manifest" href="manifest.json">
-  <title>ALËNA GRASS | 3D Калькулятор и Дневник курса</title>
+  <title>ALËNA GRASS | Калькулятор и Дневник курса</title>
   <link rel="icon" type="image/svg+xml" href="icon-512.svg">
   <link rel="apple-touch-icon" href="icon-512.png">
   <style>
@@ -803,15 +803,18 @@
           <div class="subtitle">Индивидуальный калькулятор и дневник курса</div>
         </div>
       </div>
-      <div id="statusBadge" style="font-size: 0.72rem; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 3px 8px; border-radius: 6px;">
-        Офлайн готов
+      <div style="display:flex; align-items:center; gap:6px;">
+        <div id="syncBadge" style="background:rgba(15,23,42,0.6); border:1px solid #334155; color:#38bdf8; font-size:0.72rem; padding:4px 10px; border-radius:8px; display:flex; align-items:center; gap:6px;">
+          <span id="syncDot" style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 8px #10b981;"></span>
+          <span id="syncStatusLabel" style="font-weight:600;">Авто-синхр.</span>
+        </div>
       </div>
     </div>
   </header>
 
   <!-- Navigation Switcher -->
   <div class="top-nav">
-    <button class="tab-btn active" id="tabBtnCalc">📐 3D Калькулятор</button>
+    <button class="tab-btn active" id="tabBtnCalc">📐 Калькулятор</button>
     <button class="tab-btn" id="tabBtnDiary">📚 Дневник курса <span id="navProgressBadge" style="font-size:0.7rem; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:10px;">0%</span></button>
   </div>
 
@@ -876,10 +879,23 @@
         </div>
 
         <div class="formula-info">
-          <strong>Формула Grasser 3D Final v3.1:</strong><br>
+          <strong>Формула Grasser Final v3.1:</strong><br>
           Полнота = ((ОБ - ОГ) + 2) / 4 $	o$ определяет динамическую базу (0–5 группа).<br>
           Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
           <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом полноты и порога ОГ &gt; 108 см.</em>
+        </div>
+      </div>
+
+      
+      <!-- Saved Calculations & History Card -->
+      <div class="card" id="savedCalcsCard">
+        <div class="card-title">
+          <span>📂 Сохраненные расчеты <span id="savedCountBadge" style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:var(--accent); padding:2px 8px; border-radius:10px;">0</span></span>
+          <button class="btn btn-primary" id="openSaveModalBtn" style="padding:6px 12px; font-size:0.78rem;">💾 Сохранить текущий</button>
+        </div>
+        
+        <div id="savedCalcsList" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- Rendered via JS -->
         </div>
       </div>
 
@@ -982,6 +998,32 @@
     </div>
 
   </div>
+
+  
+    
+    <!-- Save Calculation Modal -->
+    <div id="saveCalcModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:16px;">
+      <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:420px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">💾 Сохранить расчет</h3>
+          <button id="closeSaveModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
+
+        <p style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px;">
+          Введите название для сохранения текущих параметров (<span id="savePreviewParams" style="color:var(--accent); font-weight:600;">163-84-94</span>):
+        </p>
+
+        <div style="margin-bottom:14px;">
+          <label style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px; display:block;">Название расчета / клиента:</label>
+          <input type="text" id="calcNameInput" placeholder="например: Платье для Анны, Базовая выкройка..." style="width:100%; background:#090d16; border:1px solid #334155; border-radius:8px; padding:10px 12px; color:#fff; font-size:0.92rem; outline:none;">
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" id="confirmSaveCalcBtn" style="flex:1; justify-content:center; padding:10px;">Сохранить</button>
+          <button class="btn" id="cancelSaveCalcBtn" style="justify-content:center; padding:10px;">Отмена</button>
+        </div>
+      </div>
+    </div>
 
   <div id="toast" class="toast">Сохранено!</div>
 
@@ -1641,6 +1683,223 @@
     });
 
     // ==========================================
+    
+    // ==========================================
+    // 3.1 SAVED CALCULATIONS ENGINE
+    // ==========================================
+    const SAVED_CALCS_STORAGE_KEY = 'alena_grass_saved_calcs_v1';
+    let savedCalcsState = [];
+
+    const savedCalcsList = document.getElementById('savedCalcsList');
+    const savedCountBadge = document.getElementById('savedCountBadge');
+    const saveCalcModal = document.getElementById('saveCalcModal');
+    const openSaveModalBtn = document.getElementById('openSaveModalBtn');
+    const closeSaveModalBtn = document.getElementById('closeSaveModalBtn');
+    const cancelSaveCalcBtn = document.getElementById('cancelSaveCalcBtn');
+    const confirmSaveCalcBtn = document.getElementById('confirmSaveCalcBtn');
+    const calcNameInput = document.getElementById('calcNameInput');
+    const savePreviewParams = document.getElementById('savePreviewParams');
+
+    function loadSavedCalcsState() {
+      try {
+        const data = localStorage.getItem(SAVED_CALCS_STORAGE_KEY);
+        if (data) {
+          savedCalcsState = JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Error loading saved calcs', e);
+      }
+    }
+
+    function saveSavedCalcsState() {
+      localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+      if (typeof pushToCloudAuto === 'function') {
+        pushToCloudAuto();
+      }
+    }
+
+    function getCalculationSnapshot() {
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
+
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      let groupIndex = Math.round(fullnessExact);
+      if (groupIndex < 0) groupIndex = 0;
+      if (groupIndex > 5) groupIndex = 5;
+
+      const results = measurementsData.map(item => {
+        const baseVal = item.bases[groupIndex];
+        let shiftSize = 0;
+        if (item.dynamicB) {
+          shiftSize = item.calcShiftB(og, kB, groupIndex);
+        } else {
+          shiftSize = item.dB * kB;
+        }
+        const res = (baseVal + item.dH * kH + shiftSize).toFixed(2);
+        return { code: item.code, name: item.name, val: res };
+      });
+
+      return {
+        h, og, ob,
+        kH: (kH >= 0 ? '+' : '') + kH.toFixed(2),
+        kB: (kB >= 0 ? '+' : '') + kB.toFixed(2),
+        fullnessGroup: groupIndex,
+        fullnessExact: fullnessExact.toFixed(1),
+        results
+      };
+    }
+
+    function renderSavedCalcs() {
+      savedCalcsList.innerHTML = '';
+      savedCountBadge.textContent = savedCalcsState.length;
+
+      if (savedCalcsState.length === 0) {
+        savedCalcsList.innerHTML = `
+          <div style="text-align:center; padding:16px 10px; color:var(--text-muted); font-size:0.8rem; background:var(--row-alt); border-radius:8px; border:1px dashed var(--card-border);">
+            У вас пока нет сохраненных расчетов. Нажмите «💾 Сохранить текущий», чтобы сохранить мерки клиента.
+          </div>
+        `;
+        return;
+      }
+
+      savedCalcsState.forEach((item, index) => {
+        const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--row-alt); border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;';
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+            <div>
+              <div style="font-weight:700; font-size:0.92rem; color:#fff; word-break:break-word;">${item.name}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">🕒 ${dateStr}</div>
+            </div>
+            <div style="font-size:0.75rem; background:rgba(56,189,248,0.12); color:var(--accent); padding:2px 8px; border-radius:6px; font-weight:700; white-space:nowrap;">
+              ${item.fullnessGroup}-я гр.
+            </div>
+          </div>
+
+          <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.75rem; color:#cbd5e1;">
+            <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">Рост: <strong>${item.h}</strong> см</span>
+            <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОГ: <strong>${item.og}</strong> см</span>
+            <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОБ: <strong>${item.ob}</strong> см</span>
+          </div>
+
+          <div style="display:flex; gap:6px; margin-top:4px; justify-content:flex-end;">
+            <button class="btn btn-primary load-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">⚡ Загрузить</button>
+            <button class="btn copy-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">📋 Копия</button>
+            <button class="btn delete-calc-btn" data-index="${index}" style="padding:5px 8px; font-size:0.74rem; color:#f87171;" title="Удалить">🗑</button>
+          </div>
+        `;
+
+        savedCalcsList.appendChild(card);
+      });
+
+      // Bind buttons
+      savedCalcsList.querySelectorAll('.load-calc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          const item = savedCalcsState[idx];
+          if (item) {
+            heightInput.value = item.h;
+            bustInput.value = item.og;
+            hipsInput.value = item.ob;
+            calculate();
+            showToast(`Расчет «${item.name}» загружен!`);
+            // Scroll smoothly to inputs
+            document.getElementById('heightInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      });
+
+      savedCalcsList.querySelectorAll('.copy-calc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          const item = savedCalcsState[idx];
+          if (item) {
+            let text = `ALËNA GRASS РАСЧЕТ: ${item.name}\nПараметры: Рост ${item.h} см, ОГ ${item.og} см, ОБ ${item.ob} см (${item.fullnessGroup}-я гр.)\n\n`;
+            if (item.results) {
+              item.results.forEach(r => {
+                text += `${r.code} (${r.name}): ${r.val} см\n`;
+              });
+            }
+            navigator.clipboard.writeText(text).then(() => {
+              showToast(`Мерки «${item.name}» скопированы!`);
+            });
+          }
+        });
+      });
+
+      savedCalcsList.querySelectorAll('.delete-calc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          const item = savedCalcsState[idx];
+          if (item && confirm(`Удалить сохраненный расчет «${item.name}»?`)) {
+            savedCalcsState.splice(idx, 1);
+            saveSavedCalcsState();
+            renderSavedCalcs();
+            showToast('Расчет удален');
+          }
+        });
+      });
+    }
+
+    // Modal Handlers
+    openSaveModalBtn.addEventListener('click', () => {
+      const h = heightInput.value || 163;
+      const og = bustInput.value || 84;
+      const ob = hipsInput.value || 94;
+      savePreviewParams.textContent = `${h}-${og}-${ob}`;
+      calcNameInput.value = '';
+      saveCalcModal.style.display = 'flex';
+      setTimeout(() => calcNameInput.focus(), 50);
+    });
+
+    closeSaveModalBtn.addEventListener('click', () => {
+      saveCalcModal.style.display = 'none';
+    });
+
+    cancelSaveCalcBtn.addEventListener('click', () => {
+      saveCalcModal.style.display = 'none';
+    });
+
+    saveCalcModal.addEventListener('click', (e) => {
+      if (e.target === saveCalcModal) saveCalcModal.style.display = 'none';
+    });
+
+    confirmSaveCalcBtn.addEventListener('click', () => {
+      const name = calcNameInput.value.trim() || `Расчет от ${new Date().toLocaleDateString('ru-RU')}`;
+      const snap = getCalculationSnapshot();
+
+      const newRecord = {
+        id: 'calc_' + Date.now(),
+        name: name,
+        createdAt: new Date().toISOString(),
+        h: snap.h,
+        og: snap.og,
+        ob: snap.ob,
+        fullnessGroup: snap.fullnessGroup,
+        fullnessExact: snap.fullnessExact,
+        results: snap.results
+      };
+
+      savedCalcsState.unshift(newRecord);
+      saveSavedCalcsState();
+      renderSavedCalcs();
+
+      saveCalcModal.style.display = 'none';
+      showToast(`Расчет «${name}» успешно сохранен!`);
+    });
+
+    calcNameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        confirmSaveCalcBtn.click();
+      }
+    });
+
+    // ==========================================
     // 4. DIARY & TRACKER LOGIC
     // ==========================================
     const courseBlocksContainer = document.getElementById('courseBlocksContainer');
@@ -1907,8 +2166,133 @@
     // Init All
     loadCalcState();
     calculate();
+    loadSavedCalcsState();
+    renderSavedCalcs();
     loadDiaryState();
     renderDiary();
+  
+    // ==========================================
+    // 6. FULLY AUTOMATIC CLOUD SYNC (Zero Config)
+    // ==========================================
+    const CLOUD_SYNC_ENDPOINT = 'https://kvdb.io/8xK5ZtQcWp9z3M4y2J1b7N/alena_grass_single_user_store';
+    const syncDot = document.getElementById('syncDot');
+    const syncStatusLabel = document.getElementById('syncStatusLabel');
+
+    let isSyncing = false;
+    let pushTimeout = null;
+
+    function setSyncStatus(state, label) {
+      if (state === 'synced') {
+        syncDot.style.background = '#10b981';
+        syncDot.style.boxShadow = '0 0 8px #10b981';
+        syncStatusLabel.textContent = label || 'Синхронизировано';
+        syncStatusLabel.style.color = '#10b981';
+      } else if (state === 'syncing') {
+        syncDot.style.background = '#f59e0b';
+        syncDot.style.boxShadow = '0 0 8px #f59e0b';
+        syncStatusLabel.textContent = label || 'Сохранение...';
+        syncStatusLabel.style.color = '#f59e0b';
+      } else if (state === 'error') {
+        syncDot.style.background = '#94a3b8';
+        syncDot.style.boxShadow = 'none';
+        syncStatusLabel.textContent = label || 'Локально (офлайн)';
+        syncStatusLabel.style.color = '#94a3b8';
+      }
+    }
+
+    async function pushToCloudAuto() {
+      clearTimeout(pushTimeout);
+      pushTimeout = setTimeout(async () => {
+        setSyncStatus('syncing', 'Сохранение...');
+        
+        const payload = {
+          updatedAt: new Date().toISOString(),
+          calc: {
+            h: heightInput.value,
+            og: bustInput.value,
+            ob: hipsInput.value
+          },
+          lessonsState: lessonsState,
+          collapsedState: collapsedState,
+          savedCalcsState: savedCalcsState
+        };
+
+        try {
+          const res = await fetch(CLOUD_SYNC_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            setSyncStatus('synced', 'Авто-синхр.');
+          } else {
+            setSyncStatus('error', 'Локально');
+          }
+        } catch (e) {
+          setSyncStatus('error', 'Офлайн');
+        }
+      }, 400);
+    }
+
+    async function pullFromCloudAuto(silent = true) {
+      setSyncStatus('syncing', 'Обновление...');
+      try {
+        const res = await fetch(CLOUD_SYNC_ENDPOINT + '?t=' + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.lessonsState) {
+            lessonsState = data.lessonsState || {};
+            if (data.collapsedState) collapsedState = data.collapsedState;
+            localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+            localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+            renderDiary();
+
+            if (data.savedCalcsState) {
+              savedCalcsState = data.savedCalcsState;
+              localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+              renderSavedCalcs();
+            }
+
+            if (data.calc) {
+              if (data.calc.h) heightInput.value = data.calc.h;
+              if (data.calc.og) bustInput.value = data.calc.og;
+              if (data.calc.ob) hipsInput.value = data.calc.ob;
+              calculate();
+            }
+
+            setSyncStatus('synced', 'Авто-синхр.');
+            if (!silent) showToast('Данные синхронизированы!');
+          }
+        } else if (res.status === 404) {
+          // Initialize bucket
+          pushToCloudAuto();
+        }
+      } catch (e) {
+        setSyncStatus('error', 'Офлайн');
+      }
+    }
+
+    // Auto-hook into save operations
+    const originalSaveDiary = saveDiaryState;
+    saveDiaryState = function() {
+      originalSaveDiary();
+      pushToCloudAuto();
+    };
+
+    const originalSaveCalc = saveCalcState;
+    saveCalcState = function() {
+      originalSaveCalc();
+      pushToCloudAuto();
+    };
+
+    // Auto pull on page load and when switching back to tab
+    pullFromCloudAuto(true);
+    window.addEventListener('focus', () => pullFromCloudAuto(true));
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        pullFromCloudAuto(true);
+      }
+    });
   </script>
 </body>
 </html>
