@@ -1050,22 +1050,11 @@
           <button class="btn" id="modalForcePushBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📤 Отправить в облако</button>
         </div>
 
-        <div style="margin-bottom:14px;">
-          <label style="font-size:0.74rem; color:#94a3b8; margin-bottom:4px; display:block;">Ваш персональный ID синхронизации:</label>
-          <input type="text" id="customSyncIdInput" placeholder="alena_grass_store_v1" style="width:100%; background:#090d16; border:1px solid #334155; border-radius:8px; padding:8px 10px; color:#fff; font-size:0.85rem; outline:none;">
-          <div style="font-size:0.68rem; color:#64748b; margin-top:4px;">Одинаковый на всех ваших устройствах (по умолчанию уже настроен).</div>
-        </div>
-
-        <div style="display:flex; gap:6px; margin-bottom:12px;">
-          <button class="btn" id="saveCustomIdBtn" style="flex:1; justify-content:center; font-size:0.75rem;">💾 Применить ID</button>
-          <button class="btn" id="resetCustomIdBtn" style="justify-content:center; font-size:0.75rem;">↺ Сбросить ID</button>
-        </div>
-
         <div style="border-top:1px dashed #334155; padding-top:12px;">
           <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px;">Резервная копия в файл:</div>
           <div style="display:flex; gap:6px;">
-            <button class="btn" id="exportBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📥 Скачать бэкап</button>
-            <button class="btn" id="importBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📤 Загрузить файл</button>
+            <button class="btn" id="exportBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📥 Бэкап</button>
+            <button class="btn" id="importBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📤 Восстановить</button>
             <input type="file" id="modalBackupFileInput" accept=".json" style="display:none;">
           </div>
         </div>
@@ -1841,6 +1830,7 @@
           </div>
         `;
 
+        savedCalcsList.innerHTML += ''; // triggers render
         savedCalcsList.appendChild(card);
       });
 
@@ -1855,7 +1845,6 @@
             hipsInput.value = item.ob;
             calculate();
             showToast(`Расчет «${item.name}» загружен!`);
-            // Scroll smoothly to inputs
             document.getElementById('heightInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         });
@@ -2033,7 +2022,6 @@
         const isBlockCompleted = (doneInBlock === totalInBlock && totalInBlock > 0);
         const percentInBlock = totalInBlock > 0 ? Math.round((doneInBlock / totalInBlock) * 100) : 0;
 
-        // Check if block matches filter
         const blockMatches = !filter || 
           block.title.toLowerCase().includes(filter) ||
           (block.note && block.note.toLowerCase().includes(filter)) ||
@@ -2045,14 +2033,12 @@
 
         const isCollapsed = collapsedState[block.id] !== undefined ? collapsedState[block.id] : (isBlockCompleted);
 
-        // Build Block Card Element
         const blockCard = document.createElement('div');
         blockCard.className = `block-card ${isBlockCompleted ? 'completed' : ''} ${isCollapsed ? 'collapsed' : ''}`;
         blockCard.id = `blockCard_${block.id}`;
 
         const badgeInfo = calculateDeadlineBadge(block.deadline, isBlockCompleted);
 
-        // Block Header
         const headerDiv = document.createElement('div');
         headerDiv.className = 'block-header';
         
@@ -2073,7 +2059,6 @@
           </div>
         `;
 
-        // Block Checkbox Listener (Toggles all lessons in block)
         const blockCb = headerDiv.querySelector(`#blockCb_${block.id}`);
         blockCb.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -2086,14 +2071,12 @@
           showToast(targetState ? `Блок ${block.id} завершен!` : `Блок ${block.id} открыт заново`);
         });
 
-        // Block Header Click (Toggle Collapse)
         headerDiv.addEventListener('click', () => {
           blockCard.classList.toggle('collapsed');
           collapsedState[block.id] = blockCard.classList.contains('collapsed');
           saveDiaryState();
         });
 
-        // Block Body
         const bodyDiv = document.createElement('div');
         bodyDiv.className = 'block-body';
 
@@ -2124,7 +2107,6 @@
             ${isTest ? '<span class="test-badge">ТЕСТ</span>' : ''}
           `;
 
-          // Checkbox click
           const lcb = lessonItem.querySelector(`#lcb_${lessonKey}`);
           lessonItem.addEventListener('click', (e) => {
             if (e.target !== lcb) {
@@ -2144,7 +2126,6 @@
         courseBlocksContainer.appendChild(blockCard);
       });
 
-      // Update Overall Summary
       const overallPercent = totalLessonsCount > 0 ? Math.round((completedLessonsCount / totalLessonsCount) * 100) : 0;
       overallProgressBar.style.width = `${overallPercent}%`;
       overallPercentText.textContent = `${overallPercent}%`;
@@ -2152,7 +2133,6 @@
       navProgressBadge.textContent = `${overallPercent}%`;
     }
 
-    // Diary Search & Controls
     searchDiaryInput.addEventListener('input', renderDiary);
 
     document.getElementById('collapseAllBtn').addEventListener('click', () => {
@@ -2177,9 +2157,6 @@
       }
     });
 
-    // ==========================================
-    // 5. PWA SERVICE WORKER & INITIALIZATION
-    // ==========================================
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => {
@@ -2210,24 +2187,19 @@
       }
     });
 
-    // Init All
     loadCalcState();
     calculate();
     loadSavedCalcsState();
     renderSavedCalcs();
     loadDiaryState();
     renderDiary();
-  
-    
-    
-    
-    
+  </script>
+
+  <script>
     // ==========================================
-    // 6. GITHUB GIST DIRECT AUTO-SYNC ENGINE
+    // 6. FIREBASE REALTIME DATABASE AUTO-SYNC
     // ==========================================
-    const GIST_ID = 'a87b5387d00b76fdfaee4beeac842434';
-    const GIST_TOKEN = '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';
-    const GIST_FILENAME = 'sync.json';
+    const FIREBASE_SYNC_ENDPOINT = 'https://alena-grass-default-rtdb.europe-west1.firebasedatabase.app/user_data.json';
 
     const syncBadge = document.getElementById('syncBadge');
     const syncDot = document.getElementById('syncDot');
@@ -2250,10 +2222,10 @@
       if (state === 'synced') {
         syncDot.style.background = '#10b981';
         syncDot.style.boxShadow = '0 0 8px #10b981';
-        syncStatusLabel.textContent = label || 'GitHub: Синхр.';
+        syncStatusLabel.textContent = label || 'Облако: Синхр.';
         syncStatusLabel.style.color = '#10b981';
         if (modalSyncStatus) {
-          modalSyncStatus.textContent = '🟢 ' + (label || 'Синхронизировано через GitHub');
+          modalSyncStatus.textContent = '🟢 ' + (label || 'Синхронизировано');
           modalSyncStatus.style.color = '#10b981';
         }
       } else if (state === 'syncing') {
@@ -2262,7 +2234,7 @@
         syncStatusLabel.textContent = label || 'Синхронизация...';
         syncStatusLabel.style.color = '#f59e0b';
         if (modalSyncStatus) {
-          modalSyncStatus.textContent = '🟡 ' + (label || 'Синхронизация с GitHub...');
+          modalSyncStatus.textContent = '🟡 ' + (label || 'Синхронизация...');
           modalSyncStatus.style.color = '#f59e0b';
         }
       } else if (state === 'error') {
@@ -2304,30 +2276,20 @@
         setVisualStatus('syncing', 'Сохранение...');
 
         const payload = collectAppData();
-        const jsonStr = JSON.stringify(payload, null, 2);
+        const jsonStr = JSON.stringify(payload);
 
         try {
-          const res = await fetch('https://api.github.com/gists/' + GIST_ID, {
-            method: 'PATCH',
-            headers: {
-              'Authorization': 'token ' + GIST_TOKEN,
-              'Accept': 'application/vnd.github.v3+json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              files: {
-                [GIST_FILENAME]: {
-                  content: jsonStr
-                }
-              }
-            })
+          const res = await fetch(FIREBASE_SYNC_ENDPOINT, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: jsonStr
           });
 
           if (res.ok) {
             const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            setVisualStatus('synced', 'GitHub: ' + timeStr);
+            setVisualStatus('synced', 'Синхр: ' + timeStr);
           } else {
-            setVisualStatus('error', 'Ошибка GitHub');
+            setVisualStatus('error', 'Локально');
           }
         } catch (e) {
           console.warn('Network offline during push:', e);
@@ -2340,7 +2302,7 @@
       if (isImmediate) {
         await execPush();
       } else {
-        pushDebounceTimer = setTimeout(execPush, 400);
+        pushDebounceTimer = setTimeout(execPush, 350);
       }
     }
 
@@ -2350,69 +2312,54 @@
       setVisualStatus('syncing', 'Загрузка...');
 
       try {
-        const res = await fetch('https://api.github.com/gists/' + GIST_ID + '?t=' + Date.now(), {
+        const res = await fetch(FIREBASE_SYNC_ENDPOINT + '?t=' + Date.now(), {
           method: 'GET',
-          headers: {
-            'Authorization': 'token ' + GIST_TOKEN,
-            'Accept': 'application/vnd.github.v3+json'
-          },
           cache: 'no-store'
         });
 
         if (res.ok) {
-          const gistData = await res.json();
-          const fileObj = gistData.files && gistData.files[GIST_FILENAME];
-          if (fileObj && fileObj.content) {
-            let data;
-            try {
-              data = JSON.parse(fileObj.content);
-            } catch (err) {
-              console.warn('Gist JSON parse error', err);
+          const data = await res.json();
+          if (data && typeof data === 'object') {
+            if (data.lessonsState) {
+              lessonsState = data.lessonsState;
+              localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+            }
+            if (data.collapsedState) {
+              collapsedState = data.collapsedState;
+              localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+            }
+            renderDiary();
+
+            if (data.savedCalcsState) {
+              savedCalcsState = data.savedCalcsState;
+              localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+              renderSavedCalcs();
             }
 
-            if (data && typeof data === 'object') {
-              if (data.lessonsState) {
-                lessonsState = data.lessonsState;
-                localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
-              }
-              if (data.collapsedState) {
-                collapsedState = data.collapsedState;
-                localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
-              }
-              renderDiary();
+            if (data.calc) {
+              if (data.calc.h) heightInput.value = data.calc.h;
+              if (data.calc.og) bustInput.value = data.calc.og;
+              if (data.calc.ob) hipsInput.value = data.calc.ob;
+              calculate();
+            }
 
-              if (data.savedCalcsState) {
-                savedCalcsState = data.savedCalcsState;
-                localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
-                renderSavedCalcs();
-              }
-
-              if (data.calc) {
-                if (data.calc.h) heightInput.value = data.calc.h;
-                if (data.calc.og) bustInput.value = data.calc.og;
-                if (data.calc.ob) hipsInput.value = data.calc.ob;
-                calculate();
-              }
-
-              const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-              setVisualStatus('synced', 'GitHub: ' + timeStr);
-              if (showNotice) {
-                showToast('Данные успешно загружены из Gist!');
-              }
+            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            setVisualStatus('synced', 'Синхр: ' + timeStr);
+            if (showNotice) {
+              showToast('Данные успешно загружены из облака!');
             }
           }
         } else {
           setVisualStatus('error', 'Локально');
         }
       } catch (e) {
-        console.warn('Could not pull from Gist:', e);
+        console.warn('Could not pull from cloud:', e);
         setVisualStatus('error', 'Офлайн (локально)');
       } finally {
         isSyncInProgress = false;
       }
     }
 
-    // Modal Events
     if (syncBadge) {
       syncBadge.style.cursor = 'pointer';
       syncBadge.addEventListener('click', () => {
@@ -2438,10 +2385,9 @@
 
     modalForcePushBtn.addEventListener('click', async () => {
       await pushToCloud(true);
-      showToast('Данные отправлены в GitHub Gist!');
+      showToast('Данные отправлены в облако!');
     });
 
-    // Backup File Handlers
     exportBackupFileBtn.addEventListener('click', () => {
       const payload = collectAppData();
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -2490,7 +2436,6 @@
       reader.readAsText(file);
     });
 
-    // Hook into existing save handlers
     const originalSaveDiary = saveDiaryState;
     saveDiaryState = function() {
       originalSaveDiary();
@@ -2509,7 +2454,6 @@
       pushToCloud(true);
     };
 
-    // Auto pull on page load & tab focus
     window.addEventListener('load', () => {
       setTimeout(() => pullFromCloud(false), 200);
     });
@@ -2524,14 +2468,11 @@
       }
     });
 
-    // Periodic background sync every 20s
     setInterval(() => {
       if (document.visibilityState === 'visible' && !isSyncInProgress) {
         pullFromCloud(false);
       }
     }, 20000);
   </script>
-
-
 </body>
 </html>
