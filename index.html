@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ALËNA GRASS">
   <link rel="manifest" href="manifest.json">
-  <title>ALËNA GRASS | Калькулятор, Проекты и Профили</title>
+  <title>ALËNA GRASS | Калькулятор, Проекты и Дневник курса</title>
   <link rel="icon" type="image/svg+xml" href="icon-512.svg">
   <link rel="apple-touch-icon" href="icon-512.png">
   <style>
@@ -96,33 +96,33 @@
       color: var(--text-muted);
     }
 
-    /* Top Navigation Tabs */
+    /* Top Navigation Tabs - Fully Responsive */
     .top-nav {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       max-width: 900px;
       margin: 12px auto 0;
       padding: 0 12px;
       width: 100%;
       gap: 6px;
-      overflow-x: auto;
     }
 
     .tab-btn {
-      flex: 1;
-      padding: 9px 10px;
+      padding: 8px 4px;
       background: var(--card-bg);
       color: var(--text-muted);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      font-size: 0.78rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 3px;
       transition: all 0.2s ease;
       white-space: nowrap;
+      text-align: center;
     }
 
     .tab-btn.active {
@@ -202,16 +202,18 @@
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 10px 8px;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #fff;
       outline: none;
       transition: all 0.2s ease;
+      text-align: center;
     }
 
     input[type="text"], textarea {
       font-size: 0.88rem;
       font-weight: 400;
+      text-align: left;
     }
 
     input:focus, textarea:focus {
@@ -377,14 +379,6 @@
       color: #e2e8f0;
     }
 
-    .measure-details {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-      display: flex;
-      gap: 8px;
-    }
-
     .measure-res-box {
       text-align: right;
       flex-shrink: 0;
@@ -441,6 +435,11 @@
       border-radius: 12px;
       margin-bottom: 10px;
       overflow: hidden;
+    }
+
+    .block-card.completed {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(19, 46, 39, 0.35);
     }
 
     .block-header {
@@ -547,7 +546,7 @@
         <div class="logo-icon">📐</div>
         <div>
           <h1>ALËNA GRASS</h1>
-          <div class="subtitle">Калькулятор, Проекты и Модели</div>
+          <div class="subtitle">Калькулятор, Проекты и Дневник курса</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:6px;">
@@ -559,9 +558,9 @@
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
+  <!-- Responsive Navigation Tabs -->
   <div class="top-nav">
-    <button class="tab-btn active" id="tabBtnCalc">📐 Калькулятор</button>
+    <button class="tab-btn active" id="tabBtnCalc">📐 Кальк.</button>
     <button class="tab-btn" id="tabBtnProjects">📁 Проекты</button>
     <button class="tab-btn" id="tabBtnModels">👤 Профили</button>
     <button class="tab-btn" id="tabBtnDiary">📚 Дневник</button>
@@ -614,8 +613,8 @@
 
         <div id="measureCardsContainer" class="measure-list"></div>
         <div id="measureTableContainer" style="display: none; overflow-x: auto;">
-          <table class="table-view-mode" style="width:1500px; border-collapse:collapse; font-size:0.78rem;">
-            <thead><tr style="background:#152033; color:var(--text-muted); text-align:left;"><th>Код</th><th>Признак</th><th style="text-align:right;">База</th><th style="text-align:right;">ИТОГ</th></tr></thead>
+          <table class="table-view-mode" style="width:100%; border-collapse:collapse; font-size:0.78rem;">
+            <thead><tr style="background:#152033; color:var(--text-muted); text-align:left;"><th style="padding:8px;">Код</th><th style="padding:8px;">Признак</th><th style="padding:8px; text-align:right;">База</th><th style="padding:8px; text-align:right;">ИТОГ</th></tr></thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
@@ -637,7 +636,7 @@
     <div id="tabContentModels" class="tab-content">
       <div class="card">
         <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-          <span>👤 Профили моделей / клиентов</span>
+          <span>👤 Профили клиентов / моделей</span>
           <button class="btn btn-primary" id="addModelBtn" style="width:auto; padding:6px 12px;">+ Добавить профиль</button>
         </div>
         <div id="modelsList" style="display:flex; flex-direction:column; gap:10px;"></div>
@@ -664,19 +663,6 @@
 
   </div>
 
-  <!-- Cloud Sync Modal -->
-  <div id="syncSettingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; padding:16px;">
-    <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:400px; width:100%; padding:20px;">
-      <h3 style="color:#38bdf8; margin-bottom:12px;">☁️ Статус синхронизации</h3>
-      <p style="font-size:0.82rem; color:#cbd5e1; margin-bottom:14px;" id="modalSyncStatus">🟢 Синхронизировано с Firebase</p>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" id="modalForcePullBtn" style="flex:1;">📥 Загрузить</button>
-        <button class="btn" id="modalForcePushBtn" style="flex:1;">📤 Отправить</button>
-      </div>
-      <button class="btn" id="closeSyncModalBtn" style="margin-top:10px; width:100%;">Закрыть</button>
-    </div>
-  </div>
-
   <div id="toast" class="toast">Сохранено!</div>
 
   <script>
@@ -690,14 +676,42 @@
       { code: "Сб", name: "Полуобхват бедер", bases: [43.0, 45.0, 47.0, 49.0, 51.0, 53.0], dH: 0.0, dB: 2.0 },
       { code: "Шг", name: "Ширина груди", bases: [16.4, 16.4, 16.4, 16.4, 16.4, 16.4], dH: 0.2, dB: 0.4 },
       { code: "Дтс", name: "Длина спины до талии", bases: [40.2, 40.2, 40.2, 40.2, 40.2, 40.2], dH: 1.2, dB: 0.1 },
+      { code: "Дтс2", name: "Длина спины до талии от шеи", bases: [42.9, 42.9, 42.9, 42.9, 42.9, 42.9], dH: 1.1, dB: 0.2 },
       { code: "Дтп2", name: "Длина переда до талии", bases: [43.8, 43.6, 43.4, 43.2, 43.0, 42.8], dH: 1.0, dynamicB: true, calcShiftB: (og, kB, g) => (g === 0 ? kB * 0.7 : (og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8)), stepB: (og, g) => (g >= 1 && og > 108 ? 0.8 : 0.7) },
+      { code: "Вг2", name: "Высота груди", bases: [26.4, 26.6, 26.8, 27.0, 27.2, 27.4], dH: 0.4, dB: 0.9 },
+      { code: "Впрз2", name: "Высота проймы сзади", bases: [21.1, 21.2, 21.3, 21.4, 21.5, 21.6], dH: 0.2, dB: 0.3 },
+      { code: "Впк2", name: "Высота плеча косая", bases: [42.8, 43.0, 42.8, 42.8, 42.8, 43.9], dH: 0.8, dB: 0.4 },
+      { code: "Шс", name: "Ширина спины", bases: [17.2, 17.2, 17.2, 17.2, 17.2, 17.2], dH: 0.0, dB: 0.5 },
+      { code: "Шп", name: "Ширина плечевого ската", bases: [13.1, 13.1, 13.1, 13.1, 13.1, 13.1], dH: 0.3, dB: 0.1 },
+      { code: "Др.зап.", name: "Длина рукава", bases: [55.8, 55.8, 55.8, 55.8, 55.8, 55.8], dH: 2.2, dB: 0.2 },
       { code: "Оп", name: "Обхват плеча", bases: [25.8, 26.6, 27.4, 28.2, 29.0, 29.8], dH: 0.0, dB: 1.4 },
-      { code: "Дсб", name: "Длина ноги по боку", bases: [105.4, 105.6, 105.8, 106.0, 106.2, 106.4], dH: 4.5, dB: 0.1 }
+      { code: "Озап", name: "Обхват запястья", bases: [14.8, 15.3, 15.5, 15.7, 15.9, 16.1], dH: 0.0, dB: 0.3 },
+      { code: "dпзр", name: "Диаметр руки", bases: [9.5, 9.7, 9.9, 10.1, 10.3, 10.5], dH: 0.0, dB: 0.6 },
+      { code: "Дсб", name: "Длина ноги по боку", bases: [105.4, 105.6, 105.8, 106.0, 106.2, 106.4], dH: 4.5, dB: 0.1 },
+      { code: "Дсп", name: "Длина ноги спереди", bases: [103.8, 104.0, 104.2, 104.4, 104.6, 104.8], dH: 4.4, dB: 0.1 },
+      { code: "Дтк", name: "Длина до колена", bases: [58.4, 58.6, 58.8, 59.0, 59.2, 59.4], dH: 2.5, dB: 0.1 }
     ];
 
     const courseBlocksData = [
-      { id: 1, title: "Антропометрия", dates: "11.08.2026 – 25.08.2026", lessons: ["Урок 1. Введение", "Урок 2. Общие сведения об одежде", "Урок 3. Антропометрия", "Урок 4. Анализ особенностей", "Урок 5. Сравнительный анализ"] },
-      { id: 2, title: "Введение в конструирование", dates: "25.08.2026 – 01.09.2026", lessons: ["Урок 6. Введение", "7. ТЕСТ", "Урок 8. Прибавки", "9. ТЕСТ", "Урок 10. Материаловедение"] }
+      { id: 1, title: "Антропометрия", dates: "11.08.2026 – 25.08.2026", deadline: "2026-08-25", lessons: ["Урок 1. Введение", "Урок 2. Общие сведения об одежде", "Урок 3. Антропометрия и снятие размерных признаков", "Урок 4. Анализ индивидуальных особенностей", "Урок 5. Сравнительный анализ с типовыми размерными признаками"] },
+      { id: 2, title: "Введение в конструирование", dates: "25.08.2026 – 01.09.2026", deadline: "2026-09-01", lessons: ["Урок 6. Введение в конструирование", "7. ТЕСТ", "Урок 8. Прибавки и припуски в одежде", "9. ТЕСТ", "Урок 10. Введение в материаловедение", "11. ТЕСТ", "Урок 12. Адресное проектирование одежды", "13. ТЕСТ", "Урок 14. Разработка чертежей конструкции прямой юбки", "15. ТЕСТ"] },
+      { id: 3, title: "Юбки. Макет прямой юбки. Моделирование", dates: "01.09.2026 – 22.09.2026", deadline: "2026-09-22", note: "ТР — дедлайн 22.09.2026", lessons: ["Урок 16. Технология. Ручные швы", "Урок 17. Раскрой и сборка макета прямой юбки", "18. ТЕСТ", "Урок 19. Проведение примерки макета юбки", "Урок 20. Дефекты посадки юбки", "Урок 21. Моделирование. Вытачки", "Урок 22. Моделирование юбки-карандаш", "Урок 23. Технический рисунок"] },
+      { id: 4, title: "Оборудование. Технология", dates: "22.09.2026 – 06.10.2026", deadline: "2026-10-06", lessons: ["Урок 24. Оборудование", "Урок 25. Оборудование для ВТО", "Урок 26. Соединительные швы", "Урок 27. Краевые швы", "Урок 28. ВТО. Вытачки, молния, пояс", "Урок 29. Язык технологических схем", "Урок 30. Наряд-заказ"] },
+      { id: 5, title: "Пошив юбки на подкладке со шлицей", dates: "06.10.2026 – 03.11.2026", deadline: "2026-11-03", note: "ТР — дедлайн 03.11.2026", lessons: ["Урок 31. Раскрой и примерка макета", "Урок 32. Примерка изделия", "Урок 33. Подкрой подкладки", "Урок 34. Последовательность пошива", "Урок 35. Пошив юбки-карандаш. Ч.1", "Урок 36. Пошив юбки-карандаш. Ч.2", "Урок 37. Моделирование. Вытачки", "Урок 38. Складки и кокетка", "Урок 39. Баска и запах", "Урок 40. Карманы в шве", "Урок 41. Тех. рисунок юбок"] },
+      { id: 6, title: "Технология пошива. Юбки. Модельная юбка", dates: "03.11.2026 – 17.11.2026", deadline: "2026-11-17", payment: "11.11.2026 — Оплата 2 части", lessons: ["Урок 42. Сборка. Складки", "Урок 43. Талия и низ", "Урок 44. Карманы и застежка", "Урок 45. Подкрой подкладки", "Урок 46. Тех. схемы", "Урок 47. Пример пошива", "Урок 48. Практика"] },
+      { id: 7, title: "Брюки. Конструирование", dates: "17.11.2026 – 01.12.2026", deadline: "2026-12-01", lessons: ["Урок 49. Введение и мерки", "Урок 50. Построение по Кочесовой", "Урок 51. Построение по Мюллеру", "Урок 52. Примерка макета", "Урок 53. Дефекты посадки"] },
+      { id: 8, title: "Брюки. ВТО. Моделирование", dates: "01.12.2026 – 22.12.2026", deadline: "2026-12-22", note: "ТР — дедлайн 15.12.2026", lessons: ["Урок 54. ВТО брюк", "Урок 55. Материаловедение", "Урок 56. Моделирование", "Урок 57. Тех. рисунок", "Урок 58. Узлы брюк", "Урок 59. Карманы", "Урок 60. Тех. схемы", "Урок 61. Практика пошива"] },
+      { id: 9, title: "Модельные брюки", dates: "22.12.2026 – 12.01.2027", deadline: "2027-01-12", holidays: "31.12.2026 – 10.01.2027 — Новогодние выходные", lessons: ["Урок 62. Моделирование. Ч.1", "Урок 63. Моделирование. Ч.2", "Урок 64. Тех. рисунок", "Урок 65. Узлы модельных брюк", "Урок 66. Практика"] },
+      { id: 10, title: "Плечевое изделие с втачным рукавом", dates: "12.01.2027 – 02.02.2027", deadline: "2027-02-02", lessons: ["Урок 67. Введение", "Урок 68. Построение сетки", "Урок 69. Построение БК", "Урок 70. Раскрой макета", "Урок 71. Примерка макета", "Урок 72-74. Дефекты посадки"] },
+      { id: 11, title: "Моделирование плечевого изделия", dates: "02.02.2027 – 16.03.2027", deadline: "2027-03-16", payment: "11.02.2027 — Оплата 3 части", lessons: ["Урок 75-76. Основы моделирования", "Урок 77. Рукав и проймы", "Uрок 78. Застежки", "Урок 79. Воротники", "Урок 80. Дефекты воротников", "Урок 81. Подкладка", "Урок 82. Тех. рисунок", "Урок 83. Прейскурант"] },
+      { id: 12, title: "Технология. Пошив платья", dates: "16.03.2027 – 30.03.2027", deadline: "2027-03-30", lessons: ["Урок 84. Соединение с подкладкой", "Урок 85. Воротник и манжеты", "Урок 86. Тех. схемы", "Урок 87. Конфекционирование", "Урок 88. Практика пошива"] },
+      { id: 13, title: "Плечевое изделие с рубашечным рукавом", dates: "30.03.2027 – 13.04.2027", deadline: "2027-04-13", lessons: ["Урок 89. Особенности построения", "Урок 90. Дефекты посадки", "Урок 91. Моделирование", "Урок 92. Воротник на стойке", "Урок 93. Тех. рисунок"] },
+      { id: 14, title: "Пошив рубашки", dates: "13.04.2027 – 27.04.2027", deadline: "2027-04-27", lessons: ["Урок 94. Рукав", "Урок 95. Кокетки", "Урок 96. Застежки", "Урок 97. Тех. схемы", "Урок 98. Конфекционирование", "Урок 99-100. Практика и пошив"] },
+      { id: 15, title: "Реглан и цельнокроеный рукав", dates: "27.04.2027 – 11.05.2027", deadline: "2027-05-11", payment: "до 11.05.2027 — Оплата 4 части", lessons: ["Урок 101. Построение реглана", "Урок 102. Технология реглана", "Урок 103-104. Примерка и дефекты", "Урок 105-106. Моделирование реглана", "Урок 107. Цельнокроеный рукав", "Урок 108-110. Моделирование и пошив"] },
+      { id: 16, title: "Модельное платье или блузка", dates: "11.05.2027 – 01.06.2027", deadline: "2027-06-01", lessons: ["Урок 111. Фантазийное моделирование", "Урок 112. Тех. рисунок", "Урок 113-114. Обработка узлов", "Урок 115-122. Практика и примеры пошива"] },
+      { id: 17, title: "Жилет", dates: "01.06.2027 – 15.06.2027", deadline: "2027-06-15", lessons: ["Урок 123. Делопроизводство", "Урок 124. Построение БК и примерка", "Урок 125. Тех. рисунок", "Урок 126. Пошив жилета"] },
+      { id: 18, title: "Жакет", dates: "15.06.2027 – 20.07.2027", deadline: "2027-07-20", lessons: ["Урок 127. Прибавки и расчет", "Урок 128. Построение БК", "Урок 129. Моделирование", "Урок 130-132. Примерка и дефекты", "Урок 133-141. Тех. рисунок, подкладка и пошив жакета"] },
+      { id: 19, title: "Аттестационное изделие", dates: "20.07.2027 – 24.08.2027", deadline: "2027-08-24", lessons: ["Урок 142. Аттестация и защита", "Урок 143. Тех. рисунок", "Урок 144. Ремонт и восстановление"] }
     ];
 
     // Tab Navigation
@@ -808,7 +822,7 @@
               <div class="photo-upload-container">
                 <input type="file" accept="image/*" onchange="uploadPhoto(event, ${pIdx}, ${aIdx})" style="font-size:0.7rem; color:var(--text-muted);">
                 <div class="photo-preview-grid">
-                  ${(att.photos || []).map((img, i) => `<img src="${img}" class="photo-thumb" onclick="window.open('${img}')">`).join('')}
+                  ${(att.photos || []).map((img) => `<img src="${img}" class="photo-thumb" onclick="window.open('${img}')">`).join('')}
                 </div>
               </div>
             </div>
@@ -818,11 +832,11 @@
         pCard.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <input type="text" value="${proj.name}" oninput="updateProjectName(${pIdx}, this.value)" style="font-weight:700; font-size:0.95rem; background:transparent; border:none; border-bottom:1px solid #334155; color:#fff; width:70%;">
-            <button class="btn" onclick="deleteProject(${pIdx})" style="color:#f87171; padding:4px 8px; font-size:0.7rem; width:auto;">Удалить проект</button>
+            <button class="btn" onclick="deleteProject(${pIdx})" style="color:#f87171; padding:4px 8px; font-size:0.7rem; width:auto;">Удалить</button>
           </div>
-          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Попыток моделирования: ${proj.attempts.length}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Попыток: ${proj.attempts.length}</div>
           ${attemptsHtml}
-          <button class="btn btn-primary" onclick="addAttempt(${pIdx})" style="margin-top:8px; font-size:0.75rem; padding:6px;">+ Добавить попытку моделирования</button>
+          <button class="btn btn-primary" onclick="addAttempt(${pIdx})" style="margin-top:8px; font-size:0.75rem; padding:6px;">+ Добавить попытку</button>
         `;
         container.appendChild(pCard);
       });
@@ -830,7 +844,7 @@
     }
 
     window.addProject = function() {
-      projectsState.push({ name: "Новый проект (изделие)", attempts: [{ text: "", photos: [] }] });
+      projectsState.push({ name: "Новый проект", attempts: [{ text: "", photos: [] }] });
       renderProjects();
     };
     window.deleteProject = function(pIdx) { projectsState.splice(pIdx, 1); renderProjects(); };
@@ -868,8 +882,8 @@
         card.style.cssText = 'background:var(--row-alt); border:1px solid var(--card-border); border-radius:10px; padding:12px; margin-bottom:8px;';
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <input type="text" value="${m.name}" placeholder="Имя модели / клиента" oninput="updateModelField(${mIdx}, 'name', this.value)" style="font-weight:700; background:transparent; border:none; border-bottom:1px solid #334155; color:#fff; width:45%;">
-            <input type="text" value="${m.project}" placeholder="Изделие / проект" oninput="updateModelField(${mIdx}, 'project', this.value)" style="background:transparent; border:none; border-bottom:1px solid #334155; color:var(--accent); width:40%; font-size:0.8rem;">
+            <input type="text" value="${m.name}" placeholder="Имя" oninput="updateModelField(${mIdx}, 'name', this.value)" style="font-weight:700; background:transparent; border:none; border-bottom:1px solid #334155; color:#fff; width:45%;">
+            <input type="text" value="${m.project}" placeholder="Изделие" oninput="updateModelField(${mIdx}, 'project', this.value)" style="background:transparent; border:none; border-bottom:1px solid #334155; color:var(--accent); width:40%; font-size:0.8rem;">
             <span style="cursor:pointer; color:#f87171; font-size:0.75rem;" onclick="deleteModel(${mIdx})">✕</span>
           </div>
           <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Мерки: Рост ${m.metrics.h}, ОГ ${m.metrics.og}, ОБ ${m.metrics.ob}</div>
@@ -877,7 +891,7 @@
           <div class="photo-upload-container">
             <input type="file" accept="image/*" onchange="uploadModelPhoto(event, ${mIdx})" style="font-size:0.7rem; color:var(--text-muted);">
             <div class="photo-preview-grid">
-              ${(m.photos || []).map((img, i) => `<img src="${img}" class="photo-thumb" onclick="window.open('${img}')">`).join('')}
+              ${(m.photos || []).map((img) => `<img src="${img}" class="photo-thumb" onclick="window.open('${img}')">`).join('')}
             </div>
           </div>
         `;
@@ -912,13 +926,23 @@
       container.innerHTML = '';
       const lessonsState = JSON.parse(localStorage.getItem('lessons_state_v1') || '{}');
       
+      let totalCount = 0, completedCount = 0;
+
       courseBlocksData.forEach(block => {
+        const totalInBlock = block.lessons.length;
+        let doneInBlock = 0;
+        block.lessons.forEach((_, idx) => { if (lessonsState[`b${block.id}_l${idx}`]) doneInBlock++; });
+
+        totalCount += totalInBlock;
+        completedCount += doneInBlock;
+
+        const isBlockCompleted = (doneInBlock === totalInBlock && totalInBlock > 0);
         const bCard = document.createElement('div');
-        bCard.className = 'block-card';
+        bCard.className = `block-card ${isBlockCompleted ? 'completed' : ''}`;
         bCard.innerHTML = `
-          <div class="block-header">
+          <div class="block-header" onclick="this.parentElement.classList.toggle('collapsed')">
             <div class="block-title-text">БЛОК ${block.id}. ${block.title}</div>
-            <div style="font-size:0.7rem; color:var(--text-muted);">${block.dates}</div>
+            <div style="font-size:0.7rem; color:var(--text-muted);">${doneInBlock}/${totalInBlock}</div>
           </div>
           <div class="block-body">
             <div class="lessons-list">
@@ -932,6 +956,12 @@
         `;
         container.appendChild(bCard);
       });
+
+      const overallPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+      document.getElementById('overallProgressBar').style.width = `${overallPercent}%`;
+      document.getElementById('overallPercentText').textContent = `${overallPercent}%`;
+      document.getElementById('overallCountText').textContent = `${completedCount} / ${totalCount} уроков`;
+      document.getElementById('navProgressBadge').textContent = `${overallPercent}%`;
     }
 
     window.toggleLesson = function(k) {
@@ -1001,6 +1031,20 @@
 
     [heightInput, bustInput, hipsInput].forEach(i => i.addEventListener('input', calculate));
     searchInput.addEventListener('input', calculate);
+
+    document.getElementById('viewCardsBtn').addEventListener('click', () => {
+      document.getElementById('viewCardsBtn').classList.add('active');
+      document.getElementById('viewTableBtn').classList.remove('active');
+      document.getElementById('measureCardsContainer').style.display = 'flex';
+      document.getElementById('measureTableContainer').style.display = 'none';
+    });
+
+    document.getElementById('viewTableBtn').addEventListener('click', () => {
+      document.getElementById('viewTableBtn').classList.add('active');
+      document.getElementById('viewCardsBtn').classList.remove('active');
+      document.getElementById('measureCardsContainer').style.display = 'none';
+      document.getElementById('measureTableContainer').style.display = 'block';
+    });
 
     // Init
     if (localStorage.getItem('grass_calc_h')) heightInput.value = localStorage.getItem('grass_calc_h');
