@@ -2,168 +2,2477 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ALËNA GRASS">
   <link rel="manifest" href="manifest.json">
-  <title>CoutureCAD Pro</title>
+  <title>ALËNA GRASS | Калькулятор и Дневник курса</title>
+  <link rel="icon" type="image/svg+xml" href="icon-512.svg">
+  <link rel="apple-touch-icon" href="icon-512.png">
   <style>
     :root {
-      --primary: #6366f1;
       --bg: #0f172a;
-      --surface: #1e293b;
-      --text-main: #f8fafc;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: #334155;
+      --input-bg: #090d16;
+      --row-hover: #243247;
+      --row-alt: #172133;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #a855f7;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    body { background-color: var(--bg); color: var(--text-main); padding: 16px; padding-bottom: 80px; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 40px;
+    }
 
-    .app-container { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
 
-    header { text-align: center; margin-bottom: 8px; }
-    header h1 { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #a5b4fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+    }
 
-    .input-box { display: flex; flex-direction: column; gap: 4px; }
-    .input-box label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .input-box input { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none; }
-    .input-box input:focus { border-color: var(--primary); }
+    h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
 
-    .btn-save { background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 10px; width: 100%;}
-    .btn-save:hover { background: #4f46e5; }
+    .subtitle {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
 
-    .measure-row { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 8px; }
-    .measure-code { font-weight: 800; color: #ec4899; min-width: 40px; font-size: 0.85rem; }
-    .measure-name { font-size: 0.85rem; color: #e2e8f0; flex: 1; margin: 0 10px; }
-    .measure-value { font-size: 1rem; font-weight: 700; color: #38bdf8; }
+    /* Top Navigation Tabs */
+    .top-nav {
+      display: flex;
+      max-width: 900px;
+      margin: 12px auto 0;
+      padding: 0 12px;
+      width: 100%;
+      gap: 8px;
+    }
 
-    #saved-clients { margin-top: 10px; }
-    .client-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
-    .client-card strong { color: #a5b4fc; }
-    .client-card small { color: var(--text-muted); font-size: 0.75rem; }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 12px auto;
+      padding: 0 12px;
+      width: 100%;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Input Grids */
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      white-space: nowrap;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 8px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+    }
+
+    .params-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--card-border);
+    }
+
+    .param-box {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+    }
+
+    .param-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+
+    .param-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .param-val.accent {
+      color: var(--accent);
+    }
+
+    .formula-info {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-top: 10px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+    }
+
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    .actions-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .search-input {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 0.84rem;
+      outline: none;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    button.btn {
+      background: var(--card-bg);
+      color: #fff;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    @media (min-width: 640px) {
+      .actions-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .search-input {
+        width: auto;
+        flex: 1;
+      }
+      .btn-group {
+        width: auto;
+        flex-wrap: nowrap;
+      }
+      button.btn {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+      }
+    }
+
+    button.btn:active {
+      transform: scale(0.97);
+    }
+
+    button.btn-primary {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+
+    /* Measure List Rows */
+    .measure-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .measure-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--row-alt);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      transition: background 0.15s ease;
+    }
+
+    .measure-row:nth-child(even) {
+      background: rgba(30, 41, 59, 0.7);
+    }
+
+    .measure-row:hover {
+      background: var(--row-hover);
+    }
+
+    .measure-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+      padding-right: 8px;
+    }
+
+    .measure-code-badge {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 4px 6px;
+      min-width: 52px;
+      text-align: center;
+      flex-shrink: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .measure-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .measure-name {
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .measure-details {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .measure-details span {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .measure-res-box {
+      text-align: right;
+      flex-shrink: 0;
+      padding-left: 6px;
+    }
+
+    .measure-res-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .measure-res-unit {
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-left: 2px;
+    }
+
+    .view-toggle {
+      display: inline-flex;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 2px;
+      font-size: 0.72rem;
+    }
+
+    .view-toggle button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .view-toggle button.active {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .table-view-mode {
+      display: none;
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .table-view-mode th {
+      background: #152033;
+      padding: 8px 6px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .table-view-mode td {
+      padding: 8px 6px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      color: #cbd5e1;
+    }
+
+    /* === TRACKER / DIARY STYLES === */
+    .overall-progress-box {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .overall-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #090d16;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #10b981);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .info-badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .info-badge-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-badge-card.payment {
+      border-left: 3px solid var(--warning);
+    }
+
+    .info-badge-card.holiday {
+      border-left: 3px solid var(--purple);
+    }
+
+    .block-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .block-card.completed {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(19, 46, 39, 0.35);
+    }
+
+    .block-header {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      gap: 10px;
+    }
+
+    .block-header:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .block-title-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .block-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--success);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .block-title-text {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #f8fafc;
+      line-height: 1.3;
+    }
+
+    .block-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .block-status-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .deadline-badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .deadline-badge.urgent {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .deadline-badge.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .deadline-badge.normal {
+      background: rgba(56, 189, 248, 0.15);
+      color: #bae6fd;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .deadline-badge.done {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .chevron-icon {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .block-card.collapsed .chevron-icon {
+      transform: rotate(-90deg);
+    }
+
+    .block-body {
+      padding: 0 14px 12px;
+      border-top: 1px solid rgba(51, 65, 85, 0.4);
+    }
+
+    .block-card.collapsed .block-body {
+      display: none;
+    }
+
+    .block-note-banner {
+      font-size: 0.74rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin: 8px 0 10px;
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 3px solid var(--accent);
+      color: #cbd5e1;
+    }
+
+    .lessons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--row-alt);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lesson-item:hover {
+      background: var(--row-hover);
+    }
+
+    .lesson-item.done {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .lesson-checkbox {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--success);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .lesson-title {
+      font-size: 0.82rem;
+      color: #f1f5f9;
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .lesson-item.done .lesson-title {
+      text-decoration: line-through;
+      color: #64748b;
+    }
+
+    .test-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--purple);
+      background: rgba(168, 85, 247, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      flex-shrink: 0;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--success);
+      color: #042f2e;
+      padding: 9px 18px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      transition: transform 0.25s ease;
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .pwa-banner {
+      display: none;
+      background: linear-gradient(90deg, #1e293b, #0c4a6e);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pwa-banner.show {
+      display: flex;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        margin: 16px auto;
+      }
+      .card {
+        padding: 20px;
+      }
+      .grid-inputs {
+        gap: 16px;
+      }
+      input[type="number"] {
+        padding: 12px 14px;
+        font-size: 1.25rem;
+      }
+      .measure-name {
+        font-size: 0.92rem;
+      }
+      .measure-res-val {
+        font-size: 1.25rem;
+      }
+    }
   </style>
 </head>
 <body>
 
-<div class="app-container">
   <header>
-    <h1>CoutureCAD Pro</h1>
+    <div class="header-content">
+      <div class="logo-area">
+        <div class="logo-icon">📐</div>
+        <div>
+          <h1>ALËNA GRASS</h1>
+          <div class="subtitle">Индивидуальный калькулятор и дневник курса</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <div id="syncBadge" style="background:rgba(15,23,42,0.6); border:1px solid #334155; color:#38bdf8; font-size:0.72rem; padding:4px 10px; border-radius:8px; display:flex; align-items:center; gap:6px;">
+          <span id="syncDot" style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 8px #10b981;"></span>
+          <span id="syncStatusLabel" style="font-weight:600;">Авто-синхр.</span>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <!-- 1. Профиль клиента -->
-  <section class="card">
-    <div class="input-box">
-      <label>Имя клиента</label>
-      <input type="text" placeholder="Анна Иванова" id="client-name">
+  <!-- Navigation Switcher -->
+  <div class="top-nav">
+    <button class="tab-btn active" id="tabBtnCalc">📐 Калькулятор</button>
+    <button class="tab-btn" id="tabBtnDiary">📚 Дневник курса <span id="navProgressBadge" style="font-size:0.7rem; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:10px;">0%</span></button>
+  </div>
+
+  <div class="container">
+    
+    <!-- Install PWA Banner -->
+    <div id="pwaBanner" class="pwa-banner">
+      <div>
+        <div style="font-weight: 600; font-size: 0.85rem;">📱 Установить на экран</div>
+        <div style="font-size: 0.7rem; color: #cbd5e1;">Работает автономно без рамок браузера</div>
+      </div>
+      <button class="btn btn-primary" id="installBtn">Установить</button>
     </div>
-  </section>
 
-  <!-- 2. Параметры фигуры (Калькулятор) -->
-  <section class="card">
-    <div class="grid-3">
-      <div class="input-box">
-        <label>Рост (см)</label>
-        <input type="number" id="height" value="170" step="1">
+    <!-- ==================== TAB 1: CALCULATOR ==================== -->
+    <div id="tabContentCalc" class="tab-content active">
+      
+      <!-- Inputs Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>1. Параметры (см)</span>
+        </div>
+        <div class="grid-inputs">
+          
+          <div class="input-group">
+            <label for="heightInput">Рост (Р)</label>
+            <div class="input-wrapper">
+              <input type="number" id="heightInput" value="163" step="1" min="100" max="230">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="bustInput">Грудь (ОГ)</label>
+            <div class="input-wrapper">
+              <input type="number" id="bustInput" value="84" step="1" min="60" max="180">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="hipsInput">Бедра (ОБ)</label>
+            <div class="input-wrapper">
+              <input type="number" id="hipsInput" value="94" step="1" min="60" max="200">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Calculated shifts -->
+        <div class="params-summary">
+          <div class="param-box">
+            <div class="param-label">k_рост</div>
+            <div class="param-val" id="kHeightVal">-0.17</div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">k_разм</div>
+            <div class="param-val" id="kSizeVal">-1.00</div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">Полнотная группа</div>
+            <div class="param-val accent" id="fullnessGroupVal">3-я группа</div>
+          </div>
+        </div>
+
+        <div class="formula-info">
+          <strong>Формула Grasser Final v3.1:</strong><br>
+          Полнота = ((ОБ - ОГ) + 2) / 4 → определяет динамическую базу (0–5 группа).<br>
+          Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
+          <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом полноты и порога ОГ &gt; 108 см.</em>
+        </div>
       </div>
-      <div class="input-box">
-        <label>Обхват груди (см)</label>
-        <input type="number" id="chest" value="80" step="1">
+
+      
+      
+
+      <!-- Results Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>2. Результаты (23 мерки)</span>
+          <div class="view-toggle">
+            <button id="viewCardsBtn" class="active">Список</button>
+            <button id="viewTableBtn">Таблица</button>
+          </div>
+        </div>
+        
+        <div class="actions-bar">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск мерки или кода...">
+          <div class="btn-group">
+            <button class="btn" id="copyBtn">📋 Копия</button>
+            <button class="btn" id="resetBtn">↺ Сброс</button>
+          </div>
+        </div>
+
+        <!-- Mobile-Optimized List -->
+        <div id="measureCardsContainer" class="measure-list"></div>
+
+        <!-- Table View -->
+        <div id="measureTableContainer" style="display: none; overflow-x: auto;">
+          <table class="table-view-mode" style="display: table;">
+            <thead>
+              <tr>
+                <th>Код</th>
+                <th>Признак</th>
+                <th style="text-align: right;">База</th>
+                <th style="text-align: right;">ΔР</th>
+                <th style="text-align: right;">ΔОГ</th>
+                <th style="text-align: right; color: var(--accent);">ИТОГ</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
       </div>
-      <div class="input-box">
-        <label>Обхват бедер (см)</label>
-        <input type="number" id="hips" value="90" step="1">
+
+      <!-- Saved Calculations & History Card (Moved below results) -->
+      <div class="card" id="savedCalcsCard">
+        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <span>📂 Сохраненные расчеты <span id="savedCountBadge" style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:var(--accent); padding:2px 8px; border-radius:10px;">0</span></span>
+          <button class="btn btn-primary" id="openSaveModalBtn" style="padding:6px 12px; font-size:0.78rem; flex:0 0 auto; width:auto;">💾 Сохранить расчет</button>
+        </div>
+        
+        <div id="savedCalcsList" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ==================== TAB 2: COURSE DIARY / TRACKER ==================== -->
+    <div id="tabContentDiary" class="tab-content">
+      
+      <!-- Overall Progress Card -->
+      <div class="overall-progress-box">
+        <div class="overall-header">
+          <div>
+            <div style="font-weight: 800; font-size: 1rem; color: #fff;">ПРОГРЕСС КУРСА</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Курс «Закройщик-портной» • 19 блоков, 144 урока</div>
+          </div>
+          <div style="text-align: right;">
+            <div id="overallPercentText" style="font-size: 1.25rem; font-weight: 800; color: var(--accent);">0%</div>
+            <div id="overallCountText" style="font-size: 0.72rem; color: var(--text-muted);">0 / 144 уроков</div>
+          </div>
+        </div>
+
+        <div class="progress-bar-bg">
+          <div id="overallProgressBar" class="progress-bar-fill"></div>
+        </div>
+
+        <!-- Important Reminders Badges -->
+        <div class="info-badges-grid">
+          <div class="info-badge-card payment">
+            <span style="font-size:1.1rem;">💳</span>
+            <div>
+              <strong style="color:#fbbf24;">График оплат:</strong><br>
+              2 часть: 11.11.26 • 3 часть: 11.02.27 • 4 часть: до 11.05.27
+            </div>
+          </div>
+          <div class="info-badge-card holiday">
+            <span style="font-size:1.1rem;">🌴</span>
+            <div>
+              <strong style="color:#c084fc;">Каникулы и отдых:</strong><br>
+              31.12–10.01 (НГ) • 02.02–02.03 (Каникулы) • 08.03, 03.05, 10.05, 14.06
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diary Actions Bar -->
+      <div class="actions-bar">
+        <input type="text" id="searchDiaryInput" class="search-input" placeholder="🔍 Поиск урока, темы или блока...">
+        <div class="btn-group">
+          <button class="btn" id="collapseAllBtn">Свернуть всё</button>
+          <button class="btn" id="expandAllBtn">Развернуть</button>
+          <button class="btn" id="resetDiaryBtn">↺ Сброс</button>
+        </div>
+      </div>
+
+      <!-- Blocks Container -->
+      <div id="courseBlocksContainer">
+        <!-- Rendered via JS -->
+      </div>
+
+    </div>
+
+  </div>
+
+  
+    
+    <!-- Save Calculation Modal -->
+    <div id="saveCalcModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:16px;">
+      <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:420px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">💾 Сохранить расчет</h3>
+          <button id="closeSaveModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
+
+        <p style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px;">
+          Введите название для сохранения текущих параметров (<span id="savePreviewParams" style="color:var(--accent); font-weight:600;">163-84-94</span>):
+        </p>
+
+        <div style="margin-bottom:14px;">
+          <label style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px; display:block;">Название расчета / клиента:</label>
+          <input type="text" id="calcNameInput" placeholder="например: Платье для Анны, Базовая выкройка..." style="width:100%; background:#090d16; border:1px solid #334155; border-radius:8px; padding:10px 12px; color:#fff; font-size:0.92rem; outline:none;">
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" id="confirmSaveCalcBtn" style="flex:1; justify-content:center; padding:10px;">Сохранить</button>
+          <button class="btn" id="cancelSaveCalcBtn" style="justify-content:center; padding:10px;">Отмена</button>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- Блок сохранения -->
-  <button class="btn-save" onclick="saveClient()">💾 Сохранить клиента</button>
+  
+    <!-- Cloud Sync Settings Modal -->
+    <div id="syncSettingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; padding:16px;">
+      <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:440px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">☁️ Статус синхронизации</h3>
+          <button id="closeSyncSettingsBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
 
-  <!-- 3. Расчет мерок -->
-  <section class="card">
-    <div id="measure-list"></div>
-  </section>
+        <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:8px; border:1px solid #334155; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:4px;">
+            <span style="color:#94a3b8;">Состояние:</span>
+            <span id="modalSyncStatus" style="font-weight:700; color:#10b981;">🟢 Синхронизировано</span>
+          </div>
+          <div style="font-size:0.72rem; color:#64748b;" id="modalLastSyncTime">Последняя проверка: только что</div>
+        </div>
 
-  <!-- Список сохраненных -->
-  <div id="saved-clients"></div>
-</div>
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <button class="btn btn-primary" id="modalForcePullBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📥 Загрузить из облака</button>
+          <button class="btn" id="modalForcePushBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📤 Отправить в облако</button>
+        </div>
 
-<script>
-  // Данные мерок (5 для MVP)
-  const measurements = [
-    { code: "P", name: "Рост", base: 164, dp: 6, dog: 6 },
-    { code: "Сш", name: "П/о шеи", base: 17.4, dp: 0, dog: 0.4 },
-    { code: "Сг1", name: "П/о груди 1", base: 42.6, dp: 0.2, dog: 1.6 },
-    { code: "Ст", name: "П/о талии", base: 34.4, dp: -0.1, dog: 2 },
-    { code: "Сб", name: "П/о бедер с жив.", base: 49, dp: 0, dog: 2 }
-  ];
+        <div style="border-top:1px dashed #334155; padding-top:12px;">
+          <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px;">Резервная копия в файл:</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn" id="exportBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📥 Бэкап</button>
+            <button class="btn" id="importBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📤 Восстановить</button>
+            <input type="file" id="modalBackupFileInput" accept=".json" style="display:none;">
+          </div>
+        </div>
+      </div>
+    </div>
 
-  const heightInput = document.getElementById('height');
-  const chestInput = document.getElementById('chest');
-  const listContainer = document.getElementById('measure-list');
+  <div id="toast" class="toast">Сохранено!</div>
 
-  // Функция расчета
-  function render() {
-    const H = parseFloat(heightInput.value) || 164;
-    const Og = parseFloat(chestInput.value) || 88;
-    const k_rost = (H - 164) / 6;
-    const k_razm = (Og - 88) / 4;
+  <script>
+    // ==========================================
+    // 1. DATA DEFINITIONS
+    // ==========================================
+    const measurementsData = [
+      { code: "P", name: "Рост", bases: [164, 164, 164, 164, 164, 164], dH: 6.0, dB: 6.0 },
+      { code: "Сш", name: "Полуобхват шеи", bases: [17.4, 17.4, 17.4, 17.4, 17.4, 17.4], dH: 0.0, dB: 0.4 },
+      { code: "Сг1", name: "Полуобхват груди первый", bases: [42.0, 42.2, 42.4, 42.6, 42.8, 43.0], dH: 0.2, dB: 1.6 },
+      { code: "Сг2", name: "Полуобхват груди второй", bases: [45.7, 45.9, 46.1, 46.3, 46.5, 46.7], dH: 0.0, dB: 2.0 },
+      { code: "Сг3", name: "Полуобхват груди третий", bases: [44.0, 44.0, 44.0, 44.0, 44.0, 44.0], dH: 0.0, dB: 2.0 },
+      { 
+        code: "Ст", 
+        name: "Полуобхват талии", 
+        bases: [32.6, 33.2, 33.8, 34.4, 35.0, 35.6], 
+        dH: -0.1, 
+        dynamicB: true, 
+        calcShiftB: (og, kB, groupIndex) => (og <= 108 ? kB * 2.0 : 10.0 + (kB - 5.0) * 2.5), 
+        stepB: (og, groupIndex) => (og > 108 ? 2.5 : 2.0) 
+      },
+      { code: "Сб", name: "Полуобхват бедер с учетом выступа живота", bases: [43.0, 45.0, 47.0, 49.0, 51.0, 53.0], dH: 0.0, dB: 2.0 },
+      { code: "Шг", name: "Ширина груди", bases: [16.4, 16.4, 16.4, 16.4, 16.4, 16.4], dH: 0.2, dB: 0.4 },
+      { code: "Дтс", name: "Длина спины до талии от высшей точки шва", bases: [40.2, 40.2, 40.2, 40.2, 40.2, 40.2], dH: 1.2, dB: 0.1 },
+      { code: "Дтс2", name: "Длина спины до талии от точки основания шеи", bases: [42.9, 42.9, 42.9, 42.9, 42.9, 42.9], dH: 1.1, dB: 0.2 },
+      { 
+        code: "Дтп2", 
+        name: "Длина переда до талии от точки основания шеи", 
+        bases: [43.8, 43.6, 43.4, 43.2, 43.0, 42.8], 
+        dH: 1.0, 
+        dynamicB: true, 
+        calcShiftB: (og, kB, groupIndex) => {
+          if (groupIndex === 0) {
+            return kB * 0.7;
+          } else {
+            return og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8;
+          }
+        }, 
+        stepB: (og, groupIndex) => (groupIndex >= 1 && og > 108 ? 0.8 : 0.7) 
+      },
+      { code: "Вг2", name: "Высота груди от точки основания шеи", bases: [26.4, 26.6, 26.8, 27.0, 27.2, 27.4], dH: 0.4, dB: 0.9 },
+      { code: "Впрз2", name: "Высота проймы сзади от точки основания шеи", bases: [21.1, 21.2, 21.3, 21.4, 21.5, 21.6], dH: 0.2, dB: 0.3 },
+      { code: "Впк2", name: "Высота плеча косая от точки основания шеи", bases: [42.8, 43.0, 42.8, 42.8, 42.8, 43.9], dH: 0.8, dB: 0.4 },
+      { code: "Шс", name: "Ширина спины", bases: [17.2, 17.2, 17.2, 17.2, 17.2, 17.2], dH: 0.0, dB: 0.5 },
+      { code: "Шп", name: "Ширина плечевого ската", bases: [13.1, 13.1, 13.1, 13.1, 13.1, 13.1], dH: 0.3, dB: 0.1 },
+      { code: "Др.зап.", name: "Длина рукава до сочленения кисти с предплечьем", bases: [55.8, 55.8, 55.8, 55.8, 55.8, 55.8], dH: 2.2, dB: 0.2 },
+      { code: "Оп", name: "Обхват плеча", bases: [25.8, 26.6, 27.4, 28.2, 29.0, 29.8], dH: 0.0, dB: 1.4 },
+      { code: "Озап", name: "Обхват запястья", bases: [14.8, 15.3, 15.5, 15.7, 15.9, 16.1], dH: 0.0, dB: 0.3 },
+      { code: "dпзр", name: "Переднезадний диаметр руки", bases: [9.5, 9.7, 9.9, 10.1, 10.3, 10.5], dH: 0.0, dB: 0.6 },
+      { code: "Дсб", name: "Длина ноги по боковой поверхности от талии", bases: [105.4, 105.6, 105.8, 106.0, 106.2, 106.4], dH: 4.5, dB: 0.1 },
+      { code: "Дсп", name: "Длина ноги по передней поверхности от талии", bases: [103.8, 104.0, 104.2, 104.4, 104.6, 104.8], dH: 4.4, dB: 0.1 },
+      { code: "Дтк", name: "Длина от линии талии до коленной точки", bases: [58.4, 58.6, 58.8, 59.0, 59.2, 59.4], dH: 2.5, dB: 0.1 }
+    ];
 
-    listContainer.innerHTML = '';
-    measurements.forEach(item => {
-      const calculated = item.base + (item.dp * k_rost) + (item.dog * k_razm);
-      const row = document.createElement('div');
-      row.className = 'measure-row';
-      row.innerHTML = `
-        <span class="measure-code">${item.code}</span>
-        <span class="measure-name">${item.name}</span>
-        <span class="measure-value">${calculated.toFixed(1)}</span>
-      `;
-      listContainer.appendChild(row);
+    const courseBlocksData = [
+  {
+    "id": 1,
+    "title": "Антропометрия",
+    "duration": "2 недели",
+    "dates": "11.08.2026 – 25.08.2026",
+    "deadline": "2026-08-25",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 1. Введение",
+      "Урок 2. Общие сведения об одежде",
+      "Урок 3. Антропометрия и снятие размерных признаков",
+      "Урок 4. Анализ индивидуальных особенностей",
+      "Урок 5. Сравнительный анализ с типовыми размерными признаками"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Введение в конструирование",
+    "duration": "1 неделя",
+    "dates": "25.08.2026 – 01.09.2026",
+    "deadline": "2026-09-01",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 6. Введение в конструирование",
+      "7. ТЕСТ",
+      "Урок 8. Прибавки и припуски в одежде",
+      "9. ТЕСТ",
+      "Урок 10. Введение в материаловедение",
+      "11. ТЕСТ",
+      "Урок 12. Адресное проектирование одежды",
+      "13. ТЕСТ",
+      "Урок 14. Разработка чертежей конструкции прямой юбки",
+      "15. ТЕСТ"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Юбки. Макет прямой юбки. Моделирование. Тех. рисунок",
+    "duration": "3 недели",
+    "dates": "01.09.2026 – 22.09.2026",
+    "deadline": "2026-09-22",
+    "trDeadline": "22.09.2026",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 22.09.2026",
+    "lessons": [
+      "Урок 16. Технология. Ручные швы",
+      "Урок 17. Раскрой и сборка макета прямой юбки",
+      "18. ТЕСТ",
+      "Урок 19. Проведение примерки макета юбки. Дефекты посадки",
+      "Урок 20. Дефекты посадки юбки",
+      "Урок 21. Моделирование. Вытачки",
+      "Урок 22. Моделирование юбки-карандаш и конической юбки",
+      "Урок 23. Введение в технический рисунок. Прямая и коническая юбка"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Оборудование. Технология",
+    "duration": "2 недели",
+    "dates": "22.09.2026 – 06.10.2026",
+    "deadline": "2026-10-06",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 24. Оборудование",
+      "Урок 25. Оборудование для ВТО",
+      "Урок 26. Технология. Соединительные швы",
+      "Урок 27. Технология. Краевые, рельефные швы",
+      "Урок 28. Технология. ВТО. Вытачки, молния, пояс, шлица",
+      "Урок 29. Язык технологических схем",
+      "Урок 30. Конфекционирование. Наряд-заказ"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Пошив юбки на подкладке со шлицей. Моделирование юбок. Тех. рисунок",
+    "duration": "4 недели",
+    "dates": "06.10.2026 – 03.11.2026",
+    "deadline": "2026-11-03",
+    "trDeadline": "03.11.2026",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 03.11.2026",
+    "lessons": [
+      "Урок 31. Пошив юбки на подкладке со шлицей. Раскрой и примерка макета",
+      "Урок 32. Пошив юбки на подкладке со шлицей. Примерка изделия",
+      "Урок 33. Подкрой подкладки в юбке со шлицей",
+      "Урок 34. Технологическая последовательность пошива юбки на подкладке",
+      "Урок 35. Пошив юбки-карандаш. Часть 1",
+      "Урок 36. Пошив юбки-карандаш. Часть 2",
+      "Урок 37. Моделирование юбки. Вытачки. Сборка",
+      "Урок 38. Моделирование юбки. Складки. Подрезы. Кокетка",
+      "Урок 39. Моделирование юбки. Баска. Запах. Пояс",
+      "Урок 40. Проектирование карманов в шве",
+      "Урок 41. Технический рисунок. Модельные юбки"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Технология пошива. Юбки. Пошив макета модельной юбки",
+    "duration": "2 недели",
+    "dates": "03.11.2026 – 17.11.2026",
+    "deadline": "2026-11-17",
+    "trDeadline": null,
+    "payment": "11.11.2026 — Оплата 2 части",
+    "holidays": null,
+    "note": "💳 11.11.2026 — оплата 2 части",
+    "lessons": [
+      "Урок 42. Технология. Сборка. Складки",
+      "Урок 43. Технология. Обработка талии, низа",
+      "Урок 44. Технология. Карманы. Застежка. Разрез",
+      "Урок 45. Подкрой подкладки к юбкам",
+      "Урок 46. Технологические схемы в юбке",
+      "Урок 47. Пример пошива модельной юбки",
+      "Урок 48. Практика. Пошив модельной юбки"
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Брюки. Конструирование",
+    "duration": "2 недели",
+    "dates": "17.11.2026 – 01.12.2026",
+    "deadline": "2026-12-01",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 49. Введение в конструирование брюк. Снятие мерок",
+      "Урок 50. Построение БК брюк по методике Кочесовой",
+      "Урок 51. Построение БК брюк с учетом индивидуальных особенностей по методике Мюллер и сын",
+      "Урок 52. Раскрой и примерка макета базовой конструкции брюк",
+      "Урок 53. Дефекты посадки брюк"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Брюки. ВТО. Моделирование. Тех. рисунок. Технология классических брюк",
+    "duration": "3 недели",
+    "dates": "01.12.2026 – 22.12.2026",
+    "deadline": "2026-12-22",
+    "trDeadline": "15.12.2026",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 15.12.2026",
+    "lessons": [
+      "Урок 54. ВТО брюк",
+      "Урок 55. Брюки. Материаловедение",
+      "Урок 56. Производные детали брюк. Моделирование",
+      "Урок 57. Технический рисунок. Классические брюки",
+      "Урок 58. Технология пошива узлов брюк",
+      "Урок 59. Технология пошива узлов брюк. Карманы",
+      "Урок 60. Технологические схемы в классических брюках",
+      "Урок 61. Практика. Пошив классических брюк"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Модельные брюки. Моделирование. Тех. рисунок. Пошив макета",
+    "duration": "2 недели",
+    "dates": "22.12.2026 – 12.01.2027",
+    "deadline": "2027-01-12",
+    "trDeadline": "12.01.2027",
+    "payment": null,
+    "holidays": "31.12.2026 – 10.01.2027 — Новогодние выходные",
+    "note": "ТР — дедлайн 12.01.2027 | 🎄 31.12–10.01 выходные",
+    "lessons": [
+      "Урок 62. Моделирование брюк. Часть 1",
+      "Урок 63. Моделирование брюк. Часть 2",
+      "Урок 64. Технический рисунок. Модельные брюки",
+      "Урок 65. Технология пошива узлов модельных брюк",
+      "Урок 66. Практика. Пошив модельных брюк"
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Плечевое изделие с втачным рукавом. Конструирование. Макет",
+    "duration": "3 недели",
+    "dates": "12.01.2027 – 02.02.2027",
+    "deadline": "2027-02-02",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 67. Введение к блоку по плечевому изделию",
+      "Урок 68. Построение сетки чертежа БК плечевого изделия с втачным рукавом на индивидуальную фигуру",
+      "Урок 69. Построение БК плечевого изделия с втачным рукавом на индивидуальную фигуру",
+      "Урок 70. Раскрой и сборка макета БК плечевого изделия с втачным рукавом",
+      "Урок 71. Проведение примерки макета БК плечевого изделия с втачным рукавом",
+      "Урок 72. Дефекты посадки плечевого изделия",
+      "Урок 73. Дефекты посадки плечевого изделия",
+      "Урок 74. Дефекты посадки плечевого изделия"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Моделирование плечевого изделия. Застежки, воротники, подкладка. Тех. рисунок",
+    "duration": "2 недели (с учетом каникул)",
+    "dates": "02.02.2027 – 16.03.2027",
+    "deadline": "2027-03-16",
+    "trDeadline": "16.03.2027",
+    "payment": "11.02.2027 — Оплата 3 части",
+    "holidays": "02.02–02.03.2027 — Каникулы; 08.03.2027 — Выходной",
+    "note": "ТР дедлайн 16.03.27 | 🌴 02.02–02.03 каникулы | 💳 11.02 оплата 3 части | 08.03 выходной",
+    "lessons": [
+      "Урок 75. Основы моделирования плечевого изделия",
+      "Урок 76. Основы моделирования плечевого изделия",
+      "Урок 77. Моделирование рукава. Моделирование рукава в связке с проймой",
+      "Урок 78. Моделирование области застежки в плечевых изделиях",
+      "Урок 79. Обтачка и отложной воротник. Стояче-отложные воротники",
+      "Урок 80. Дефекты посадки отложных воротников",
+      "Урок 81. Подкрой подкладки",
+      "Урок 82. Технический рисунок. Платье с втачным рукавом",
+      "Урок 83. Прейскурант на индивидуальный пошив изделия"
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Технология. Пошив платья с втачным рукавом",
+    "duration": "2 недели",
+    "dates": "16.03.2027 – 30.03.2027",
+    "deadline": "2027-03-30",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 84. Технология пошива плечевого изделия. Соединение с подкладкой",
+      "Урок 85. Технология пошива плечевого изделия. Отложной воротник. Замкнутые манжеты",
+      "Урок 86. Технологические схемы в плечевом изделии с втачным рукавом",
+      "Урок 87. Конфекционирование. Платье с втачным рукавом",
+      "Урок 88. Практика. Пошив платья с втачным одношовным рукавом"
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Плечевое изделие с рубашечным рукавом. Конструирование. Макет. Моделирование",
+    "duration": "2 недели",
+    "dates": "30.03.2027 – 13.04.2027",
+    "deadline": "2027-04-13",
+    "trDeadline": "13.04.2027",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 13.04.2027",
+    "lessons": [
+      "Урок 89. Особенности построения изделия с рукавом рубашечного покроя",
+      "Урок 90. Дефекты посадки изделия с рубашечным рукавом",
+      "Урок 91. Моделирование изделий с рубашечным рукавом",
+      "Урок 92. Построение стояче-отложного воротника на отрезной стойке",
+      "Урок 93. Технический рисунок. Изделие с рубашечным рукавом"
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Пошив изделия с рубашечным рукавом",
+    "duration": "2 недели",
+    "dates": "13.04.2027 – 27.04.2027",
+    "deadline": "2027-04-27",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": null,
+    "lessons": [
+      "Урок 94. Технология. Втачивание и обработка рубашечного рукава",
+      "Урок 95. Технология. Обработка кокеток",
+      "Урок 96. Технология. Обработка застежек и воротника",
+      "Урок 97. Технологические схемы в изделии с рубашечным рукавом",
+      "Урок 98. Конфекционирование. Рубашка",
+      "Урок 99. Практика. Пошив изделия с рубашечным рукавом",
+      "Урок 100. Пример пошива рубашки"
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Изделие с рукавом реглан. Изделие с цельнокроеным рукавом",
+    "duration": "2 недели",
+    "dates": "27.04.2027 – 11.05.2027",
+    "deadline": "2027-05-11",
+    "trDeadline": null,
+    "payment": "до 11.05.2027 — Оплата 4 части",
+    "holidays": "03.05, 10.05.2027 — Выходные",
+    "note": "💳 Оплата 4 части до 11.05.27 | 03.05, 10.05 выходные",
+    "lessons": [
+      "Урок 101. Построение БК плечевого изделия с рукавом реглан",
+      "Урок 102. Технология обработки рукава реглан",
+      "Урок 103. Проведение примерки макета БК изделия с рукавом реглан. Дефекты",
+      "Урок 104. Дефекты изделия с рукавом реглан",
+      "Урок 105. Моделирование рукава покроя реглан",
+      "Урок 106. Дефекты посадки в рукавах покроя полуреглан, реглан-погон, реглан-кокетка и реглан нулевой",
+      "Урок 107. Построение БК плечевого изделия с цельнокроеным рукавом",
+      "Урок 108. Моделирование цельнокроеного рукава",
+      "Урок 109. Дефекты посадки цельнокроеного рукава",
+      "Урок 110. Технология обработки цельнокроеного рукава"
+    ]
+  },
+  {
+    "id": 16,
+    "title": "Модельное платье или блузка",
+    "duration": "3 недели",
+    "dates": "11.05.2027 – 01.06.2027",
+    "deadline": "2027-06-01",
+    "trDeadline": "25.05.2027",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн 25.05.2027",
+    "lessons": [
+      "Урок 111. Основные приемы фантазийного моделирования. Моделирование комбинезона",
+      "Урок 112. Технический рисунок. Модельные платья и блузки",
+      "Урок 113. Технология обработки узлов в модельных платьях и блузках",
+      "Урок 114. Технология обработки узлов в модельных платьях и блузках",
+      "Урок 115. Практика. Пошив модельного платья или блузки",
+      "Урок 116. Пример пошива платья. Выкройка №672",
+      "Урок 117. Пример пошива платья, крой по косой. Выкройка №900. Часть 1",
+      "Урок 118. Пример пошива платья, крой по косой. Выкройка №900. Часть 2",
+      "Урок 119. Пример пошива платья на подкладке. Выкройка №387",
+      "Урок 120. Пример пошива платья с пайетками. Выкройка №648",
+      "Урок 121. Пример пошива платья-комбинации из бархата. Выкройка №389",
+      "Урок 122. Пример моделирования и пошива блузки на основе базовых лекал"
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Жилет",
+    "duration": "2 недели",
+    "dates": "01.06.2027 – 15.06.2027",
+    "deadline": "2027-06-15",
+    "trDeadline": "08.06.2027",
+    "payment": null,
+    "holidays": "14.06.2027 — Выходной",
+    "note": "ТР — дедлайн 08.06.2027 | 14.06 выходной",
+    "lessons": [
+      "Урок 123. Делопроизводство",
+      "Урок 124. Построение БК жилета. Сборка на примерку. Проведение примерки",
+      "Урок 125. Технический рисунок. Жилет",
+      "Урок 126. Пошив жилета"
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Жакет",
+    "duration": "5 недель",
+    "dates": "15.06.2027 – 20.07.2027",
+    "deadline": "2027-07-20",
+    "trDeadline": "20.07.2027",
+    "payment": null,
+    "holidays": null,
+    "note": "ТР — дедлайн до 20.07.2027",
+    "lessons": [
+      "Урок 127. Выбор прибавок. Заполнение файла с исходными данными. Предварительный расчет конструкции жакета на подкладке",
+      "Урок 128. Построение БК типового жакета на подкладке",
+      "Урок 129. Моделирование разных типов классического жакета с учетом индивидуальных и модельных особенностей",
+      "Урок 130. Проектирование производных деталей жакета на подкладке. Сборка макета на примерку. Проведение примерки макета",
+      "Урок 131. Дефекты посадки в жакете и их устранение. Часть 1",
+      "Урок 132. Дефекты посадки в жакете и их устранение. Часть 2",
+      "Урок 133. Технический рисунок. Жакет",
+      "Урок 134. Раскрой, сборка на примерку и проведение примерки жакета",
+      "Урок 135. Построение деталей притачной подкладки",
+      "Урок 136. Пошив жакета",
+      "Урок 137. Пошив жакета",
+      "Урок 138. Пошив жакета после второй примерки",
+      "Урок 139. Обработка карманов",
+      "Урок 140. Дополнительный урок по ВТО",
+      "Урок 141. Проектирование других форм воротников"
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Аттестационное изделие. Ремонт и восстановление изделий",
+    "duration": "5 недель",
+    "dates": "20.07.2027 – 24.08.2027",
+    "deadline": "2027-08-24",
+    "trDeadline": null,
+    "payment": null,
+    "holidays": null,
+    "note": "13.09.2027 — завершающий день работы куратора",
+    "lessons": [
+      "Урок 142. Аттестационное изделие и защита",
+      "Урок 143. Технический рисунок. Аттестационное изделие",
+      "Урок 144. Ремонт и восстановление изделий"
+    ]
+  }
+];
+
+    // ==========================================
+    // 2. TABS SWITCHER
+    // ==========================================
+    const tabBtnCalc = document.getElementById('tabBtnCalc');
+    const tabBtnDiary = document.getElementById('tabBtnDiary');
+    const tabContentCalc = document.getElementById('tabContentCalc');
+    const tabContentDiary = document.getElementById('tabContentDiary');
+
+    tabBtnCalc.addEventListener('click', () => {
+      tabBtnCalc.classList.add('active');
+      tabBtnDiary.classList.remove('active');
+      tabContentCalc.classList.add('active');
+      tabContentDiary.classList.remove('active');
     });
-  }
 
-  [heightInput, chestInput].forEach(el => el.addEventListener('input', render));
-  render(); // Первый запуск
+    tabBtnDiary.addEventListener('click', () => {
+      tabBtnDiary.classList.add('active');
+      tabBtnCalc.classList.remove('active');
+      tabContentDiary.classList.add('active');
+      tabContentCalc.classList.remove('active');
+    });
 
-  // --- ЛОГИКА СОХРАНЕНИЯ (LocalStorage) ---
+    // ==========================================
+    // 3. CALCULATOR LOGIC
+    // ==========================================
+    const heightInput = document.getElementById('heightInput');
+    const bustInput = document.getElementById('bustInput');
+    const hipsInput = document.getElementById('hipsInput');
+    const searchInput = document.getElementById('searchInput');
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
+    const kHeightVal = document.getElementById('kHeightVal');
+    const kSizeVal = document.getElementById('kSizeVal');
+    const fullnessGroupVal = document.getElementById('fullnessGroupVal');
+    const cardsContainer = document.getElementById('measureCardsContainer');
+    const tableBody = document.getElementById('tableBody');
+    const toast = document.getElementById('toast');
 
-  function saveClient() {
-    const data = {
-        name: document.getElementById('client-name').value || "Без имени",
-        height: document.getElementById('height').value,
-        chest: document.getElementById('chest').value,
-        date: new Date().toLocaleDateString()
+    const viewCardsBtn = document.getElementById('viewCardsBtn');
+    const viewTableBtn = document.getElementById('viewTableBtn');
+    const measureCardsContainer = document.getElementById('measureCardsContainer');
+    const measureTableContainer = document.getElementById('measureTableContainer');
+
+    function calculate() {
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
+
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      
+      let fullnessGroupIndex = Math.round(fullnessExact);
+      if (fullnessGroupIndex < 0) fullnessGroupIndex = 0;
+      if (fullnessGroupIndex > 5) fullnessGroupIndex = 5;
+
+      kHeightVal.textContent = (kH >= 0 ? '+' : '') + kH.toFixed(2);
+      kSizeVal.textContent = (kB >= 0 ? '+' : '') + kB.toFixed(2);
+      fullnessGroupVal.textContent = `${fullnessGroupIndex}-я группа (${fullnessExact.toFixed(1)})`;
+
+      renderCalculatorViews(kH, kB, og, fullnessGroupIndex);
+      saveCalcState();
+    }
+
+    function renderCalculatorViews(kH, kB, og, groupIndex) {
+      const filter = searchInput.value.toLowerCase().trim();
+      cardsContainer.innerHTML = '';
+      tableBody.innerHTML = '';
+
+      measurementsData.forEach(item => {
+        if (filter && !item.code.toLowerCase().includes(filter) && !item.name.toLowerCase().includes(filter)) {
+          return;
+        }
+
+        const baseVal = item.bases[groupIndex];
+        let shiftSize = 0;
+        let deltaSizeLabel = '';
+
+        if (item.dynamicB) {
+          shiftSize = item.calcShiftB(og, kB, groupIndex);
+          const step = item.stepB(og, groupIndex);
+          deltaSizeLabel = (step > 0 ? '+' : '') + step.toFixed(1);
+        } else {
+          shiftSize = item.dB * kB;
+          deltaSizeLabel = (item.dB > 0 ? '+' : '') + item.dB.toFixed(1);
+        }
+
+        const shiftHeight = item.dH * kH;
+        const res = baseVal + shiftHeight + shiftSize;
+        const resStr = res.toFixed(2);
+
+        // Mobile List Row
+        const row = document.createElement('div');
+        row.className = 'measure-row';
+        row.innerHTML = `
+          <div class="measure-main">
+            <div class="measure-code-badge">${item.code}</div>
+            <div class="measure-info">
+              <div class="measure-name">${item.name}</div>
+              <div class="measure-details">
+                <span>База: ${baseVal.toFixed(1)}</span>
+                <span>ΔР: ${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</span>
+                <span>ΔОГ: ${deltaSizeLabel}</span>
+              </div>
+            </div>
+          </div>
+          <div class="measure-res-box">
+            <span class="measure-res-val">${resStr}</span><span class="measure-res-unit">см</span>
+          </div>
+        `;
+        cardsContainer.appendChild(row);
+
+        // Table Row
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong style="color:var(--accent);">${item.code}</strong></td>
+          <td>${item.name}</td>
+          <td style="text-align: right;">${baseVal.toFixed(1)}</td>
+          <td style="text-align: right;">${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</td>
+          <td style="text-align: right;">${deltaSizeLabel}</td>
+          <td style="text-align: right; font-weight: 700; color: #fff;">${resStr}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    viewCardsBtn.addEventListener('click', () => {
+      viewCardsBtn.classList.add('active');
+      viewTableBtn.classList.remove('active');
+      measureCardsContainer.style.display = 'flex';
+      measureTableContainer.style.display = 'none';
+    });
+
+    viewTableBtn.addEventListener('click', () => {
+      viewTableBtn.classList.add('active');
+      viewCardsBtn.classList.remove('active');
+      measureCardsContainer.style.display = 'none';
+      measureTableContainer.style.display = 'block';
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function saveCalcState() {
+      localStorage.setItem('grass_calc_h_v3_1', heightInput.value);
+      localStorage.setItem('grass_calc_og_v3_1', bustInput.value);
+      localStorage.setItem('grass_calc_ob_v3_1', hipsInput.value);
+    }
+
+    function loadCalcState() {
+      if (localStorage.getItem('grass_calc_h_v3_1')) heightInput.value = localStorage.getItem('grass_calc_h_v3_1');
+      if (localStorage.getItem('grass_calc_og_v3_1')) bustInput.value = localStorage.getItem('grass_calc_og_v3_1');
+      if (localStorage.getItem('grass_calc_ob_v3_1')) hipsInput.value = localStorage.getItem('grass_calc_ob_v3_1');
+    }
+
+    [heightInput, bustInput, hipsInput].forEach(inp => {
+      inp.addEventListener('input', calculate);
+    });
+
+    searchInput.addEventListener('input', () => {
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      let groupIndex = Math.round(fullnessExact);
+      if (groupIndex < 0) groupIndex = 0;
+      if (groupIndex > 5) groupIndex = 5;
+      renderCalculatorViews(kH, kB, og, groupIndex);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      heightInput.value = 163;
+      bustInput.value = 84;
+      hipsInput.value = 94;
+      searchInput.value = '';
+      calculate();
+      showToast('Сброшено на 163-84-94');
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      let groupIndex = Math.round(fullnessExact);
+      if (groupIndex < 0) groupIndex = 0;
+      if (groupIndex > 5) groupIndex = 5;
+
+      let text = `ALËNA GRASS РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см (Полнота: ${groupIndex}-я гр.)\n\n`;
+      measurementsData.forEach(item => {
+        const baseVal = item.bases[groupIndex];
+        const shiftSize = item.dynamicB ? item.calcShiftB(og, kB, groupIndex) : item.dB * kB;
+        const val = (baseVal + item.dH * kH + shiftSize).toFixed(2);
+        text += `${item.code} (${item.name}): ${val} см\n`;
+      });
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Все 23 мерки скопированы!');
+      }).catch(() => {
+        showToast('Ошибка копирования');
+      });
+    });
+
+    // ==========================================
+    
+    // ==========================================
+    // 3.1 SAVED CALCULATIONS ENGINE
+    // ==========================================
+    const SAVED_CALCS_STORAGE_KEY = 'alena_grass_saved_calcs_v1';
+    let savedCalcsState = [];
+
+    const savedCalcsList = document.getElementById('savedCalcsList');
+    const savedCountBadge = document.getElementById('savedCountBadge');
+    const saveCalcModal = document.getElementById('saveCalcModal');
+    const openSaveModalBtn = document.getElementById('openSaveModalBtn');
+    const closeSaveModalBtn = document.getElementById('closeSaveModalBtn');
+    const cancelSaveCalcBtn = document.getElementById('cancelSaveCalcBtn');
+    const confirmSaveCalcBtn = document.getElementById('confirmSaveCalcBtn');
+    const calcNameInput = document.getElementById('calcNameInput');
+    const savePreviewParams = document.getElementById('savePreviewParams');
+
+    function loadSavedCalcsState() {
+      try {
+        const data = localStorage.getItem(SAVED_CALCS_STORAGE_KEY);
+        if (data) {
+          savedCalcsState = JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Error loading saved calcs', e);
+      }
+    }
+
+    function saveSavedCalcsState() {
+      localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+      if (typeof pushToCloudAuto === 'function') {
+        pushToCloudAuto();
+      }
+    }
+
+    function getCalculationSnapshot() {
+      const h = parseFloat(heightInput.value) || 163;
+      const og = parseFloat(bustInput.value) || 84;
+      const ob = parseFloat(hipsInput.value) || 94;
+
+      const kH = (h - 164) / 6;
+      const kB = (og - 88) / 4;
+      const fullnessExact = ((ob - og) - (-2)) / 4;
+      let groupIndex = Math.round(fullnessExact);
+      if (groupIndex < 0) groupIndex = 0;
+      if (groupIndex > 5) groupIndex = 5;
+
+      const results = measurementsData.map(item => {
+        const baseVal = item.bases[groupIndex];
+        let shiftSize = 0;
+        if (item.dynamicB) {
+          shiftSize = item.calcShiftB(og, kB, groupIndex);
+        } else {
+          shiftSize = item.dB * kB;
+        }
+        const res = (baseVal + item.dH * kH + shiftSize).toFixed(2);
+        return { code: item.code, name: item.name, val: res };
+      });
+
+      return {
+        h, og, ob,
+        kH: (kH >= 0 ? '+' : '') + kH.toFixed(2),
+        kB: (kB >= 0 ? '+' : '') + kB.toFixed(2),
+        fullnessGroup: groupIndex,
+        fullnessExact: fullnessExact.toFixed(1),
+        results
+      };
+    }
+
+    function renderSavedCalcs() {
+      savedCalcsList.innerHTML = '';
+      savedCountBadge.textContent = savedCalcsState.length;
+
+      if (savedCalcsState.length === 0) {
+        savedCalcsList.innerHTML = `
+          <div style="text-align:center; padding:16px 10px; color:var(--text-muted); font-size:0.8rem; background:var(--row-alt); border-radius:8px; border:1px dashed var(--card-border);">
+            У вас пока нет сохраненных расчетов. Нажмите «💾 Сохранить расчет», чтобы сохранить мерки клиента.
+          </div>
+        `;
+        return;
+      }
+
+      savedCalcsState.forEach((item, index) => {
+        const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--row-alt); border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;';
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+            <div>
+              <div style="font-weight:700; font-size:0.92rem; color:#fff; word-break:break-word;">${item.name}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">🕒 ${dateStr}</div>
+            </div>
+            <div style="font-size:0.75rem; background:rgba(56,189,248,0.12); color:var(--accent); padding:2px 8px; border-radius:6px; font-weight:700; white-space:nowrap;">
+              ${item.fullnessGroup}-я гр.
+            </div>
+          </div>
+
+          <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.75rem; color:#cbd5e1;">
+            <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">Рост: <strong>${item.h}</strong> см</span>
+            <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОГ: <strong>${item.og}</strong> см</span>
+            <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОБ: <strong>${item.ob}</strong> см</span>
+          </div>
+
+          <div style="display:flex; gap:6px; margin-top:4px; justify-content:flex-end;">
+            <button class="btn btn-primary load-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">⚡ Загрузить</button>
+            <button class="btn copy-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">📋 Копия</button>
+            <button class="btn delete-calc-btn" data-index="${index}" style="padding:5px 8px; font-size:0.74rem; color:#f87171;" title="Удалить">🗑</button>
+          </div>
+        `;
+
+        savedCalcsList.innerHTML += ''; // triggers render
+        savedCalcsList.appendChild(card);
+      });
+
+      // Bind buttons
+      savedCalcsList.querySelectorAll('.load-calc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          const item = savedCalcsState[idx];
+          if (item) {
+            heightInput.value = item.h;
+            bustInput.value = item.og;
+            hipsInput.value = item.ob;
+            calculate();
+            showToast(`Расчет «${item.name}» загружен!`);
+            document.getElementById('heightInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      });
+
+      savedCalcsList.querySelectorAll('.copy-calc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          const item = savedCalcsState[idx];
+          if (item) {
+            let text = `ALËNA GRASS РАСЧЕТ: ${item.name}\nПараметры: Рост ${item.h} см, ОГ ${item.og} см, ОБ ${item.ob} см (${item.fullnessGroup}-я гр.)\n\n`;
+            if (item.results) {
+              item.results.forEach(r => {
+                text += `${r.code} (${r.name}): ${r.val} см\n`;
+              });
+            }
+            navigator.clipboard.writeText(text).then(() => {
+              showToast(`Мерки «${item.name}» скопированы!`);
+            });
+          }
+        });
+      });
+
+      savedCalcsList.querySelectorAll('.delete-calc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          const item = savedCalcsState[idx];
+          if (item && confirm(`Удалить сохраненный расчет «${item.name}»?`)) {
+            savedCalcsState.splice(idx, 1);
+            saveSavedCalcsState();
+            renderSavedCalcs();
+            showToast('Расчет удален');
+          }
+        });
+      });
+    }
+
+    // Modal Handlers
+    openSaveModalBtn.addEventListener('click', () => {
+      const h = heightInput.value || 163;
+      const og = bustInput.value || 84;
+      const ob = hipsInput.value || 94;
+      savePreviewParams.textContent = `${h}-${og}-${ob}`;
+      calcNameInput.value = '';
+      saveCalcModal.style.display = 'flex';
+      setTimeout(() => calcNameInput.focus(), 50);
+    });
+
+    closeSaveModalBtn.addEventListener('click', () => {
+      saveCalcModal.style.display = 'none';
+    });
+
+    cancelSaveCalcBtn.addEventListener('click', () => {
+      saveCalcModal.style.display = 'none';
+    });
+
+    saveCalcModal.addEventListener('click', (e) => {
+      if (e.target === saveCalcModal) saveCalcModal.style.display = 'none';
+    });
+
+    confirmSaveCalcBtn.addEventListener('click', () => {
+      const name = calcNameInput.value.trim() || `Расчет от ${new Date().toLocaleDateString('ru-RU')}`;
+      const snap = getCalculationSnapshot();
+
+      const newRecord = {
+        id: 'calc_' + Date.now(),
+        name: name,
+        createdAt: new Date().toISOString(),
+        h: snap.h,
+        og: snap.og,
+        ob: snap.ob,
+        fullnessGroup: snap.fullnessGroup,
+        fullnessExact: snap.fullnessExact,
+        results: snap.results
+      };
+
+      savedCalcsState.unshift(newRecord);
+      saveSavedCalcsState();
+      renderSavedCalcs();
+
+      saveCalcModal.style.display = 'none';
+      showToast(`Расчет «${name}» успешно сохранен!`);
+    });
+
+    calcNameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        confirmSaveCalcBtn.click();
+      }
+    });
+
+    // ==========================================
+    // 4. DIARY & TRACKER LOGIC
+    // ==========================================
+    const courseBlocksContainer = document.getElementById('courseBlocksContainer');
+    const searchDiaryInput = document.getElementById('searchDiaryInput');
+    const overallProgressBar = document.getElementById('overallProgressBar');
+    const overallPercentText = document.getElementById('overallPercentText');
+    const overallCountText = document.getElementById('overallCountText');
+    const navProgressBadge = document.getElementById('navProgressBadge');
+
+    // Storage keys
+    const LESSONS_STORAGE_KEY = 'alena_grass_lessons_status_v1';
+    const COLLAPSED_STORAGE_KEY = 'alena_grass_collapsed_blocks_v1';
+
+    let lessonsState = {};
+    let collapsedState = {};
+
+    function loadDiaryState() {
+      try {
+        const savedLessons = localStorage.getItem(LESSONS_STORAGE_KEY);
+        if (savedLessons) lessonsState = JSON.parse(savedLessons);
+
+        const savedCollapsed = localStorage.getItem(COLLAPSED_STORAGE_KEY);
+        if (savedCollapsed) collapsedState = JSON.parse(savedCollapsed);
+      } catch (e) {
+        console.error('Error loading diary state', e);
+      }
+    }
+
+    function saveDiaryState() {
+      localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+      localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+    }
+
+    function calculateDeadlineBadge(deadlineStr, isBlockDone) {
+      if (isBlockDone) {
+        return { text: '✔ Завершен', class: 'done' };
+      }
+
+      if (!deadlineStr) {
+        return { text: 'В процессе', class: 'normal' };
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const targetDate = new Date(deadlineStr);
+      targetDate.setHours(0, 0, 0, 0);
+
+      const diffTime = targetDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        return { text: `⚠️ Просрочен (${Math.abs(diffDays)} дн.)`, class: 'urgent' };
+      } else if (diffDays === 0) {
+        return { text: '🔥 Дедлайн сегодня!', class: 'urgent' };
+      } else if (diffDays <= 3) {
+        return { text: `⏳ Осталось ${diffDays} дн.!`, class: 'warning' };
+      } else {
+        return { text: `⏳ ${diffDays} дн. до дедлайна`, class: 'normal' };
+      }
+    }
+
+    function renderDiary() {
+      const filter = searchDiaryInput.value.toLowerCase().trim();
+      courseBlocksContainer.innerHTML = '';
+
+      let totalLessonsCount = 0;
+      let completedLessonsCount = 0;
+
+      courseBlocksData.forEach(block => {
+        const blockLessons = block.lessons;
+        const totalInBlock = blockLessons.length;
+        let doneInBlock = 0;
+
+        blockLessons.forEach((_, idx) => {
+          const lessonKey = `b${block.id}_l${idx}`;
+          if (lessonsState[lessonKey]) {
+            doneInBlock++;
+          }
+        });
+
+        totalLessonsCount += totalInBlock;
+        completedLessonsCount += doneInBlock;
+
+        const isBlockCompleted = (doneInBlock === totalInBlock && totalInBlock > 0);
+        const percentInBlock = totalInBlock > 0 ? Math.round((doneInBlock / totalInBlock) * 100) : 0;
+
+        const blockMatches = !filter || 
+          block.title.toLowerCase().includes(filter) ||
+          (block.note && block.note.toLowerCase().includes(filter)) ||
+          blockLessons.some(l => l.toLowerCase().includes(filter));
+
+        if (!blockMatches) {
+          return;
+        }
+
+        const isCollapsed = collapsedState[block.id] !== undefined ? collapsedState[block.id] : (isBlockCompleted);
+
+        const blockCard = document.createElement('div');
+        blockCard.className = `block-card ${isBlockCompleted ? 'completed' : ''} ${isCollapsed ? 'collapsed' : ''}`;
+        blockCard.id = `blockCard_${block.id}`;
+
+        const badgeInfo = calculateDeadlineBadge(block.deadline, isBlockCompleted);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'block-header';
+        
+        headerDiv.innerHTML = `
+          <div class="block-title-area">
+            <input type="checkbox" class="block-checkbox" id="blockCb_${block.id}" ${isBlockCompleted ? 'checked' : ''} title="Отметить весь блок">
+            <div>
+              <div class="block-title-text">БЛОК ${block.id}. ${block.title}</div>
+              <div class="block-meta">
+                <span>📅 ${block.dates} (${block.duration})</span>
+                <span>• Прогресс: ${doneInBlock}/${totalInBlock} (${percentInBlock}%)</span>
+              </div>
+            </div>
+          </div>
+          <div class="block-status-area">
+            <span class="deadline-badge ${badgeInfo.class}">${badgeInfo.text}</span>
+            <span class="chevron-icon">▼</span>
+          </div>
+        `;
+
+        const blockCb = headerDiv.querySelector(`#blockCb_${block.id}`);
+        blockCb.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetState = blockCb.checked;
+          blockLessons.forEach((_, idx) => {
+            lessonsState[`b${block.id}_l${idx}`] = targetState;
+          });
+          saveDiaryState();
+          renderDiary();
+          showToast(targetState ? `Блок ${block.id} завершен!` : `Блок ${block.id} открыт заново`);
+        });
+
+        headerDiv.addEventListener('click', () => {
+          blockCard.classList.toggle('collapsed');
+          collapsedState[block.id] = blockCard.classList.contains('collapsed');
+          saveDiaryState();
+        });
+
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'block-body';
+
+        if (block.note) {
+          const noteDiv = document.createElement('div');
+          noteDiv.className = 'block-note-banner';
+          noteDiv.innerHTML = `📌 <strong>Важно:</strong> ${block.note}`;
+          bodyDiv.appendChild(noteDiv);
+        }
+
+        const lessonsListDiv = document.createElement('div');
+        lessonsListDiv.className = 'lessons-list';
+
+        blockLessons.forEach((lessonText, idx) => {
+          const lessonKey = `b${block.id}_l${idx}`;
+          const isDone = !!lessonsState[lessonKey];
+          const isTest = lessonText.toLowerCase().includes('тест');
+
+          if (filter && !lessonText.toLowerCase().includes(filter) && !block.title.toLowerCase().includes(filter)) {
+            return;
+          }
+
+          const lessonItem = document.createElement('div');
+          lessonItem.className = `lesson-item ${isDone ? 'done' : ''}`;
+          lessonItem.innerHTML = `
+            <input type="checkbox" class="lesson-checkbox" id="lcb_${lessonKey}" ${isDone ? 'checked' : ''}>
+            <span class="lesson-title">${lessonText}</span>
+            ${isTest ? '<span class="test-badge">ТЕСТ</span>' : ''}
+          `;
+
+          const lcb = lessonItem.querySelector(`#lcb_${lessonKey}`);
+          lessonItem.addEventListener('click', (e) => {
+            if (e.target !== lcb) {
+              lcb.checked = !lcb.checked;
+            }
+            lessonsState[lessonKey] = lcb.checked;
+            saveDiaryState();
+            renderDiary();
+          });
+
+          lessonsListDiv.appendChild(lessonItem);
+        });
+
+        bodyDiv.appendChild(lessonsListDiv);
+        blockCard.appendChild(headerDiv);
+        blockCard.appendChild(bodyDiv);
+        courseBlocksContainer.appendChild(blockCard);
+      });
+
+      const overallPercent = totalLessonsCount > 0 ? Math.round((completedLessonsCount / totalLessonsCount) * 100) : 0;
+      overallProgressBar.style.width = `${overallPercent}%`;
+      overallPercentText.textContent = `${overallPercent}%`;
+      overallCountText.textContent = `${completedLessonsCount} / ${totalLessonsCount} уроков`;
+      navProgressBadge.textContent = `${overallPercent}%`;
+    }
+
+    searchDiaryInput.addEventListener('input', renderDiary);
+
+    document.getElementById('collapseAllBtn').addEventListener('click', () => {
+      courseBlocksData.forEach(b => collapsedState[b.id] = true);
+      saveDiaryState();
+      renderDiary();
+    });
+
+    document.getElementById('expandAllBtn').addEventListener('click', () => {
+      courseBlocksData.forEach(b => collapsedState[b.id] = false);
+      saveDiaryState();
+      renderDiary();
+    });
+
+    document.getElementById('resetDiaryBtn').addEventListener('click', () => {
+      if (confirm('Сбросить все отметки выполнения уроков?')) {
+        lessonsState = {};
+        collapsedState = {};
+        saveDiaryState();
+        renderDiary();
+        showToast('Прогресс уроков сброшен');
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('SW registration error:', err);
+        });
+      });
+    }
+
+    let deferredPrompt;
+    const pwaBanner = document.getElementById('pwaBanner');
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaBanner.classList.add('show');
+    });
+
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            pwaBanner.classList.remove('show');
+          }
+          deferredPrompt = null;
+        });
+      }
+    });
+
+    loadCalcState();
+    calculate();
+    loadSavedCalcsState();
+    renderSavedCalcs();
+    loadDiaryState();
+    renderDiary();
+  </script>
+
+  <script>
+    // ==========================================
+    // 6. FIREBASE REALTIME DATABASE AUTO-SYNC
+    // ==========================================
+    const FIREBASE_SYNC_ENDPOINT = 'https://alena-grass-default-rtdb.europe-west1.firebasedatabase.app/user_data.json';
+
+    const syncBadge = document.getElementById('syncBadge');
+    const syncDot = document.getElementById('syncDot');
+    const syncStatusLabel = document.getElementById('syncStatusLabel');
+
+    const syncSettingsModal = document.getElementById('syncSettingsModal');
+    const closeSyncSettingsBtn = document.getElementById('closeSyncSettingsBtn');
+    const modalSyncStatus = document.getElementById('modalSyncStatus');
+    const modalLastSyncTime = document.getElementById('modalLastSyncTime');
+    const modalForcePullBtn = document.getElementById('modalForcePullBtn');
+    const modalForcePushBtn = document.getElementById('modalForcePushBtn');
+    const exportBackupFileBtn = document.getElementById('exportBackupFileBtn');
+    const importBackupFileBtn = document.getElementById('importBackupFileBtn');
+    const modalBackupFileInput = document.getElementById('modalBackupFileInput');
+
+    let isSyncInProgress = false;
+    let pushDebounceTimer = null;
+
+    function setVisualStatus(state, label) {
+      if (state === 'synced') {
+        syncDot.style.background = '#10b981';
+        syncDot.style.boxShadow = '0 0 8px #10b981';
+        syncStatusLabel.textContent = label || 'Облако: Синхр.';
+        syncStatusLabel.style.color = '#10b981';
+        if (modalSyncStatus) {
+          modalSyncStatus.textContent = '🟢 ' + (label || 'Синхронизировано');
+          modalSyncStatus.style.color = '#10b981';
+        }
+      } else if (state === 'syncing') {
+        syncDot.style.background = '#f59e0b';
+        syncDot.style.boxShadow = '0 0 8px #f59e0b';
+        syncStatusLabel.textContent = label || 'Синхронизация...';
+        syncStatusLabel.style.color = '#f59e0b';
+        if (modalSyncStatus) {
+          modalSyncStatus.textContent = '🟡 ' + (label || 'Синхронизация...');
+          modalSyncStatus.style.color = '#f59e0b';
+        }
+      } else if (state === 'error') {
+        syncDot.style.background = '#f87171';
+        syncDot.style.boxShadow = '0 0 6px #f87171';
+        syncStatusLabel.textContent = label || 'Офлайн (локально)';
+        syncStatusLabel.style.color = '#f87171';
+        if (modalSyncStatus) {
+          modalSyncStatus.textContent = '⚪ ' + (label || 'Офлайн (сохранено на устройстве)');
+          modalSyncStatus.style.color = '#94a3b8';
+        }
+      }
+      if (modalLastSyncTime) {
+        modalLastSyncTime.textContent = 'Время: ' + new Date().toLocaleTimeString('ru-RU');
+      }
+    }
+
+    function collectAppData() {
+      return {
+        app: 'ALENA_GRASS',
+        updatedAt: Date.now(),
+        calc: {
+          h: heightInput.value,
+          og: bustInput.value,
+          ob: hipsInput.value
+        },
+        lessonsState: lessonsState || {},
+        collapsedState: collapsedState || {},
+        savedCalcsState: savedCalcsState || []
+      };
+    }
+
+    async function pushToCloud(isImmediate = false) {
+      clearTimeout(pushDebounceTimer);
+
+      const execPush = async () => {
+        if (isSyncInProgress) return;
+        isSyncInProgress = true;
+        setVisualStatus('syncing', 'Сохранение...');
+
+        const payload = collectAppData();
+        const jsonStr = JSON.stringify(payload);
+
+        try {
+          const res = await fetch(FIREBASE_SYNC_ENDPOINT, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: jsonStr
+          });
+
+          if (res.ok) {
+            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            setVisualStatus('synced', 'Синхр: ' + timeStr);
+          } else {
+            setVisualStatus('error', 'Локально');
+          }
+        } catch (e) {
+          console.warn('Network offline during push:', e);
+          setVisualStatus('error', 'Офлайн');
+        } finally {
+          isSyncInProgress = false;
+        }
+      };
+
+      if (isImmediate) {
+        await execPush();
+      } else {
+        pushDebounceTimer = setTimeout(execPush, 350);
+      }
+    }
+
+    async function pullFromCloud(showNotice = false) {
+      if (isSyncInProgress) return;
+      isSyncInProgress = true;
+      setVisualStatus('syncing', 'Загрузка...');
+
+      try {
+        const res = await fetch(FIREBASE_SYNC_ENDPOINT + '?t=' + Date.now(), {
+          method: 'GET',
+          cache: 'no-store'
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data === 'object') {
+            if (data.lessonsState) {
+              lessonsState = data.lessonsState;
+              localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+            }
+            if (data.collapsedState) {
+              collapsedState = data.collapsedState;
+              localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+            }
+            renderDiary();
+
+            if (data.savedCalcsState) {
+              savedCalcsState = data.savedCalcsState;
+              localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+              renderSavedCalcs();
+            }
+
+            if (data.calc) {
+              if (data.calc.h) heightInput.value = data.calc.h;
+              if (data.calc.og) bustInput.value = data.calc.og;
+              if (data.calc.ob) hipsInput.value = data.calc.ob;
+              calculate();
+            }
+
+            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            setVisualStatus('synced', 'Синхр: ' + timeStr);
+            if (showNotice) {
+              showToast('Данные успешно загружены из облака!');
+            }
+          }
+        } else {
+          setVisualStatus('error', 'Локально');
+        }
+      } catch (e) {
+        console.warn('Could not pull from cloud:', e);
+        setVisualStatus('error', 'Офлайн (локально)');
+      } finally {
+        isSyncInProgress = false;
+      }
+    }
+
+    if (syncBadge) {
+      syncBadge.style.cursor = 'pointer';
+      syncBadge.addEventListener('click', () => {
+        syncSettingsModal.style.display = 'flex';
+      });
+    }
+
+    if (closeSyncSettingsBtn) {
+      closeSyncSettingsBtn.addEventListener('click', () => {
+        syncSettingsModal.style.display = 'none';
+      });
+    }
+
+    syncSettingsModal.addEventListener('click', (e) => {
+      if (e.target === syncSettingsModal) {
+        syncSettingsModal.style.display = 'none';
+      }
+    });
+
+    modalForcePullBtn.addEventListener('click', () => {
+      pullFromCloud(true);
+    });
+
+    modalForcePushBtn.addEventListener('click', async () => {
+      await pushToCloud(true);
+      showToast('Данные отправлены в облако!');
+    });
+
+    exportBackupFileBtn.addEventListener('click', () => {
+      const payload = collectAppData();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `alena_grass_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Резервная копия сохранена!');
+    });
+
+    importBackupFileBtn.addEventListener('click', () => {
+      modalBackupFileInput.click();
+    });
+
+    modalBackupFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (imported) {
+            if (imported.lessonsState) lessonsState = imported.lessonsState;
+            if (imported.collapsedState) collapsedState = imported.collapsedState;
+            if (imported.savedCalcsState) savedCalcsState = imported.savedCalcsState;
+            if (imported.calc) {
+              if (imported.calc.h) heightInput.value = imported.calc.h;
+              if (imported.calc.og) bustInput.value = imported.calc.og;
+              if (imported.calc.ob) hipsInput.value = imported.calc.ob;
+            }
+            saveDiaryState();
+            saveSavedCalcsState();
+            saveCalcState();
+            renderDiary();
+            renderSavedCalcs();
+            calculate();
+            showToast('Резервная копия восстановлена!');
+            syncSettingsModal.style.display = 'none';
+          }
+        } catch (err) {
+          alert('Не удалось прочитать файл резервной копии');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    const originalSaveDiary = saveDiaryState;
+    saveDiaryState = function() {
+      originalSaveDiary();
+      pushToCloud(false);
     };
-    if(data.name === "Без имени") { alert("Введите имя клиента!"); return; }
 
-    let db = JSON.parse(localStorage.getItem('clients') || '[]');
-    db.push(data);
-    localStorage.setItem('clients', JSON.stringify(db));
-    alert('Клиент сохранен!');
-    loadClients();
-  }
+    const originalSaveCalc = saveCalcState;
+    saveCalcState = function() {
+      originalSaveCalc();
+      pushToCloud(false);
+    };
 
-  function loadClients() {
-    const db = JSON.parse(localStorage.getItem('clients') || '[]');
-    const list = document.getElementById('saved-clients');
-    list.innerHTML = db.length ? '<h3 style="margin:15px 0 10px; font-size:0.9rem; color:var(--text-muted)">Сохраненные клиенты:</h3>' : '';
-    list.innerHTML += db.map(c => `
-      <div class="client-card">
-        <strong>${c.name}</strong> <small>${c.date}</small><br>
-        ОГ: ${c.chest} | Рост: ${c.height}
-      </div>
-    `).join('');
-  }
-  loadClients();
-</script>
+    const originalSaveSavedCalcs = saveSavedCalcsState;
+    saveSavedCalcsState = function() {
+      originalSaveSavedCalcs();
+      pushToCloud(true);
+    };
+
+    window.addEventListener('load', () => {
+      setTimeout(() => pullFromCloud(false), 200);
+    });
+
+    window.addEventListener('focus', () => {
+      pullFromCloud(false);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        pullFromCloud(false);
+      }
+    });
+
+    setInterval(() => {
+      if (document.visibilityState === 'visible' && !isSyncInProgress) {
+        pullFromCloud(false);
+      }
+    }, 20000);
+  </script>
 </body>
 </html>
