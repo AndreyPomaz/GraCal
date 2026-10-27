@@ -886,13 +886,10 @@
         </div>
       </div>
 
-      
-      
-
       <!-- Results Card -->
       <div class="card">
         <div class="card-title">
-          <span>2. Результаты (23 мерки)</span>
+          <span>2. Результаты и обхваты (23 мерки)</span>
           <div class="view-toggle">
             <button id="viewCardsBtn" class="active">Список</button>
             <button id="viewTableBtn">Таблица</button>
@@ -916,7 +913,7 @@
             <thead>
               <tr>
                 <th>Код</th>
-                <th>Признак</th>
+                <th>Признак (с полным обхватом)</th>
                 <th style="text-align: right;">База</th>
                 <th style="text-align: right;">ΔР</th>
                 <th style="text-align: right;">ΔОГ</th>
@@ -929,7 +926,7 @@
 
       </div>
 
-      <!-- Saved Calculations & History Card (Moved below results) -->
+      <!-- Saved Calculations & History Card -->
       <div class="card" id="savedCalcsCard">
         <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <span>📂 Сохраненные расчеты <span id="savedCountBadge" style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:var(--accent); padding:2px 8px; border-radius:10px;">0</span></span>
@@ -937,17 +934,14 @@
         </div>
         
         <div id="savedCalcsList" style="display:flex; flex-direction:column; gap:8px;">
-          <!-- Rendered via JS -->
         </div>
       </div>
 
     </div>
 
-
     <!-- ==================== TAB 2: COURSE DIARY / TRACKER ==================== -->
     <div id="tabContentDiary" class="tab-content">
       
-      <!-- Overall Progress Card -->
       <div class="overall-progress-box">
         <div class="overall-header">
           <div>
@@ -964,7 +958,6 @@
           <div id="overallProgressBar" class="progress-bar-fill"></div>
         </div>
 
-        <!-- Important Reminders Badges -->
         <div class="info-badges-grid">
           <div class="info-badge-card payment">
             <span style="font-size:1.1rem;">💳</span>
@@ -983,7 +976,6 @@
         </div>
       </div>
 
-      <!-- Diary Actions Bar -->
       <div class="actions-bar">
         <input type="text" id="searchDiaryInput" class="search-input" placeholder="🔍 Поиск урока, темы или блока...">
         <div class="btn-group">
@@ -993,80 +985,66 @@
         </div>
       </div>
 
-      <!-- Blocks Container -->
       <div id="courseBlocksContainer">
-        <!-- Rendered via JS -->
       </div>
 
     </div>
 
   </div>
 
-  
-    
-    <!-- Save Calculation Modal -->
-    <div id="saveCalcModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:16px;">
-      <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:420px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-          <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">💾 Сохранить расчет</h3>
-          <button id="closeSaveModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+  <!-- Save Calculation Modal -->
+  <div id="saveCalcModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:420px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">💾 Сохранить расчет</h3>
+        <button id="closeSaveModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+      </div>
+      <p style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px;">
+        Введите название для текущих параметров (<span id="savePreviewParams" style="color:var(--accent); font-weight:600;">163-84-94</span>):
+      </p>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px; display:block;">Название расчета:</label>
+        <input type="text" id="calcNameInput" placeholder="например: Платье для Анны..." style="width:100%; background:#090d16; border:1px solid #334155; border-radius:8px; padding:10px 12px; color:#fff; font-size:0.92rem; outline:none;">
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" id="confirmSaveCalcBtn" style="flex:1; justify-content:center; padding:10px;">Сохранить</button>
+        <button class="btn" id="cancelSaveCalcBtn" style="justify-content:center; padding:10px;">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cloud Sync Settings Modal -->
+  <div id="syncSettingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:440px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">☁️ Статус синхронизации</h3>
+        <button id="closeSyncSettingsBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+      </div>
+      <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:8px; border:1px solid #334155; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:4px;">
+          <span style="color:#94a3b8;">Состояние:</span>
+          <span id="modalSyncStatus" style="font-weight:700; color:#10b981;">🟢 Синхронизировано</span>
         </div>
-
-        <p style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px;">
-          Введите название для сохранения текущих параметров (<span id="savePreviewParams" style="color:var(--accent); font-weight:600;">163-84-94</span>):
-        </p>
-
-        <div style="margin-bottom:14px;">
-          <label style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px; display:block;">Название расчета / клиента:</label>
-          <input type="text" id="calcNameInput" placeholder="например: Платье для Анны, Базовая выкройка..." style="width:100%; background:#090d16; border:1px solid #334155; border-radius:8px; padding:10px 12px; color:#fff; font-size:0.92rem; outline:none;">
-        </div>
-
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-primary" id="confirmSaveCalcBtn" style="flex:1; justify-content:center; padding:10px;">Сохранить</button>
-          <button class="btn" id="cancelSaveCalcBtn" style="justify-content:center; padding:10px;">Отмена</button>
+        <div style="font-size:0.72rem; color:#64748b;" id="modalLastSyncTime">Время: только что</div>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <button class="btn btn-primary" id="modalForcePullBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📥 Загрузить из облака</button>
+        <button class="btn" id="modalForcePushBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📤 Отправить в облако</button>
+      </div>
+      <div style="border-top:1px dashed #334155; padding-top:12px;">
+        <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px;">Резервная копия в файл:</div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn" id="exportBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📥 Бэкап</button>
+          <button class="btn" id="importBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📤 Восстановить</button>
+          <input type="file" id="modalBackupFileInput" accept=".json" style="display:none;">
         </div>
       </div>
     </div>
-
-  
-    <!-- Cloud Sync Settings Modal -->
-    <div id="syncSettingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; padding:16px;">
-      <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:440px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">☁️ Статус синхронизации</h3>
-          <button id="closeSyncSettingsBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
-        </div>
-
-        <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:8px; border:1px solid #334155; margin-bottom:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:4px;">
-            <span style="color:#94a3b8;">Состояние:</span>
-            <span id="modalSyncStatus" style="font-weight:700; color:#10b981;">🟢 Синхронизировано</span>
-          </div>
-          <div style="font-size:0.72rem; color:#64748b;" id="modalLastSyncTime">Последняя проверка: только что</div>
-        </div>
-
-        <div style="display:flex; gap:8px; margin-bottom:14px;">
-          <button class="btn btn-primary" id="modalForcePullBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📥 Загрузить из облака</button>
-          <button class="btn" id="modalForcePushBtn" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📤 Отправить в облако</button>
-        </div>
-
-        <div style="border-top:1px dashed #334155; padding-top:12px;">
-          <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px;">Резервная копия в файл:</div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn" id="exportBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📥 Бэкап</button>
-            <button class="btn" id="importBackupFileBtn" style="flex:1; justify-content:center; font-size:0.75rem;">📤 Восстановить</button>
-            <input type="file" id="modalBackupFileInput" accept=".json" style="display:none;">
-          </div>
-        </div>
-      </div>
-    </div>
+  </div>
 
   <div id="toast" class="toast">Сохранено!</div>
 
   <script>
-    // ==========================================
-    // 1. DATA DEFINITIONS
-    // ==========================================
     const measurementsData = [
       { code: "P", name: "Рост", bases: [164, 164, 164, 164, 164, 164], dH: 6.0, dB: 6.0 },
       { code: "Сш", name: "Полуобхват шеи", bases: [17.4, 17.4, 17.4, 17.4, 17.4, 17.4], dH: 0.0, dB: 0.4 },
@@ -1093,11 +1071,8 @@
         dH: 1.0, 
         dynamicB: true, 
         calcShiftB: (og, kB, groupIndex) => {
-          if (groupIndex === 0) {
-            return kB * 0.7;
-          } else {
-            return og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8;
-          }
+          if (groupIndex === 0) return kB * 0.7;
+          else return og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8;
         }, 
         stepB: (og, groupIndex) => (groupIndex >= 1 && og > 108 ? 0.8 : 0.7) 
       },
@@ -1122,10 +1097,6 @@
     "duration": "2 недели",
     "dates": "11.08.2026 – 25.08.2026",
     "deadline": "2026-08-25",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
-    "note": null,
     "lessons": [
       "Урок 1. Введение",
       "Урок 2. Общие сведения об одежде",
@@ -1140,10 +1111,6 @@
     "duration": "1 неделя",
     "dates": "25.08.2026 – 01.09.2026",
     "deadline": "2026-09-01",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
-    "note": null,
     "lessons": [
       "Урок 6. Введение в конструирование",
       "7. ТЕСТ",
@@ -1164,8 +1131,6 @@
     "dates": "01.09.2026 – 22.09.2026",
     "deadline": "2026-09-22",
     "trDeadline": "22.09.2026",
-    "payment": null,
-    "holidays": null,
     "note": "ТР — дедлайн 22.09.2026",
     "lessons": [
       "Урок 16. Технология. Ручные швы",
@@ -1184,10 +1149,6 @@
     "duration": "2 недели",
     "dates": "22.09.2026 – 06.10.2026",
     "deadline": "2026-10-06",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
-    "note": null,
     "lessons": [
       "Урок 24. Оборудование",
       "Урок 25. Оборудование для ВТО",
@@ -1205,8 +1166,6 @@
     "dates": "06.10.2026 – 03.11.2026",
     "deadline": "2026-11-03",
     "trDeadline": "03.11.2026",
-    "payment": null,
-    "holidays": null,
     "note": "ТР — дедлайн 03.11.2026",
     "lessons": [
       "Урок 31. Пошив юбки на подкладке со шлицей. Раскрой и примерка макета",
@@ -1228,9 +1187,7 @@
     "duration": "2 недели",
     "dates": "03.11.2026 – 17.11.2026",
     "deadline": "2026-11-17",
-    "trDeadline": null,
     "payment": "11.11.2026 — Оплата 2 части",
-    "holidays": null,
     "note": "💳 11.11.2026 — оплата 2 части",
     "lessons": [
       "Урок 42. Технология. Сборка. Складки",
@@ -1248,10 +1205,6 @@
     "duration": "2 недели",
     "dates": "17.11.2026 – 01.12.2026",
     "deadline": "2026-12-01",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
-    "note": null,
     "lessons": [
       "Урок 49. Введение в конструирование брюк. Снятие мерок",
       "Урок 50. Построение БК брюк по методике Кочесовой",
@@ -1267,8 +1220,6 @@
     "dates": "01.12.2026 – 22.12.2026",
     "deadline": "2026-12-22",
     "trDeadline": "15.12.2026",
-    "payment": null,
-    "holidays": null,
     "note": "ТР — дедлайн 15.12.2026",
     "lessons": [
       "Урок 54. ВТО брюк",
@@ -1288,7 +1239,6 @@
     "dates": "22.12.2026 – 12.01.2027",
     "deadline": "2027-01-12",
     "trDeadline": "12.01.2027",
-    "payment": null,
     "holidays": "31.12.2026 – 10.01.2027 — Новогодние выходные",
     "note": "ТР — дедлайн 12.01.2027 | 🎄 31.12–10.01 выходные",
     "lessons": [
@@ -1305,10 +1255,6 @@
     "duration": "3 недели",
     "dates": "12.01.2027 – 02.02.2027",
     "deadline": "2027-02-02",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
-    "note": null,
     "lessons": [
       "Урок 67. Введение к блоку по плечевому изделию",
       "Урок 68. Построение сетки чертежа БК плечевого изделия с втачным рукавом на индивидуальную фигуру",
@@ -1348,10 +1294,6 @@
     "duration": "2 недели",
     "dates": "16.03.2027 – 30.03.2027",
     "deadline": "2027-03-30",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
-    "note": null,
     "lessons": [
       "Урок 84. Технология пошива плечевого изделия. Соединение с подкладкой",
       "Урок 85. Технология пошива плечевого изделия. Отложной воротник. Замкнутые манжеты",
@@ -1367,8 +1309,6 @@
     "dates": "30.03.2027 – 13.04.2027",
     "deadline": "2027-04-13",
     "trDeadline": "13.04.2027",
-    "payment": null,
-    "holidays": null,
     "note": "ТР — дедлайн 13.04.2027",
     "lessons": [
       "Урок 89. Особенности построения изделия с рукавом рубашечного покроя",
@@ -1384,10 +1324,6 @@
     "duration": "2 недели",
     "dates": "13.04.2027 – 27.04.2027",
     "deadline": "2027-04-27",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
-    "note": null,
     "lessons": [
       "Урок 94. Технология. Втачивание и обработка рубашечного рукава",
       "Урок 95. Технология. Обработка кокеток",
@@ -1404,7 +1340,6 @@
     "duration": "2 недели",
     "dates": "27.04.2027 – 11.05.2027",
     "deadline": "2027-05-11",
-    "trDeadline": null,
     "payment": "до 11.05.2027 — Оплата 4 части",
     "holidays": "03.05, 10.05.2027 — Выходные",
     "note": "💳 Оплата 4 части до 11.05.27 | 03.05, 10.05 выходные",
@@ -1428,8 +1363,6 @@
     "dates": "11.05.2027 – 01.06.2027",
     "deadline": "2027-06-01",
     "trDeadline": "25.05.2027",
-    "payment": null,
-    "holidays": null,
     "note": "ТР — дедлайн 25.05.2027",
     "lessons": [
       "Урок 111. Основные приемы фантазийного моделирования. Моделирование комбинезона",
@@ -1453,7 +1386,6 @@
     "dates": "01.06.2027 – 15.06.2027",
     "deadline": "2027-06-15",
     "trDeadline": "08.06.2027",
-    "payment": null,
     "holidays": "14.06.2027 — Выходной",
     "note": "ТР — дедлайн 08.06.2027 | 14.06 выходной",
     "lessons": [
@@ -1470,8 +1402,6 @@
     "dates": "15.06.2027 – 20.07.2027",
     "deadline": "2027-07-20",
     "trDeadline": "20.07.2027",
-    "payment": null,
-    "holidays": null,
     "note": "ТР — дедлайн до 20.07.2027",
     "lessons": [
       "Урок 127. Выбор прибавок. Заполнение файла с исходными данными. Предварительный расчет конструкции жакета на подкладке",
@@ -1497,9 +1427,6 @@
     "duration": "5 недель",
     "dates": "20.07.2027 – 24.08.2027",
     "deadline": "2027-08-24",
-    "trDeadline": null,
-    "payment": null,
-    "holidays": null,
     "note": "13.09.2027 — завершающий день работы куратора",
     "lessons": [
       "Урок 142. Аттестационное изделие и защита",
@@ -1509,9 +1436,6 @@
   }
 ];
 
-    // ==========================================
-    // 2. TABS SWITCHER
-    // ==========================================
     const tabBtnCalc = document.getElementById('tabBtnCalc');
     const tabBtnDiary = document.getElementById('tabBtnDiary');
     const tabContentCalc = document.getElementById('tabContentCalc');
@@ -1531,9 +1455,6 @@
       tabContentCalc.classList.remove('active');
     });
 
-    // ==========================================
-    // 3. CALCULATOR LOGIC
-    // ==========================================
     const heightInput = document.getElementById('heightInput');
     const bustInput = document.getElementById('bustInput');
     const hipsInput = document.getElementById('hipsInput');
@@ -1599,7 +1520,13 @@
         const res = baseVal + shiftHeight + shiftSize;
         const resStr = res.toFixed(2);
 
-        // Mobile List Row
+        let fullGirthStr = '';
+        if (item.code.startsWith('С')) {
+          const fullCode = 'О' + item.code.slice(1);
+          const fullVal = (res * 2).toFixed(2);
+          fullGirthStr = `<div style="font-size:0.7rem; color:var(--accent); margin-top:2px;">Полный (${fullCode}): <strong>${fullVal} см</strong></div>`;
+        }
+
         const row = document.createElement('div');
         row.className = 'measure-row';
         row.innerHTML = `
@@ -1612,6 +1539,7 @@
                 <span>ΔР: ${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</span>
                 <span>ΔОГ: ${deltaSizeLabel}</span>
               </div>
+              ${fullGirthStr}
             </div>
           </div>
           <div class="measure-res-box">
@@ -1620,11 +1548,15 @@
         `;
         cardsContainer.appendChild(row);
 
-        // Table Row
+        let displayName = item.name;
+        if (item.code.startsWith('С')) {
+          displayName += ` (Полный О${item.code.slice(1)}: ${(res*2).toFixed(2)} см)`;
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong style="color:var(--accent);">${item.code}</strong></td>
-          <td>${item.name}</td>
+          <td>${displayName}</td>
           <td style="text-align: right;">${baseVal.toFixed(1)}</td>
           <td style="text-align: right;">${item.dH > 0 ? '+' : ''}${item.dH.toFixed(1)}</td>
           <td style="text-align: right;">${deltaSizeLabel}</td>
@@ -1718,11 +1650,6 @@
       });
     });
 
-    // ==========================================
-    
-    // ==========================================
-    // 3.1 SAVED CALCULATIONS ENGINE
-    // ==========================================
     const SAVED_CALCS_STORAGE_KEY = 'alena_grass_saved_calcs_v1';
     let savedCalcsState = [];
 
@@ -1739,9 +1666,7 @@
     function loadSavedCalcsState() {
       try {
         const data = localStorage.getItem(SAVED_CALCS_STORAGE_KEY);
-        if (data) {
-          savedCalcsState = JSON.parse(data);
-        }
+        if (data) savedCalcsState = JSON.parse(data);
       } catch (e) {
         console.error('Error loading saved calcs', e);
       }
@@ -1749,9 +1674,7 @@
 
     function saveSavedCalcsState() {
       localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
-      if (typeof pushToCloudAuto === 'function') {
-        pushToCloudAuto();
-      }
+      if (typeof pushToCloudAuto === 'function') pushToCloudAuto();
     }
 
     function getCalculationSnapshot() {
@@ -1768,24 +1691,12 @@
 
       const results = measurementsData.map(item => {
         const baseVal = item.bases[groupIndex];
-        let shiftSize = 0;
-        if (item.dynamicB) {
-          shiftSize = item.calcShiftB(og, kB, groupIndex);
-        } else {
-          shiftSize = item.dB * kB;
-        }
+        let shiftSize = item.dynamicB ? item.calcShiftB(og, kB, groupIndex) : item.dB * kB;
         const res = (baseVal + item.dH * kH + shiftSize).toFixed(2);
         return { code: item.code, name: item.name, val: res };
       });
 
-      return {
-        h, og, ob,
-        kH: (kH >= 0 ? '+' : '') + kH.toFixed(2),
-        kB: (kB >= 0 ? '+' : '') + kB.toFixed(2),
-        fullnessGroup: groupIndex,
-        fullnessExact: fullnessExact.toFixed(1),
-        results
-      };
+      return { h, og, ob, kH: (kH >= 0 ? '+' : '') + kH.toFixed(2), kB: (kB >= 0 ? '+' : '') + kB.toFixed(2), fullnessGroup: groupIndex, fullnessExact: fullnessExact.toFixed(1), results };
     }
 
     function renderSavedCalcs() {
@@ -1795,7 +1706,7 @@
       if (savedCalcsState.length === 0) {
         savedCalcsList.innerHTML = `
           <div style="text-align:center; padding:16px 10px; color:var(--text-muted); font-size:0.8rem; background:var(--row-alt); border-radius:8px; border:1px dashed var(--card-border);">
-            У вас пока нет сохраненных расчетов. Нажмите «💾 Сохранить расчет», чтобы сохранить мерки клиента.
+            У вас пока нет сохраненных расчетов.
           </div>
         `;
         return;
@@ -1816,25 +1727,20 @@
               ${item.fullnessGroup}-я гр.
             </div>
           </div>
-
           <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.75rem; color:#cbd5e1;">
             <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">Рост: <strong>${item.h}</strong> см</span>
             <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОГ: <strong>${item.og}</strong> см</span>
             <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОБ: <strong>${item.ob}</strong> см</span>
           </div>
-
           <div style="display:flex; gap:6px; margin-top:4px; justify-content:flex-end;">
             <button class="btn btn-primary load-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">⚡ Загрузить</button>
             <button class="btn copy-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">📋 Копия</button>
             <button class="btn delete-calc-btn" data-index="${index}" style="padding:5px 8px; font-size:0.74rem; color:#f87171;" title="Удалить">🗑</button>
           </div>
         `;
-
-        savedCalcsList.innerHTML += ''; // triggers render
         savedCalcsList.appendChild(card);
       });
 
-      // Bind buttons
       savedCalcsList.querySelectorAll('.load-calc-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const idx = parseInt(btn.getAttribute('data-index'));
@@ -1856,14 +1762,8 @@
           const item = savedCalcsState[idx];
           if (item) {
             let text = `ALËNA GRASS РАСЧЕТ: ${item.name}\nПараметры: Рост ${item.h} см, ОГ ${item.og} см, ОБ ${item.ob} см (${item.fullnessGroup}-я гр.)\n\n`;
-            if (item.results) {
-              item.results.forEach(r => {
-                text += `${r.code} (${r.name}): ${r.val} см\n`;
-              });
-            }
-            navigator.clipboard.writeText(text).then(() => {
-              showToast(`Мерки «${item.name}» скопированы!`);
-            });
+            if (item.results) item.results.forEach(r => { text += `${r.code} (${r.name}): ${r.val} см\n`; });
+            navigator.clipboard.writeText(text).then(() => showToast(`Мерки «${item.name}» скопированы!`));
           }
         });
       });
@@ -1882,62 +1782,27 @@
       });
     }
 
-    // Modal Handlers
     openSaveModalBtn.addEventListener('click', () => {
-      const h = heightInput.value || 163;
-      const og = bustInput.value || 84;
-      const ob = hipsInput.value || 94;
-      savePreviewParams.textContent = `${h}-${og}-${ob}`;
+      savePreviewParams.textContent = `${heightInput.value || 163}-${bustInput.value || 84}-${hipsInput.value || 94}`;
       calcNameInput.value = '';
       saveCalcModal.style.display = 'flex';
       setTimeout(() => calcNameInput.focus(), 50);
     });
 
-    closeSaveModalBtn.addEventListener('click', () => {
-      saveCalcModal.style.display = 'none';
-    });
-
-    cancelSaveCalcBtn.addEventListener('click', () => {
-      saveCalcModal.style.display = 'none';
-    });
-
-    saveCalcModal.addEventListener('click', (e) => {
-      if (e.target === saveCalcModal) saveCalcModal.style.display = 'none';
-    });
+    closeSaveModalBtn.addEventListener('click', () => { saveCalcModal.style.display = 'none'; });
+    cancelSaveCalcBtn.addEventListener('click', () => { saveCalcModal.style.display = 'none'; });
+    saveCalcModal.addEventListener('click', (e) => { if (e.target === saveCalcModal) saveCalcModal.style.display = 'none'; });
 
     confirmSaveCalcBtn.addEventListener('click', () => {
       const name = calcNameInput.value.trim() || `Расчет от ${new Date().toLocaleDateString('ru-RU')}`;
       const snap = getCalculationSnapshot();
-
-      const newRecord = {
-        id: 'calc_' + Date.now(),
-        name: name,
-        createdAt: new Date().toISOString(),
-        h: snap.h,
-        og: snap.og,
-        ob: snap.ob,
-        fullnessGroup: snap.fullnessGroup,
-        fullnessExact: snap.fullnessExact,
-        results: snap.results
-      };
-
-      savedCalcsState.unshift(newRecord);
+      savedCalcsState.unshift({ id: 'calc_' + Date.now(), name, createdAt: new Date().toISOString(), ...snap });
       saveSavedCalcsState();
       renderSavedCalcs();
-
       saveCalcModal.style.display = 'none';
-      showToast(`Расчет «${name}» успешно сохранен!`);
+      showToast(`Расчет «${name}» сохранен!`);
     });
 
-    calcNameInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        confirmSaveCalcBtn.click();
-      }
-    });
-
-    // ==========================================
-    // 4. DIARY & TRACKER LOGIC
-    // ==========================================
     const courseBlocksContainer = document.getElementById('courseBlocksContainer');
     const searchDiaryInput = document.getElementById('searchDiaryInput');
     const overallProgressBar = document.getElementById('overallProgressBar');
@@ -1945,10 +1810,8 @@
     const overallCountText = document.getElementById('overallCountText');
     const navProgressBadge = document.getElementById('navProgressBadge');
 
-    // Storage keys
     const LESSONS_STORAGE_KEY = 'alena_grass_lessons_status_v1';
     const COLLAPSED_STORAGE_KEY = 'alena_grass_collapsed_blocks_v1';
-
     let lessonsState = {};
     let collapsedState = {};
 
@@ -1956,12 +1819,9 @@
       try {
         const savedLessons = localStorage.getItem(LESSONS_STORAGE_KEY);
         if (savedLessons) lessonsState = JSON.parse(savedLessons);
-
         const savedCollapsed = localStorage.getItem(COLLAPSED_STORAGE_KEY);
         if (savedCollapsed) collapsedState = JSON.parse(savedCollapsed);
-      } catch (e) {
-        console.error('Error loading diary state', e);
-      }
+      } catch (e) { console.error(e); }
     }
 
     function saveDiaryState() {
@@ -1970,241 +1830,117 @@
     }
 
     function calculateDeadlineBadge(deadlineStr, isBlockDone) {
-      if (isBlockDone) {
-        return { text: '✔ Завершен', class: 'done' };
-      }
-
-      if (!deadlineStr) {
-        return { text: 'В процессе', class: 'normal' };
-      }
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const targetDate = new Date(deadlineStr);
-      targetDate.setHours(0, 0, 0, 0);
-
-      const diffTime = targetDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays < 0) {
-        return { text: `⚠️ Просрочен (${Math.abs(diffDays)} дн.)`, class: 'urgent' };
-      } else if (diffDays === 0) {
-        return { text: '🔥 Дедлайн сегодня!', class: 'urgent' };
-      } else if (diffDays <= 3) {
-        return { text: `⏳ Осталось ${diffDays} дн.!`, class: 'warning' };
-      } else {
-        return { text: `⏳ ${diffDays} дн. до дедлайна`, class: 'normal' };
-      }
+      if (isBlockDone) return { text: '✔ Завершен', class: 'done' };
+      if (!deadlineStr) return { text: 'В процессе', class: 'normal' };
+      const today = new Date(); today.setHours(0,0,0,0);
+      const targetDate = new Date(deadlineStr); targetDate.setHours(0,0,0,0);
+      const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return { text: `⚠️ Просрочен (${Math.abs(diffDays)} дн.)`, class: 'urgent' };
+      if (diffDays === 0) return { text: '🔥 Дедлайн сегодня!', class: 'urgent' };
+      if (diffDays <= 3) return { text: `⏳ Осталось ${diffDays} дн.!`, class: 'warning' };
+      return { text: `⏳ ${diffDays} дн. до дедлайна`, class: 'normal' };
     }
 
     function renderDiary() {
       const filter = searchDiaryInput.value.toLowerCase().trim();
       courseBlocksContainer.innerHTML = '';
-
-      let totalLessonsCount = 0;
-      let completedLessonsCount = 0;
+      let totalCount = 0, completedCount = 0;
 
       courseBlocksData.forEach(block => {
-        const blockLessons = block.lessons;
-        const totalInBlock = blockLessons.length;
+        const totalInBlock = block.lessons.length;
         let doneInBlock = 0;
+        block.lessons.forEach((_, idx) => { if (lessonsState[`b${block.id}_l${idx}`]) doneInBlock++; });
 
-        blockLessons.forEach((_, idx) => {
-          const lessonKey = `b${block.id}_l${idx}`;
-          if (lessonsState[lessonKey]) {
-            doneInBlock++;
-          }
-        });
-
-        totalLessonsCount += totalInBlock;
-        completedLessonsCount += doneInBlock;
+        totalCount += totalInBlock;
+        completedCount += doneInBlock;
 
         const isBlockCompleted = (doneInBlock === totalInBlock && totalInBlock > 0);
-        const percentInBlock = totalInBlock > 0 ? Math.round((doneInBlock / totalInBlock) * 100) : 0;
+        const blockMatches = !filter || block.title.toLowerCase().includes(filter) || (block.note && block.note.toLowerCase().includes(filter)) || block.lessons.some(l => l.toLowerCase().includes(filter));
+        if (!blockMatches) return;
 
-        const blockMatches = !filter || 
-          block.title.toLowerCase().includes(filter) ||
-          (block.note && block.note.toLowerCase().includes(filter)) ||
-          blockLessons.some(l => l.toLowerCase().includes(filter));
-
-        if (!blockMatches) {
-          return;
-        }
-
-        const isCollapsed = collapsedState[block.id] !== undefined ? collapsedState[block.id] : (isBlockCompleted);
-
+        const isCollapsed = collapsedState[block.id] !== undefined ? collapsedState[block.id] : isBlockCompleted;
         const blockCard = document.createElement('div');
         blockCard.className = `block-card ${isBlockCompleted ? 'completed' : ''} ${isCollapsed ? 'collapsed' : ''}`;
-        blockCard.id = `blockCard_${block.id}`;
-
         const badgeInfo = calculateDeadlineBadge(block.deadline, isBlockCompleted);
 
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'block-header';
-        
-        headerDiv.innerHTML = `
-          <div class="block-title-area">
-            <input type="checkbox" class="block-checkbox" id="blockCb_${block.id}" ${isBlockCompleted ? 'checked' : ''} title="Отметить весь блок">
-            <div>
-              <div class="block-title-text">БЛОК ${block.id}. ${block.title}</div>
-              <div class="block-meta">
-                <span>📅 ${block.dates} (${block.duration})</span>
-                <span>• Прогресс: ${doneInBlock}/${totalInBlock} (${percentInBlock}%)</span>
+        blockCard.innerHTML = `
+          <div class="block-header">
+            <div class="block-title-area">
+              <input type="checkbox" class="block-checkbox" id="blockCb_${block.id}" ${isBlockCompleted ? 'checked' : ''}>
+              <div>
+                <div class="block-title-text">БЛОК ${block.id}. ${block.title}</div>
+                <div class="block-meta"><span>📅 ${block.dates} (${block.duration})</span><span>• ${doneInBlock}/${totalInBlock}</span></div>
               </div>
             </div>
+            <div class="block-status-area">
+              <span class="deadline-badge ${badgeInfo.class}">${badgeInfo.text}</span>
+              <span class="chevron-icon">▼</span>
+            </div>
           </div>
-          <div class="block-status-area">
-            <span class="deadline-badge ${badgeInfo.class}">${badgeInfo.text}</span>
-            <span class="chevron-icon">▼</span>
+          <div class="block-body">
+            ${block.note ? `<div class="block-note-banner">📌 <strong>Важно:</strong> ${block.note}</div>` : ''}
+            <div class="lessons-list">
+              ${block.lessons.map((lessonText, idx) => {
+                const k = `b${block.id}_l${idx}`;
+                const done = !!lessonsState[k];
+                const isTest = lessonText.toLowerCase().includes('тест');
+                return `
+                  <div class="lesson-item ${done ? 'done' : ''}" onclick="toggleLesson('${k}', this)">
+                    <input type="checkbox" class="lesson-checkbox" ${done ? 'checked' : ''}>
+                    <span class="lesson-title">${lessonText}</span>
+                    ${isTest ? '<span class="test-badge">ТЕСТ</span>' : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
           </div>
         `;
 
-        const blockCb = headerDiv.querySelector(`#blockCb_${block.id}`);
-        blockCb.addEventListener('click', (e) => {
+        blockCard.querySelector(`#blockCb_${block.id}`).addEventListener('click', (e) => {
           e.stopPropagation();
-          const targetState = blockCb.checked;
-          blockLessons.forEach((_, idx) => {
-            lessonsState[`b${block.id}_l${idx}`] = targetState;
-          });
+          const targetState = e.target.checked;
+          block.lessons.forEach((_, idx) => { lessonsState[`b${block.id}_l${idx}`] = targetState; });
           saveDiaryState();
           renderDiary();
-          showToast(targetState ? `Блок ${block.id} завершен!` : `Блок ${block.id} открыт заново`);
         });
 
-        headerDiv.addEventListener('click', () => {
+        blockCard.querySelector('.block-header').addEventListener('click', (e) => {
+          if (e.target.tagName === 'INPUT') return;
           blockCard.classList.toggle('collapsed');
           collapsedState[block.id] = blockCard.classList.contains('collapsed');
           saveDiaryState();
         });
 
-        const bodyDiv = document.createElement('div');
-        bodyDiv.className = 'block-body';
-
-        if (block.note) {
-          const noteDiv = document.createElement('div');
-          noteDiv.className = 'block-note-banner';
-          noteDiv.innerHTML = `📌 <strong>Важно:</strong> ${block.note}`;
-          bodyDiv.appendChild(noteDiv);
-        }
-
-        const lessonsListDiv = document.createElement('div');
-        lessonsListDiv.className = 'lessons-list';
-
-        blockLessons.forEach((lessonText, idx) => {
-          const lessonKey = `b${block.id}_l${idx}`;
-          const isDone = !!lessonsState[lessonKey];
-          const isTest = lessonText.toLowerCase().includes('тест');
-
-          if (filter && !lessonText.toLowerCase().includes(filter) && !block.title.toLowerCase().includes(filter)) {
-            return;
-          }
-
-          const lessonItem = document.createElement('div');
-          lessonItem.className = `lesson-item ${isDone ? 'done' : ''}`;
-          lessonItem.innerHTML = `
-            <input type="checkbox" class="lesson-checkbox" id="lcb_${lessonKey}" ${isDone ? 'checked' : ''}>
-            <span class="lesson-title">${lessonText}</span>
-            ${isTest ? '<span class="test-badge">ТЕСТ</span>' : ''}
-          `;
-
-          const lcb = lessonItem.querySelector(`#lcb_${lessonKey}`);
-          lessonItem.addEventListener('click', (e) => {
-            if (e.target !== lcb) {
-              lcb.checked = !lcb.checked;
-            }
-            lessonsState[lessonKey] = lcb.checked;
-            saveDiaryState();
-            renderDiary();
-          });
-
-          lessonsListDiv.appendChild(lessonItem);
-        });
-
-        bodyDiv.appendChild(lessonsListDiv);
-        blockCard.appendChild(headerDiv);
-        blockCard.appendChild(bodyDiv);
         courseBlocksContainer.appendChild(blockCard);
       });
 
-      const overallPercent = totalLessonsCount > 0 ? Math.round((completedLessonsCount / totalLessonsCount) * 100) : 0;
+      const overallPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
       overallProgressBar.style.width = `${overallPercent}%`;
       overallPercentText.textContent = `${overallPercent}%`;
-      overallCountText.textContent = `${completedLessonsCount} / ${totalLessonsCount} уроков`;
+      overallCountText.textContent = `${completedCount} / ${totalCount} уроков`;
       navProgressBadge.textContent = `${overallPercent}%`;
     }
 
+    window.toggleLesson = function(key, el) {
+      const cb = el.querySelector('input');
+      cb.checked = !cb.checked;
+      lessonsState[key] = cb.checked;
+      saveDiaryState();
+      renderDiary();
+    };
+
     searchDiaryInput.addEventListener('input', renderDiary);
+    document.getElementById('collapseAllBtn').addEventListener('click', () => { courseBlocksData.forEach(b => collapsedState[b.id] = true); saveDiaryState(); renderDiary(); });
+    document.getElementById('expandAllBtn').addEventListener('click', () => { courseBlocksData.forEach(b => collapsedState[b.id] = false); saveDiaryState(); renderDiary(); });
+    document.getElementById('resetDiaryBtn').addEventListener('click', () => { if(confirm('Сбросить прогресс уроков?')) { lessonsState={}; collapsedState={}; saveDiaryState(); renderDiary(); } });
 
-    document.getElementById('collapseAllBtn').addEventListener('click', () => {
-      courseBlocksData.forEach(b => collapsedState[b.id] = true);
-      saveDiaryState();
-      renderDiary();
-    });
-
-    document.getElementById('expandAllBtn').addEventListener('click', () => {
-      courseBlocksData.forEach(b => collapsedState[b.id] = false);
-      saveDiaryState();
-      renderDiary();
-    });
-
-    document.getElementById('resetDiaryBtn').addEventListener('click', () => {
-      if (confirm('Сбросить все отметки выполнения уроков?')) {
-        lessonsState = {};
-        collapsedState = {};
-        saveDiaryState();
-        renderDiary();
-        showToast('Прогресс уроков сброшен');
-      }
-    });
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => {
-          console.log('SW registration error:', err);
-        });
-      });
-    }
-
-    let deferredPrompt;
-    const pwaBanner = document.getElementById('pwaBanner');
-    const installBtn = document.getElementById('installBtn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      pwaBanner.classList.add('show');
-    });
-
-    installBtn.addEventListener('click', () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            pwaBanner.classList.remove('show');
-          }
-          deferredPrompt = null;
-        });
-      }
-    });
-
-    loadCalcState();
-    calculate();
-    loadSavedCalcsState();
-    renderSavedCalcs();
-    loadDiaryState();
-    renderDiary();
-  </script>
-
-  <script>
     // ==========================================
     // 6. FIREBASE REALTIME DATABASE AUTO-SYNC
     // ==========================================
     const FIREBASE_SYNC_ENDPOINT = 'https://alena-grass-default-rtdb.europe-west1.firebasedatabase.app/user_data.json';
-
     const syncBadge = document.getElementById('syncBadge');
     const syncDot = document.getElementById('syncDot');
     const syncStatusLabel = document.getElementById('syncStatusLabel');
-
     const syncSettingsModal = document.getElementById('syncSettingsModal');
     const closeSyncSettingsBtn = document.getElementById('closeSyncSettingsBtn');
     const modalSyncStatus = document.getElementById('modalSyncStatus');
@@ -2222,188 +1958,82 @@
       if (state === 'synced') {
         syncDot.style.background = '#10b981';
         syncDot.style.boxShadow = '0 0 8px #10b981';
-        syncStatusLabel.textContent = label || 'Облако: Синхр.';
+        syncStatusLabel.textContent = label || 'Синхр.';
         syncStatusLabel.style.color = '#10b981';
-        if (modalSyncStatus) {
-          modalSyncStatus.textContent = '🟢 ' + (label || 'Синхронизировано');
-          modalSyncStatus.style.color = '#10b981';
-        }
+        if (modalSyncStatus) { modalSyncStatus.textContent = '🟢 Синхронизировано'; modalSyncStatus.style.color = '#10b981'; }
       } else if (state === 'syncing') {
         syncDot.style.background = '#f59e0b';
         syncDot.style.boxShadow = '0 0 8px #f59e0b';
-        syncStatusLabel.textContent = label || 'Синхронизация...';
+        syncStatusLabel.textContent = 'Синхр...';
         syncStatusLabel.style.color = '#f59e0b';
-        if (modalSyncStatus) {
-          modalSyncStatus.textContent = '🟡 ' + (label || 'Синхронизация...');
-          modalSyncStatus.style.color = '#f59e0b';
-        }
       } else if (state === 'error') {
         syncDot.style.background = '#f87171';
         syncDot.style.boxShadow = '0 0 6px #f87171';
-        syncStatusLabel.textContent = label || 'Офлайн (локально)';
+        syncStatusLabel.textContent = 'Офлайн';
         syncStatusLabel.style.color = '#f87171';
-        if (modalSyncStatus) {
-          modalSyncStatus.textContent = '⚪ ' + (label || 'Офлайн (сохранено на устройстве)');
-          modalSyncStatus.style.color = '#94a3b8';
-        }
       }
-      if (modalLastSyncTime) {
-        modalLastSyncTime.textContent = 'Время: ' + new Date().toLocaleTimeString('ru-RU');
-      }
-    }
-
-    function collectAppData() {
-      return {
-        app: 'ALENA_GRASS',
-        updatedAt: Date.now(),
-        calc: {
-          h: heightInput.value,
-          og: bustInput.value,
-          ob: hipsInput.value
-        },
-        lessonsState: lessonsState || {},
-        collapsedState: collapsedState || {},
-        savedCalcsState: savedCalcsState || []
-      };
+      if (modalLastSyncTime) modalLastSyncTime.textContent = 'Время: ' + new Date().toLocaleTimeString('ru-RU');
     }
 
     async function pushToCloud(isImmediate = false) {
       clearTimeout(pushDebounceTimer);
-
       const execPush = async () => {
         if (isSyncInProgress) return;
         isSyncInProgress = true;
-        setVisualStatus('syncing', 'Сохранение...');
-
-        const payload = collectAppData();
-        const jsonStr = JSON.stringify(payload);
-
+        setVisualStatus('syncing');
         try {
-          const res = await fetch(FIREBASE_SYNC_ENDPOINT, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: jsonStr
-          });
-
-          if (res.ok) {
-            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            setVisualStatus('synced', 'Синхр: ' + timeStr);
-          } else {
-            setVisualStatus('error', 'Локально');
-          }
-        } catch (e) {
-          console.warn('Network offline during push:', e);
-          setVisualStatus('error', 'Офлайн');
-        } finally {
-          isSyncInProgress = false;
-        }
+          const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState };
+          const res = await fetch(FIREBASE_SYNC_ENDPOINT, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          if (res.ok) setVisualStatus('synced', 'Синхр: ' + new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }));
+          else setVisualStatus('error');
+        } catch (e) { setVisualStatus('error'); } finally { isSyncInProgress = false; }
       };
-
-      if (isImmediate) {
-        await execPush();
-      } else {
-        pushDebounceTimer = setTimeout(execPush, 350);
-      }
+      if (isImmediate) await execPush();
+      else pushDebounceTimer = setTimeout(execPush, 350);
     }
 
     async function pullFromCloud(showNotice = false) {
       if (isSyncInProgress) return;
       isSyncInProgress = true;
-      setVisualStatus('syncing', 'Загрузка...');
-
+      setVisualStatus('syncing');
       try {
-        const res = await fetch(FIREBASE_SYNC_ENDPOINT + '?t=' + Date.now(), {
-          method: 'GET',
-          cache: 'no-store'
-        });
-
+        const res = await fetch(FIREBASE_SYNC_ENDPOINT + '?t=' + Date.now(), { method: 'GET', cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data && typeof data === 'object') {
-            if (data.lessonsState) {
-              lessonsState = data.lessonsState;
-              localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
-            }
-            if (data.collapsedState) {
-              collapsedState = data.collapsedState;
-              localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
-            }
+            if (data.lessonsState) { lessonsState = data.lessonsState; localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState)); }
+            if (data.collapsedState) { collapsedState = data.collapsedState; localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState)); }
             renderDiary();
-
-            if (data.savedCalcsState) {
-              savedCalcsState = data.savedCalcsState;
-              localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
-              renderSavedCalcs();
-            }
-
+            if (data.savedCalcsState) { savedCalcsState = data.savedCalcsState; localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState)); renderSavedCalcs(); }
             if (data.calc) {
               if (data.calc.h) heightInput.value = data.calc.h;
               if (data.calc.og) bustInput.value = data.calc.og;
               if (data.calc.ob) hipsInput.value = data.calc.ob;
               calculate();
             }
-
-            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            setVisualStatus('synced', 'Синхр: ' + timeStr);
-            if (showNotice) {
-              showToast('Данные успешно загружены из облака!');
-            }
+            setVisualStatus('synced', 'Синхр: ' + new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }));
+            if (showNotice) showToast('Данные успешно загружены!');
           }
-        } else {
-          setVisualStatus('error', 'Локально');
-        }
-      } catch (e) {
-        console.warn('Could not pull from cloud:', e);
-        setVisualStatus('error', 'Офлайн (локально)');
-      } finally {
-        isSyncInProgress = false;
-      }
+        } else { setVisualStatus('error'); }
+      } catch (e) { setVisualStatus('error'); } finally { isSyncInProgress = false; }
     }
 
-    if (syncBadge) {
-      syncBadge.style.cursor = 'pointer';
-      syncBadge.addEventListener('click', () => {
-        syncSettingsModal.style.display = 'flex';
-      });
-    }
-
-    if (closeSyncSettingsBtn) {
-      closeSyncSettingsBtn.addEventListener('click', () => {
-        syncSettingsModal.style.display = 'none';
-      });
-    }
-
-    syncSettingsModal.addEventListener('click', (e) => {
-      if (e.target === syncSettingsModal) {
-        syncSettingsModal.style.display = 'none';
-      }
-    });
-
-    modalForcePullBtn.addEventListener('click', () => {
-      pullFromCloud(true);
-    });
-
-    modalForcePushBtn.addEventListener('click', async () => {
-      await pushToCloud(true);
-      showToast('Данные отправлены в облако!');
-    });
+    syncBadge.addEventListener('click', () => { syncSettingsModal.style.display = 'flex'; });
+    closeSyncSettingsBtn.addEventListener('click', () => { syncSettingsModal.style.display = 'none'; });
+    syncSettingsModal.addEventListener('click', (e) => { if (e.target === syncSettingsModal) syncSettingsModal.style.display = 'none'; });
+    modalForcePullBtn.addEventListener('click', () => pullFromCloud(true));
+    modalForcePushBtn.addEventListener('click', async () => { await pushToCloud(true); showToast('Отправлено в облако!'); });
 
     exportBackupFileBtn.addEventListener('click', () => {
-      const payload = collectAppData();
+      const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `alena_grass_backup_${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
+      const a = document.createElement('a'); a.href = url; a.download = `alena_grass_backup_${new Date().toISOString().slice(0, 10)}.json`; a.click();
       URL.revokeObjectURL(url);
       showToast('Резервная копия сохранена!');
     });
 
-    importBackupFileBtn.addEventListener('click', () => {
-      modalBackupFileInput.click();
-    });
-
+    importBackupFileBtn.addEventListener('click', () => modalBackupFileInput.click());
     modalBackupFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -2420,59 +2050,30 @@
               if (imported.calc.og) bustInput.value = imported.calc.og;
               if (imported.calc.ob) hipsInput.value = imported.calc.ob;
             }
-            saveDiaryState();
-            saveSavedCalcsState();
-            saveCalcState();
-            renderDiary();
-            renderSavedCalcs();
-            calculate();
+            saveDiaryState(); saveSavedCalcsState(); saveCalcState();
+            renderDiary(); renderSavedCalcs(); calculate();
             showToast('Резервная копия восстановлена!');
             syncSettingsModal.style.display = 'none';
           }
-        } catch (err) {
-          alert('Не удалось прочитать файл резервной копии');
-        }
+        } catch (err) { alert('Ошибка чтения файла'); }
       };
       reader.readAsText(file);
     });
 
-    const originalSaveDiary = saveDiaryState;
-    saveDiaryState = function() {
-      originalSaveDiary();
-      pushToCloud(false);
-    };
+    const origSaveDiary = saveDiaryState; saveDiaryState = function() { origSaveDiary(); pushToCloud(false); };
+    const origSaveCalc = saveCalcState; saveCalcState = function() { origSaveCalc(); pushToCloud(false); };
+    const origSaveSavedCalcs = saveSavedCalcsState; saveSavedCalcsState = function() { origSaveSavedCalcs(); pushToCloud(true); };
 
-    const originalSaveCalc = saveCalcState;
-    saveCalcState = function() {
-      originalSaveCalc();
-      pushToCloud(false);
-    };
+    window.addEventListener('load', () => setTimeout(() => pullFromCloud(false), 200));
+    window.addEventListener('focus', () => pullFromCloud(false));
+    setInterval(() => { if (document.visibilityState === 'visible' && !isSyncInProgress) pullFromCloud(false); }, 20000);
 
-    const originalSaveSavedCalcs = saveSavedCalcsState;
-    saveSavedCalcsState = function() {
-      originalSaveSavedCalcs();
-      pushToCloud(true);
-    };
-
-    window.addEventListener('load', () => {
-      setTimeout(() => pullFromCloud(false), 200);
-    });
-
-    window.addEventListener('focus', () => {
-      pullFromCloud(false);
-    });
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        pullFromCloud(false);
-      }
-    });
-
-    setInterval(() => {
-      if (document.visibilityState === 'visible' && !isSyncInProgress) {
-        pullFromCloud(false);
-      }
-    }, 20000);
+    loadCalcState();
+    calculate();
+    loadSavedCalcsState();
+    renderSavedCalcs();
+    loadDiaryState();
+    renderDiary();
   </script>
 </body>
 </html>
