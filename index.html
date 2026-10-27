@@ -8,8 +8,6 @@
   <style>
     :root {
       --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent: #ec4899;
       --bg: #0f172a;
       --surface: #1e293b;
       --text-main: #f8fafc;
@@ -17,48 +15,34 @@
       --border: #334155;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
 
     body { background-color: var(--bg); color: var(--text-main); padding: 16px; padding-bottom: 80px; }
 
-    .app-container { max-width: 650px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .app-container { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 
-    header { text-align: center; margin-bottom: 4px; }
-    header h1 { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, #a5b4fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    header p { font-size: 0.75rem; color: var(--text-muted); }
+    header { text-align: center; margin-bottom: 8px; }
+    header h1 { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #a5b4fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
 
     .input-box { display: flex; flex-direction: column; gap: 4px; }
     .input-box label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .input-box input { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.95rem; outline: none; }
+    .input-box input { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none; }
     .input-box input:focus { border-color: var(--primary); }
 
-    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
-    .stat-badge { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 8px 4px; }
-    .stat-badge .title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
-    .stat-badge .val { font-size: 0.95rem; font-weight: 700; color: #a5b4fc; }
+    .btn-save { background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 10px; width: 100%;}
+    .btn-save:hover { background: #4f46e5; }
 
-    .btn-save { background: var(--primary); color: #fff; border: none; padding: 11px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; font-size: 0.9rem; }
-    .btn-save:hover { background: var(--primary-hover); }
+    .measure-row { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 8px; }
+    .measure-code { font-weight: 800; color: #ec4899; min-width: 40px; font-size: 0.85rem; }
+    .measure-name { font-size: 0.85rem; color: #e2e8f0; flex: 1; margin: 0 10px; }
+    .measure-value { font-size: 1rem; font-weight: 700; color: #38bdf8; }
 
-    /* Переключатель режима мерок */
-    .filter-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-    .tab-btn { background: #0f172a; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; white-space: nowrap; }
-    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-    .measure-row { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); margin-top: 6px; }
-    .measure-info { display: flex; align-items: center; gap: 8px; flex: 1; }
-    .measure-code { font-weight: 800; color: var(--accent); min-width: 48px; font-size: 0.85rem; }
-    .measure-name { font-size: 0.82rem; color: #e2e8f0; }
-
-    .values-box { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
-    .measure-value-primary { font-size: 0.98rem; font-weight: 700; color: #38bdf8; }
-    .measure-value-secondary { font-size: 0.75rem; color: #34d399; font-weight: 600; margin-top: 1px; }
-
-    .client-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    #saved-clients { margin-top: 10px; }
+    .client-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
     .client-card strong { color: #a5b4fc; }
     .client-card small { color: var(--text-muted); font-size: 0.75rem; }
   </style>
@@ -68,249 +52,117 @@
 <div class="app-container">
   <header>
     <h1>CoutureCAD Pro</h1>
-    <p>Калькулятор градации размерных признаков (Grasser)</p>
   </header>
 
-  <!-- Профиль клиента -->
+  <!-- 1. Профиль клиента -->
   <section class="card">
     <div class="input-box">
       <label>Имя клиента</label>
-      <input type="text" placeholder="Например: Алёна Б." id="client-name">
+      <input type="text" placeholder="Анна Иванова" id="client-name">
     </div>
   </section>
 
-  <!-- Ввод основных мерок -->
+  <!-- 2. Параметры фигуры (Калькулятор) -->
   <section class="card">
     <div class="grid-3">
       <div class="input-box">
-        <label>Рост (Р, см)</label>
+        <label>Рост (см)</label>
         <input type="number" id="height" value="170" step="1">
       </div>
       <div class="input-box">
-        <label>Обхват груди (ОГ, см)</label>
+        <label>Обхват груди (см)</label>
         <input type="number" id="chest" value="80" step="1">
       </div>
       <div class="input-box">
-        <label>Обхват бедер (ОБ, см)</label>
+        <label>Обхват бедер (см)</label>
         <input type="number" id="hips" value="90" step="1">
       </div>
     </div>
-
-    <div class="stats-row">
-      <div class="stat-badge">
-        <div class="title">k_рост</div>
-        <div class="val" id="k-height">+1.00</div>
-      </div>
-      <div class="stat-badge">
-        <div class="title">k_разм</div>
-        <div class="val" id="k-chest">-2.00</div>
-      </div>
-      <div class="stat-badge">
-        <div class="title">Полнота</div>
-        <div class="val" id="fullness-group">3-я гр.</div>
-      </div>
-    </div>
   </section>
 
+  <!-- Блок сохранения -->
   <button class="btn-save" onclick="saveClient()">💾 Сохранить клиента</button>
 
-  <!-- Таблица размерных признаков -->
+  <!-- 3. Расчет мерок -->
   <section class="card">
-    <div class="filter-tabs">
-      <button class="tab-btn active" onclick="setDisplayMode('all', this)">Все мерки</button>
-      <button class="tab-btn" onclick="setDisplayMode('semi', this)">Только С (полуобхваты)</button>
-      <button class="tab-btn" onclick="setDisplayMode('full', this)">Только О (обхваты)</button>
-    </div>
-
-    <div class="input-box">
-      <input type="text" id="search" placeholder="Поиск мерки (код или название)...">
-    </div>
-
     <div id="measure-list"></div>
   </section>
 
-  <!-- Сохраненные клиенты -->
+  <!-- Список сохраненных -->
   <div id="saved-clients"></div>
 </div>
 
 <script>
-  // Полная база всех признаков из таблицы
+  // Данные мерок (5 для MVP)
   const measurements = [
-    { code: "P", name: "Рост", base: 164.0, dp: 6.0, dog: 6.0, isSemi: false },
-    { code: "Сш", fullCode: "Ош", name: "Полуобхват шеи", base: 17.4, dp: 0.0, dog: 0.4, isSemi: true },
-    { code: "Сг1", fullCode: "Ог1", name: "Полуобхват груди первый", base: 42.6, dp: 0.2, dog: 1.6, isSemi: true },
-    { code: "Сг2", fullCode: "Ог2", name: "Полуобхват груди второй", base: 46.3, dp: 0.0, dog: 2.0, isSemi: true },
-    { code: "Сг3", fullCode: "Ог3", name: "Полуобхват груди третий", base: 44.0, dp: 0.0, dog: 2.0, isSemi: true },
-    { code: "Ст", fullCode: "От", name: "Полуобхват талии", base: 34.4, dp: -0.1, dog: 2.0, isSemi: true },
-    { code: "Сб", fullCode: "Об", name: "Полуобхват бедер с учетом выступа живота", base: 49.0, dp: 0.0, dog: 2.0, isSemi: true },
-    { code: "Шг", name: "Ширина груди", base: 16.4, dp: 0.2, dog: 0.4, isSemi: false },
-    { code: "Дтс", name: "Длина спины до талии от высшей точки шва", base: 40.2, dp: 1.2, dog: 0.1, isSemi: false },
-    { code: "Дтс2", name: "Длина спины до талии от основания шеи", base: 42.9, dp: 1.1, dog: 0.2, isSemi: false },
-    { code: "Дтп2", name: "Длина переда до талии от основания шеи", base: 43.2, dp: 1.0, dog: 0.7, isSemi: false },
-    { code: "Вг2", name: "Высота груди от основания шеи", base: 27.0, dp: 0.4, dog: 0.9, isSemi: false },
-    { code: "Впрз2", name: "Высота проймы сзади от основания шеи", base: 21.4, dp: 0.3, dog: 0.2, isSemi: false },
-    { code: "Впк2", name: "Высота плеча косая от основания шеи", base: 42.8, dp: 0.4, dog: 0.8, isSemi: false },
-    { code: "Шс", name: "Ширина спины", base: 17.2, dp: 0.0, dog: 0.5, isSemi: false },
-    { code: "Шп", name: "Ширина плечевого ската", base: 13.1, dp: 0.3, dog: 0.1, isSemi: false },
-    { code: "Др.зап.", name: "Длина рукава до сочленения кисти", base: 55.8, dp: 2.2, dog: 0.2, isSemi: false },
-    { code: "Оп", name: "Обхват плеча", base: 28.2, dp: 0.0, dog: 1.4, isSemi: false },
-    { code: "Озап", name: "Обхват запястья", base: 15.7, dp: 0.0, dog: 0.3, isSemi: false },
-    { code: "dпзр", name: "Переднезадний диаметр руки", base: 10.1, dp: 0.0, dog: 0.6, isSemi: false },
-    { code: "Дсб", name: "Длина ноги по боку от талии до пола", base: 106.0, dp: 4.5, dog: 0.1, isSemi: false },
-    { code: "Дсп", name: "Длина ноги по переду от талии до пола", base: 104.4, dp: 4.4, dog: 0.1, isSemi: false },
-    { code: "Дтк", name: "Длина от талии до коленной точки", base: 59.0, dp: 2.5, dog: 0.1, isSemi: false }
+    { code: "P", name: "Рост", base: 164, dp: 6, dog: 6 },
+    { code: "Сш", name: "П/о шеи", base: 17.4, dp: 0, dog: 0.4 },
+    { code: "Сг1", name: "П/о груди 1", base: 42.6, dp: 0.2, dog: 1.6 },
+    { code: "Ст", name: "П/о талии", base: 34.4, dp: -0.1, dog: 2 },
+    { code: "Сб", name: "П/о бедер с жив.", base: 49, dp: 0, dog: 2 }
   ];
-
-  let displayMode = 'all'; // 'all', 'semi', 'full'
 
   const heightInput = document.getElementById('height');
   const chestInput = document.getElementById('chest');
-  const hipsInput = document.getElementById('hips');
-  const searchInput = document.getElementById('search');
-
-  const kHeightEl = document.getElementById('k-height');
-  const kChestEl = document.getElementById('k-chest');
-  const fullnessEl = document.getElementById('fullness-group');
   const listContainer = document.getElementById('measure-list');
 
-  function setDisplayMode(mode, btn) {
-    displayMode = mode;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    render();
-  }
-
+  // Функция расчета
   function render() {
     const H = parseFloat(heightInput.value) || 164;
     const Og = parseFloat(chestInput.value) || 88;
-    const Ob = parseFloat(hipsInput.value) || 90;
-    const query = searchInput.value.toLowerCase().trim();
-
     const k_rost = (H - 164) / 6;
     const k_razm = (Og - 88) / 4;
-    const fullness = ((Ob - Og) + 2) / 4;
-
-    kHeightEl.textContent = (k_rost >= 0 ? '+' : '') + k_rost.toFixed(2);
-    kChestEl.textContent = (k_razm >= 0 ? '+' : '') + k_razm.toFixed(2);
-    fullnessEl.textContent = fullness.toFixed(1) + '-я гр.';
 
     listContainer.innerHTML = '';
-
     measurements.forEach(item => {
-      // Фильтр по поиску
-      if (query && !item.name.toLowerCase().includes(query) && !item.code.toLowerCase().includes(query) && (!item.fullCode || !item.fullCode.toLowerCase().includes(query))) {
-        return;
-      }
-
-      // Если включен режим фильтра
-      if (displayMode === 'semi' && !item.isSemi) return;
-
-      const semiVal = item.base + (item.dp * k_rost) + (item.dog * k_razm);
-      const fullVal = semiVal * 2;
-
-      let codeHtml = `<span class="measure-code">${item.code}</span>`;
-      let valueHtml = `<span class="measure-value-primary">${semiVal.toFixed(1)} см</span>`;
-
-      if (item.isSemi) {
-        if (displayMode === 'full') {
-          codeHtml = `<span class="measure-code" style="color:#34d399">${item.fullCode}</span>`;
-          valueHtml = `<span class="measure-value-primary" style="color:#34d399">${fullVal.toFixed(1)} см</span>`;
-        } else {
-          // Режим "Все" или "Полуобхваты" — показываем и С, и О
-          codeHtml = `<span class="measure-code">${item.code} <small style="color:var(--text-muted); font-size:0.7rem">(${item.fullCode})</small></span>`;
-          valueHtml = `
-            <span class="measure-value-primary">${semiVal.toFixed(1)} см</span>
-            <span class="measure-value-secondary">${item.fullCode}: ${fullVal.toFixed(1)} см</span>
-          `;
-        }
-      }
-
+      const calculated = item.base + (item.dp * k_rost) + (item.dog * k_razm);
       const row = document.createElement('div');
       row.className = 'measure-row';
       row.innerHTML = `
-        <div class="measure-info">
-          ${codeHtml}
-          <span class="measure-name">${item.name}</span>
-        </div>
-        <div class="values-box">
-          ${valueHtml}
-        </div>
+        <span class="measure-code">${item.code}</span>
+        <span class="measure-name">${item.name}</span>
+        <span class="measure-value">${calculated.toFixed(1)}</span>
       `;
       listContainer.appendChild(row);
     });
   }
 
-  [heightInput, chestInput, hipsInput, searchInput].forEach(el => el.addEventListener('input', render));
-  render();
+  [heightInput, chestInput].forEach(el => el.addEventListener('input', render));
+  render(); // Первый запуск
 
-  // --- Работа с клиентами и LocalStorage ---
+  // --- ЛОГИКА СОХРАНЕНИЯ (LocalStorage) ---
+
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js');
   }
 
   function saveClient() {
-    const name = document.getElementById('client-name').value.trim();
-    if (!name) {
-      alert("Пожалуйста, введите имя клиента!");
-      return;
-    }
-
     const data = {
-      id: Date.now(),
-      name: name,
-      height: heightInput.value,
-      chest: chestInput.value,
-      hips: hipsInput.value,
-      date: new Date().toLocaleDateString('ru-RU')
+        name: document.getElementById('client-name').value || "Без имени",
+        height: document.getElementById('height').value,
+        chest: document.getElementById('chest').value,
+        date: new Date().toLocaleDateString()
     };
+    if(data.name === "Без имени") { alert("Введите имя клиента!"); return; }
 
-    let db = JSON.parse(localStorage.getItem('couture_clients') || '[]');
-    db.unshift(data);
-    localStorage.setItem('couture_clients', JSON.stringify(db));
-    document.getElementById('client-name').value = '';
-    alert('Клиент успешно сохранен!');
+    let db = JSON.parse(localStorage.getItem('clients') || '[]');
+    db.push(data);
+    localStorage.setItem('clients', JSON.stringify(db));
+    alert('Клиент сохранен!');
     loadClients();
-  }
-
-  function deleteClient(id) {
-    let db = JSON.parse(localStorage.getItem('couture_clients') || '[]');
-    db = db.filter(c => c.id !== id);
-    localStorage.setItem('couture_clients', JSON.stringify(db));
-    loadClients();
-  }
-
-  function loadClientData(h, c, hips, name) {
-    heightInput.value = h;
-    chestInput.value = c;
-    hipsInput.value = hips;
-    document.getElementById('client-name').value = name;
-    render();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function loadClients() {
-    const db = JSON.parse(localStorage.getItem('couture_clients') || '[]');
-    const container = document.getElementById('saved-clients');
-    if (!db.length) {
-      container.innerHTML = '';
-      return;
-    }
-
-    container.innerHTML = `<h3 style="margin: 16px 0 8px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Сохраненные профили (${db.length})</h3>`;
-    db.forEach(c => {
-      const card = document.createElement('div');
-      card.className = 'client-card';
-      card.innerHTML = `
-        <div onclick="loadClientData(${c.height}, ${c.chest}, ${c.hips}, '${c.name}')" style="cursor: pointer; flex: 1;">
-          <strong>${c.name}</strong> <small>(${c.date})</small><br>
-          <small>Р: ${c.height} | ОГ: ${c.chest} | ОБ: ${c.hips}</small>
-        </div>
-        <button onclick="deleteClient(${c.id})" style="background: transparent; border: none; color: #ef4444; font-size: 1rem; cursor: pointer; padding: 4px 8px;">✕</button>
-      `;
-      container.appendChild(card);
-    });
+    const db = JSON.parse(localStorage.getItem('clients') || '[]');
+    const list = document.getElementById('saved-clients');
+    list.innerHTML = db.length ? '<h3 style="margin:15px 0 10px; font-size:0.9rem; color:var(--text-muted)">Сохраненные клиенты:</h3>' : '';
+    list.innerHTML += db.map(c => `
+      <div class="client-card">
+        <strong>${c.name}</strong> <small>${c.date}</small><br>
+        ОГ: ${c.chest} | Рост: ${c.height}
+      </div>
+    `).join('');
   }
-
   loadClients();
 </script>
 </body>
