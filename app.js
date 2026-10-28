@@ -912,19 +912,25 @@ let drawCtx = null;
 let currentDrawColor = '#ef4444';
 
 function updatePhotoTransform() {
-  modalImage.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+  const transformStr = `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${currentZoom})`;
+  modalImage.style.transform = transformStr;
   if (drawCanvas) {
-    drawCanvas.style.transform = `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${currentZoom})`;
+    drawCanvas.style.transform = transformStr;
   }
   zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
 }
 
 function resizeCanvasToImage() {
   if (!drawCanvas || !modalImage.naturalWidth) return;
+  const renderedWidth = modalImage.clientWidth || modalImage.width;
+  const renderedHeight = modalImage.clientHeight || modalImage.height;
+  if (!renderedWidth || !renderedHeight) return;
+
   drawCanvas.width = modalImage.naturalWidth;
   drawCanvas.height = modalImage.naturalHeight;
-  drawCanvas.style.width = modalImage.clientWidth + 'px';
-  drawCanvas.style.height = modalImage.clientHeight + 'px';
+  drawCanvas.style.width = renderedWidth + 'px';
+  drawCanvas.style.height = renderedHeight + 'px';
+
   drawCtx = drawCanvas.getContext('2d');
   drawCtx.strokeStyle = currentDrawColor;
   drawCtx.lineWidth = Math.max(3, Math.round(modalImage.naturalWidth / 220));
@@ -940,23 +946,27 @@ function updateGalleryView() {
   
   if (isDrawingMode) toggleDrawingMode(false);
 
+  currentZoom = 1;
+  panX = 0;
+  panY = 0;
+  updatePhotoTransform();
+
   modalImage.onload = () => {
-    resizeCanvasToImage();
+    requestAnimationFrame(() => {
+      resizeCanvasToImage();
+      updatePhotoTransform();
+    });
   };
   modalImage.src = photos[activePhotoMeta.imgIdx];
   photoCounterBadge.textContent = `${activePhotoMeta.imgIdx + 1} / ${total}`;
   prevPhotoBtn.style.display = total > 1 ? 'flex' : 'none';
   nextPhotoBtn.style.display = total > 1 ? 'flex' : 'none';
-  currentZoom = 1;
-  panX = 0;
-  panY = 0;
-  updatePhotoTransform();
 }
-
 function openPhotoModal(pIdx, aIdx, imgIdx) {
   activePhotoMeta = { pIdx, aIdx, imgIdx };
-  updateGalleryView();
+  // Сначала делаем модальное окно видимым, чтобы браузер знал реальные размеры экрана и картинки
   photoModal.style.display = 'flex';
+  updateGalleryView();
 }
 
 function closePhotoViewer() {
