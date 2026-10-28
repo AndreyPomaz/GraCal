@@ -124,7 +124,6 @@
       white-space: nowrap;
     }
 
-    /* Дневник курса на всю ширину снизу */
     .tab-btn.full-width {
       grid-column: span 2;
     }
@@ -729,7 +728,7 @@
     </div>
   </header>
 
-  <!-- Navigation Tabs in 2 Rows (Калькулятор | Моделирование в 1-й строке, Дневник во 2-й строке) -->
+  <!-- Navigation Tabs: Калькулятор | Моделирование | Дневник курса (2 строки) -->
   <div class="top-nav">
     <button class="tab-btn active" id="tabBtnCalc">📐 Калькулятор</button>
     <button class="tab-btn" id="tabBtnProjects">✂️ Моделирование</button>
@@ -785,153 +784,4 @@
           <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск мерки или кода...">
           <div class="btn-group">
             <button class="btn" id="copyBtn">📋 Копия</button>
-            <button class="btn" id="resetBtn">↺ Сброс</button>
-          </div>
-        </div>
-
-        <div id="measureCardsContainer" class="measure-list"></div>
-
-        <div id="measureTableContainer" style="display: none; overflow-x: auto;">
-          <table class="table-view-mode" style="display: table;">
-            <thead>
-              <tr>
-                <th>Код</th>
-                <th>Признак (с полным обхватом)</th>
-                <th style="text-align: right;">База</th>
-                <th style="text-align: right;">ΔР</th>
-                <th style="text-align: right;">ΔОГ</th>
-                <th style="text-align: right; color: var(--accent);">ИТОГ</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" id="savedCalcsCard">
-        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span>📂 Сохраненные расчеты <span id="savedCountBadge" style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:var(--accent); padding:2px 8px; border-radius:10px;">0</span></span>
-          <button class="btn btn-primary" id="openSaveModalBtn" style="padding:6px 12px; font-size:0.78rem; flex:0 0 auto; width:auto;">💾 Сохранить расчет</button>
-        </div>
-        <div id="savedCalcsList" style="display:flex; flex-direction:column; gap:8px;"></div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TAB 2: MODELING / PROJECTS ==================== -->
-    <div id="tabContentProjects" class="tab-content">
-      <div class="card">
-        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span>✂️ Проекты моделирования</span>
-          <button class="btn btn-primary" id="addProjectBtn" style="width:auto; padding:6px 12px; font-size:0.78rem;">+ Новый проект</button>
-        </div>
-        <div id="projectsList" style="display:flex; flex-direction:column; gap:8px;"></div>
-      </div>
-    </div>
-
-    <!-- ==================== TAB 3: COURSE DIARY ==================== -->
-    <div id="tabContentDiary" class="tab-content">
-      
-      <div class="overall-progress-box">
-        <div class="overall-header">
-          <div>
-            <div style="font-weight: 800; font-size: 1rem; color: #fff;">ПРОГРЕСС КУРСА</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Курс «Закройщик-портной» • 19 блоков, 144 урока</div>
-          </div>
-          <div style="text-align: right;">
-            <div id="overallPercentText" style="font-size: 1.25rem; font-weight: 800; color: var(--accent);">0%</div>
-            <div id="overallCountText" style="font-size: 0.72rem; color: var(--text-muted);">0 / 144 уроков</div>
-          </div>
-        </div>
-
-        <div class="progress-bar-bg">
-          <div id="overallProgressBar" class="progress-bar-fill"></div>
-        </div>
-
-        <div class="info-badges-grid">
-          <div class="info-badge-card payment">
-            <span style="font-size:1.1rem;">💳</span>
-            <div><strong style="color:#fbbf24;">Оплаты:</strong> 2 часть: 11.11.26 • 3 часть: 11.02.27 • 4 часть: до 11.05.27</div>
-          </div>
-          <div class="info-badge-card holiday">
-            <span style="font-size:1.1rem;">🌴</span>
-            <div><strong style="color:#c084fc;">Каникулы:</strong> 31.12–10.01 • 02.02–02.03 • 08.03, 03.05, 10.05, 14.06</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="actions-bar">
-        <input type="text" id="searchDiaryInput" class="search-input" placeholder="🔍 Поиск урока, темы или блока...">
-        <div class="btn-group">
-          <button class="btn" id="collapseAllBtn">Свернуть всё</button>
-          <button class="btn" id="expandAllBtn">Развернуть</button>
-          <button class="btn" id="resetDiaryBtn">↺ Сброс</button>
-        </div>
-      </div>
-
-      <div id="courseBlocksContainer"></div>
-
-    </div>
-
-  </div>
-
-  <!-- Modal for Photo Viewer -->
-  <div id="photoModal" onclick="this.style.display='none'">
-    <img id="modalImage" src="" alt="Full view">
-  </div>
-
-  <!-- Save Calculation Modal -->
-  <div id="saveCalcModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:16px;">
-    <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:420px; width:100%; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">💾 Сохранить расчет</h3>
-        <button id="closeSaveModalBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
-      </div>
-      <p style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px;">Введите название для текущих параметров:</p>
-      <div style="margin-bottom:14px;">
-        <input type="text" id="calcNameInput" placeholder="например: Платье для Анны..." style="width:100%; background:#090d16; border:1px solid #334155; border-radius:8px; padding:10px 12px; color:#fff; font-size:0.92rem; outline:none;">
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" id="confirmSaveCalcBtn" style="flex:1; justify-content:center; padding:10px;">Сохранить</button>
-        <button class="btn" id="cancelSaveCalcBtn" style="justify-content:center; padding:10px;">Отмена</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cloud Sync Settings Modal -->
-  <div id="syncSettingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; padding:16px;">
-    <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:440px; width:100%; padding:20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">☁️ Статус синхронизации</h3>
-        <button id="closeSyncSettingsBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
-      </div>
-      <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:8px; border:1px solid #334155; margin-bottom:14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:4px;">
-          <span style="color:#94a3b8;">Состояние:</span>
-          <span id="modalSyncStatus" style="font-weight:700; color:#10b981;">🟢 Синхронизировано</span>
-        </div>
-        <div style="font-size:0.72rem; color:#64748b;" id="modalLastSyncTime">Время: только что</div>
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" id="modalForcePullBtn" style="flex:1;">📥 Загрузить</button>
-        <button class="btn" id="modalForcePushBtn" style="flex:1;">📤 Отправить</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast">Сохранено!</div>
-
-  <script>
-    const measurementsData = [
-      { code: "P", name: "Рост", bases: [164, 164, 164, 164, 164, 164], dH: 6.0, dB: 6.0 },
-      { code: "Сш", name: "Полуобхват шеи", bases: [17.4, 17.4, 17.4, 17.4, 17.4, 17.4], dH: 0.0, dB: 0.4 },
-      { code: "Сг1", name: "Полуобхват груди первый", bases: [42.0, 42.2, 42.4, 42.6, 42.8, 43.0], dH: 0.2, dB: 1.6 },
-      { code: "Сг2", name: "Полуобхват груди второй", bases: [45.7, 45.9, 46.1, 46.3, 46.5, 46.7], dH: 0.0, dB: 2.0 },
-      { code: "Сг3", name: "Полуобхват груди третий", bases: [44.0, 44.0, 44.0, 44.0, 44.0, 44.0], dH: 0.0, dB: 2.0 },
-      { code: "Ст", name: "Полуобхват талии", bases: [32.6, 33.2, 33.8, 34.4, 35.0, 35.6], dH: -0.1, dynamicB: true, calcShiftB: (og, kB, g) => (og <= 108 ? kB * 2.0 : 10.0 + (kB - 5.0) * 2.5), stepB: (og) => (og > 108 ? 2.5 : 2.0) },
-      { code: "Сб", name: "Полуобхват бедер с учетом выступа живота", bases: [43.0, 45.0, 47.0, 49.0, 51.0, 53.0], dH: 0.0, dB: 2.0 },
-      { code: "Шг", name: "Ширина груди", bases: [16.4, 16.4, 16.4, 16.4, 16.4, 16.4], dH: 0.2, dB: 0.4 },
-      { code: "Дтс", name: "Длина спины до талии от высшей точки шва", bases: [40.2, 40.2, 40.2, 40.2, 40.2, 40.2], dH: 1.2, dB: 0.1 },
-      { code: "Дтс2", name: "Длина спины до талии от точки основания шеи", bases: [42.9, 42.9, 42.9, 42.9, 42.9, 42.9], dH: 1.1, dB: 0.2 },
-      { code: "Дтп2", name: "Длина переда до талии от точки основания шеи", bases: [43.8, 43.6, 43.4, 43.2, 43.0, 42.8], dH: 1.0, dynamicB: true, calcShiftB: (og, kB, g) => (g === 0 ? kB * 0.7 : (og <= 108 ? kB * 0.7 : 3.5 + (kB - 5.0) * 0.8)), stepB: (og, g) => (g >= 1 && og > 108 ? 0.8 : 0.7) },
-      { code: "Вг
+            <button class="btn" id="
