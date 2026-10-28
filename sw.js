@@ -1,7 +1,10 @@
-const CACHE_NAME = 'grass-v20-gist-sync';
+const CACHE_NAME = 'grass-v26-modular';
 const ASSETS = [
   './',
   './index.html',
+  './styles.css',
+  './data.js',
+  './app.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -12,33 +15,25 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
   );
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.url.includes('api.github.com')) {
+  if (e.request.url.includes('firebasedatabase.app') || e.request.url.includes('firebaseio.com')) {
     e.respondWith(fetch(e.request));
     return;
   }
   e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
+    caches.match(e.request).then(res => res || fetch(e.request))
   );
 });
