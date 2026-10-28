@@ -63,12 +63,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
 
     .logo-area {
       display: flex;
       align-items: center;
       gap: 10px;
+      min-width: 0;
     }
 
     .logo-icon {
@@ -82,6 +84,7 @@
       color: #fff;
       font-size: 18px;
       box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+      flex-shrink: 0;
     }
 
     h1 {
@@ -89,11 +92,33 @@
       font-weight: 800;
       color: #fff;
       letter-spacing: -0.01em;
+      white-space: nowrap;
     }
 
     .subtitle {
       font-size: 0.72rem;
       color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Fixed 1-line Sync Badge */
+    #syncBadge {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid #334155;
+      color: #38bdf8;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      height: 28px;
     }
 
     /* Top Navigation Tabs - 2 Rows on mobile, 3 Columns on desktop */
@@ -308,7 +333,7 @@
       flex-wrap: wrap;
     }
 
-    button.btn {
+    button.btn, label.btn {
       background: var(--card-bg);
       color: #fff;
       border: 1px solid var(--card-border);
@@ -341,18 +366,18 @@
         width: auto;
         flex-wrap: nowrap;
       }
-      button.btn {
+      button.btn, label.btn {
         flex: 0 0 auto;
         padding: 8px 12px;
         font-size: 0.8rem;
       }
     }
 
-    button.btn:active {
+    button.btn:active, label.btn:active {
       transform: scale(0.97);
     }
 
-    button.btn-primary {
+    button.btn-primary, label.btn-primary {
       background: var(--accent);
       color: #0f172a;
       border-color: var(--accent);
@@ -502,14 +527,20 @@
       color: #cbd5e1;
     }
 
-    /* === MODELING / PROJECTS STYLES === */
+    /* === MODELING / PROJECTS & STATUS STYLES === */
     .project-folder-card {
       background: var(--row-alt);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 12px;
       margin-bottom: 10px;
+      transition: border-color 0.2s ease;
     }
+
+    .project-folder-card.status-active { border-left: 4px solid var(--accent); }
+    .project-folder-card.status-fitting { border-left: 4px solid var(--warning); }
+    .project-folder-card.status-done { border-left: 4px solid var(--success); }
+    .project-folder-card.status-archive { border-left: 4px solid var(--text-muted); opacity: 0.85; }
 
     .project-attempts-box {
       margin-top: 10px;
@@ -523,9 +554,32 @@
     .attempt-card {
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.05);
+      border-left: 3px solid var(--warning);
       border-radius: 10px;
       padding: 10px;
     }
+
+    .attempt-card.att-status-work { border-left-color: var(--warning); }
+    .attempt-card.att-status-defect { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
+    .attempt-card.att-status-approved { border-left-color: var(--success); background: rgba(16, 185, 129, 0.06); }
+
+    .status-select-badge {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .status-select-badge.st-work { color: #fcd34d; border-color: rgba(245, 158, 11, 0.4); }
+    .status-select-badge.st-defect { color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); }
+    .status-select-badge.st-approved { color: #6ee7b7; border-color: rgba(16, 185, 129, 0.4); }
+    .status-select-badge.st-active { color: #bae6fd; border-color: rgba(56, 189, 248, 0.4); }
+    .status-select-badge.st-archive { color: #94a3b8; border-color: #475569; }
 
     .modeling-select {
       background: var(--input-bg);
@@ -591,13 +645,14 @@
     }
 
     .photo-thumb {
-      width: 70px;
-      height: 70px;
+      width: 72px;
+      height: 72px;
       border-radius: 8px;
       object-fit: cover;
       border: 1px solid var(--card-border);
       cursor: zoom-in;
       transition: transform 0.15s ease;
+      display: block;
     }
 
     .photo-thumb:hover {
@@ -612,9 +667,9 @@
       color: #fff;
       border: none;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 0.68rem;
+      width: 22px;
+      height: 22px;
+      font-size: 0.7rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -631,7 +686,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(5, 8, 15, 0.94);
+      background: rgba(5, 8, 15, 0.95);
       z-index: 500;
       flex-direction: column;
       align-items: center;
@@ -641,6 +696,21 @@
       user-select: none;
     }
 
+    .photo-modal-counter {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      z-index: 510;
+    }
+
     .photo-modal-viewport {
       width: 100%;
       height: 100%;
@@ -648,16 +718,18 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      touch-action: none;
     }
 
     #modalImage {
       max-width: 92%;
-      max-height: 82vh;
+      max-height: 80vh;
       border-radius: 8px;
       box-shadow: 0 10px 35px rgba(0,0,0,0.7);
       transform-origin: center center;
-      transition: transform 0.1s ease-out;
       cursor: grab;
+      touch-action: none;
+      will-change: transform;
     }
 
     #modalImage:active {
@@ -669,16 +741,17 @@
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(30, 41, 59, 0.92);
+      background: rgba(30, 41, 59, 0.94);
       border: 1px solid var(--accent);
       border-radius: 30px;
-      padding: 6px 14px;
+      padding: 6px 10px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       z-index: 510;
       box-shadow: 0 8px 25px rgba(0,0,0,0.6);
       backdrop-filter: blur(8px);
+      max-width: 96vw;
     }
 
     .zoom-ctrl-btn {
@@ -688,12 +761,13 @@
       border-radius: 50%;
       width: 34px;
       height: 34px;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .zoom-ctrl-btn:active {
@@ -701,10 +775,10 @@
     }
 
     .zoom-level-badge {
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 700;
       color: var(--accent);
-      min-width: 44px;
+      min-width: 40px;
       text-align: center;
     }
 
@@ -1018,16 +1092,14 @@
     <div class="header-content">
       <div class="logo-area">
         <div class="logo-icon">📐</div>
-        <div>
+        <div style="min-width:0;">
           <h1>ALËNA GRASS</h1>
           <div class="subtitle">Индивидуальный калькулятор и дневник курса</div>
         </div>
       </div>
-      <div style="display:flex; align-items:center; gap:6px;">
-        <div id="syncBadge" style="background:rgba(15,23,42,0.6); border:1px solid #334155; color:#38bdf8; font-size:0.72rem; padding:4px 10px; border-radius:8px; display:flex; align-items:center; gap:6px; cursor:pointer;">
-          <span id="syncDot" style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 8px #10b981;"></span>
-          <span id="syncStatusLabel" style="font-weight:600;">Авто-синхр.</span>
-        </div>
+      <div id="syncBadge" title="Настройки синхронизации">
+        <span id="syncDot" style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 8px #10b981; flex-shrink:0;"></span>
+        <span id="syncStatusLabel" style="font-weight:700;">--:--</span>
       </div>
     </div>
   </header>
@@ -1121,6 +1193,7 @@
           <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск мерки или кода...">
           <div class="btn-group">
             <button class="btn" id="copyBtn">📋 Копия</button>
+            <button class="btn" id="printCalcBtn" title="Печать или сохранение в PDF">🖨 PDF / Печать</button>
             <button class="btn" id="resetBtn">↺ Сброс</button>
           </div>
         </div>
@@ -1224,16 +1297,20 @@
 
   </div>
 
-  <!-- Photo Viewer Modal with Zoom & Pan -->
+  <!-- Photo Viewer Modal with Gallery Navigation, Pinch-to-Zoom, Pan & Download -->
   <div id="photoModal">
+    <div class="photo-modal-counter" id="photoCounterBadge">1 / 1</div>
     <div class="photo-modal-viewport" id="photoModalViewport">
       <img id="modalImage" src="" alt="Просмотр фото">
     </div>
     <div class="photo-zoom-controls">
+      <button class="zoom-ctrl-btn" id="prevPhotoBtn" title="Предыдущее фото">◀</button>
       <button class="zoom-ctrl-btn" id="zoomOutBtn" title="Отдалить">➖</button>
       <span class="zoom-level-badge" id="zoomLevelText">100%</span>
       <button class="zoom-ctrl-btn" id="zoomInBtn" title="Приблизить">➕</button>
       <button class="zoom-ctrl-btn" id="zoomResetBtn" title="Сбросить масштаб">↺</button>
+      <button class="zoom-ctrl-btn" id="nextPhotoBtn" title="Следующее фото">▶</button>
+      <button class="zoom-ctrl-btn" id="downloadPhotoBtn" style="background:var(--accent); color:#0f172a; border-color:var(--accent);" title="Скачать фото на устройство">📥</button>
       <button class="zoom-ctrl-btn" id="closePhotoModalBtn" style="background:var(--danger); border-color:var(--danger);" title="Закрыть">✕</button>
     </div>
   </div>
@@ -1683,6 +1760,66 @@
     ];
 
     // ==========================================
+    // 1.1 INDEXEDDB STORAGE ENGINE (For Large Photo Projects)
+    // ==========================================
+    let lastLocalWriteTime = 0;
+    let isFilePickerOpen = false;
+
+    const IDB_NAME = 'AlenaGrassDB';
+    const IDB_STORE = 'app_store';
+
+    function openIDB() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) return reject('No IndexedDB');
+        const req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(IDB_STORE)) {
+            db.createObjectStore(IDB_STORE);
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function idbSet(key, val) {
+      try {
+        const db = await openIDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, 'readwrite');
+          tx.objectStore(IDB_STORE).put(val, key);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      } catch (e) {
+        console.warn('IDB write fallback:', e);
+      }
+    }
+
+    async function idbGet(key) {
+      try {
+        const db = await openIDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, 'readonly');
+          const req = tx.objectStore(IDB_STORE).get(key);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function safeSetLocalStorage(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {
+        console.warn('LocalStorage quota exceeded, using IndexedDB & Cloud Sync');
+      }
+    }
+
+    // ==========================================
     // 2. TABS SWITCHER (3 Tabs)
     // ==========================================
     const tabBtnCalc = document.getElementById('tabBtnCalc');
@@ -1723,7 +1860,7 @@
     const measureCardsContainer = document.getElementById('measureCardsContainer');
     const measureTableContainer = document.getElementById('measureTableContainer');
 
-    function calculate() {
+    function calculate(skipSave = false) {
       const h = parseFloat(heightInput.value) || 163;
       const og = parseFloat(bustInput.value) || 84;
       const ob = parseFloat(hipsInput.value) || 94;
@@ -1741,7 +1878,7 @@
       fullnessGroupVal.textContent = `${fullnessGroupIndex}-я группа (${fullnessExact.toFixed(1)})`;
 
       renderCalculatorViews(kH, kB, og, fullnessGroupIndex);
-      saveCalcState();
+      if (!skipSave) saveCalcState();
     }
 
     function renderCalculatorViews(kH, kB, og, groupIndex) {
@@ -1838,9 +1975,10 @@
     }
 
     function saveCalcState() {
-      localStorage.setItem('grass_calc_h_v3_1', heightInput.value);
-      localStorage.setItem('grass_calc_og_v3_1', bustInput.value);
-      localStorage.setItem('grass_calc_ob_v3_1', hipsInput.value);
+      safeSetLocalStorage('grass_calc_h_v3_1', heightInput.value);
+      safeSetLocalStorage('grass_calc_og_v3_1', bustInput.value);
+      safeSetLocalStorage('grass_calc_ob_v3_1', hipsInput.value);
+      if (typeof markDirtyAndPush === 'function') markDirtyAndPush('calc', false);
     }
 
     function loadCalcState() {
@@ -1850,48 +1988,32 @@
     }
 
     [heightInput, bustInput, hipsInput].forEach(inp => {
-      inp.addEventListener('input', calculate);
+      inp.addEventListener('input', () => {
+        lastLocalWriteTime = Date.now();
+        calculate(false);
+      });
     });
 
     searchInput.addEventListener('input', () => {
-      const h = parseFloat(heightInput.value) || 163;
-      const og = parseFloat(bustInput.value) || 84;
-      const ob = parseFloat(hipsInput.value) || 94;
-      const kH = (h - 164) / 6;
-      const kB = (og - 88) / 4;
-      const fullnessExact = ((ob - og) - (-2)) / 4;
-      let groupIndex = Math.round(fullnessExact);
-      if (groupIndex < 0) groupIndex = 0;
-      if (groupIndex > 5) groupIndex = 5;
-      renderCalculatorViews(kH, kB, og, groupIndex);
+      calculate(true);
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
+      lastLocalWriteTime = Date.now();
       heightInput.value = 163;
       bustInput.value = 84;
       hipsInput.value = 94;
       searchInput.value = '';
-      calculate();
+      calculate(false);
       showToast('Сброшено на 163-84-94');
     });
 
     document.getElementById('copyBtn').addEventListener('click', () => {
-      const h = parseFloat(heightInput.value) || 163;
-      const og = parseFloat(bustInput.value) || 84;
-      const ob = parseFloat(hipsInput.value) || 94;
-      const kH = (h - 164) / 6;
-      const kB = (og - 88) / 4;
-      const fullnessExact = ((ob - og) - (-2)) / 4;
-      let groupIndex = Math.round(fullnessExact);
-      if (groupIndex < 0) groupIndex = 0;
-      if (groupIndex > 5) groupIndex = 5;
-
-      let text = `ALËNA GRASS РАСЧЕТ\nПараметры: Рост ${h} см, ОГ ${og} см, ОБ ${ob} см (Полнота: ${groupIndex}-я гр.)\n\n`;
-      measurementsData.forEach(item => {
-        const baseVal = item.bases[groupIndex];
-        const shiftSize = item.dynamicB ? item.calcShiftB(og, kB, groupIndex) : item.dB * kB;
-        const val = (baseVal + item.dH * kH + shiftSize).toFixed(2);
-        text += `${item.code} (${item.name}): ${val} см\n`;
+      const snap = getCalculationSnapshot();
+      let text = `ALËNA GRASS РАСЧЕТ\nПараметры: Рост ${snap.h} см, ОГ ${snap.og} см, ОБ ${snap.ob} см (Полнота: ${snap.fullnessGroup}-я гр.)\n\n`;
+      snap.results.forEach(r => {
+        const fullExtra = r.code.startsWith('С') ? ` [Полный О${r.code.slice(1)}: ${(parseFloat(r.val)*2).toFixed(2)} см]` : '';
+        text += `${r.code} (${r.name}): ${r.val} см${fullExtra}\n`;
       });
 
       navigator.clipboard.writeText(text).then(() => {
@@ -1900,6 +2022,150 @@
         showToast('Ошибка копирования');
       });
     });
+
+    // ==========================================
+    // 3.05 PDF / PRINT EXPORT ENGINE
+    // ==========================================
+    function openPrintWindow(title, bodyHtml) {
+      const printWin = window.open('', '_blank');
+      if (!printWin) {
+        alert('Пожалуйста, разрешите всплывающие окна в браузере для формирования PDF / Печати.');
+        return;
+      }
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html lang="ru">
+        <head>
+          <meta charset="UTF-8">
+          <title>${title}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #0f172a; padding: 24px; line-height: 1.45; max-width: 840px; margin: 0 auto; }
+            .top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 18px; }
+            h1 { font-size: 20px; margin: 0; color: #0f172a; }
+            .sub { font-size: 12px; color: #475569; margin-top: 2px; }
+            .params-grid { display: flex; gap: 14px; flex-wrap: wrap; background: #f1f5f9; padding: 12px 16px; border-radius: 8px; margin-bottom: 18px; font-size: 13px; border: 1px solid #cbd5e1; }
+            table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; }
+            th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; }
+            th { background: #e2e8f0; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+            .attempt-block { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; page-break-inside: avoid; }
+            .attempt-header { font-weight: 700; font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+            .attempt-notes { white-space: pre-wrap; font-size: 13px; color: #1e293b; margin-bottom: 8px; }
+            .photos-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+            .photos-row img { max-width: 190px; max-height: 190px; border-radius: 6px; border: 1px solid #94a3b8; object-fit: cover; }
+            .no-print-bar { margin-bottom: 16px; display: flex; gap: 10px; }
+            .btn-p { padding: 8px 16px; background: #0284c7; color: #fff; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; }
+            .btn-c { padding: 8px 16px; background: #64748b; color: #fff; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; }
+            @media print { .no-print-bar { display: none !important; } body { padding: 0; } }
+          </style>
+        </head>
+        <body>
+          <div class="no-print-bar">
+            <button class="btn-p" onclick="window.print()">🖨 Печать / Сохранить как PDF</button>
+            <button class="btn-c" onclick="window.close()">✕ Закрыть окно</button>
+          </div>
+          ${bodyHtml}
+          <script>
+            window.onload = function() { setTimeout(function() { window.print(); }, 350); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      printWin.document.close();
+    }
+
+    function printCalculationSheet(customTitle, snapData) {
+      const snap = snapData || getCalculationSnapshot();
+      const title = customTitle || `Карта размерных признаков (${snap.h}-${snap.og}-${snap.ob})`;
+      const dateStr = new Date().toLocaleDateString('ru-RU');
+
+      const rowsHtml = snap.results.map(item => {
+        const valNum = parseFloat(item.val);
+        const fullStr = item.code.startsWith('С') ? `<strong>${(valNum * 2).toFixed(2)} см</strong> (О${item.code.slice(1)})` : '—';
+        return `
+          <tr>
+            <td><strong>${item.code}</strong></td>
+            <td>${item.name}</td>
+            <td style="text-align:right; font-weight:700;">${item.val} см</td>
+            <td style="text-align:right; color:#0369a1;">${fullStr}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const html = `
+        <div class="top-bar">
+          <div>
+            <h1>📐 ALËNA GRASS — ${title}</h1>
+            <div class="sub">Индивидуальный расчет размерных признаков по методике Grasser</div>
+          </div>
+          <div style="font-size:12px; color:#475569;">Дата: ${dateStr}</div>
+        </div>
+        <div class="params-grid">
+          <div><strong>Рост (Р):</strong> ${snap.h} см</div>
+          <div><strong>Обхват груди (ОГ):</strong> ${snap.og} см</div>
+          <div><strong>Обхват бедер (ОБ):</strong> ${snap.ob} см</div>
+          <div><strong>Полнотная группа:</strong> ${snap.fullnessGroup}-я группа</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:70px;">Код</th>
+              <th>Наименование размерного признака</th>
+              <th style="width:120px; text-align:right;">Рассчитано</th>
+              <th style="width:150px; text-align:right;">Полный обхват (×2)</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+      openPrintWindow(title, html);
+    }
+
+    document.getElementById('printCalcBtn').addEventListener('click', () => {
+      printCalculationSheet(null, getCalculationSnapshot());
+    });
+
+    window.printProjectPDF = function(pIdx) {
+      const proj = projectsState[pIdx];
+      if (!proj) return;
+      const statusMap = {
+        active: '🔵 В работе',
+        fitting: '🟡 На примерке',
+        done: '🟢 Готово',
+        archive: '⚪ Архив'
+      };
+      const attStatusMap = {
+        work: '🟡 Макет / В работе',
+        defect: '🔴 Дефект посадки',
+        approved: '🟢 В раскрой (Удачно)'
+      };
+
+      const attemptsHtml = (proj.attempts || []).map((att, aIdx) => {
+        const stLabel = attStatusMap[att.status || 'work'] || '🟡 В работе';
+        const imgsHtml = (att.photos || []).map(src => `<img src="${src}">`).join('');
+        return `
+          <div class="attempt-block">
+            <div class="attempt-header">
+              <span>Попытка моделирования №${aIdx + 1}</span>
+              <span>${stLabel}</span>
+            </div>
+            <div class="attempt-notes">${att.text ? att.text : '<em>Заметки отсутствуют</em>'}</div>
+            ${imgsHtml ? `<div class="photos-row">${imgsHtml}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      const html = `
+        <div class="top-bar">
+          <div>
+            <h1>${proj.emoji || '👗'} Проект: ${proj.name}</h1>
+            <div class="sub">Паспорт моделирования и история примерок • ALËNA GRASS</div>
+          </div>
+          <div style="font-size:13px; font-weight:700;">${statusMap[proj.status || 'active']}</div>
+        </div>
+        ${attemptsHtml || '<p>Нет добавленных попыток моделирования.</p>'}
+      `;
+      openPrintWindow(`Проект — ${proj.name}`, html);
+    };
 
     // ==========================================
     // 3.1 SAVED CALCULATIONS ENGINE
@@ -1927,7 +2193,9 @@
     }
 
     function saveSavedCalcsState() {
-      localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+      lastLocalWriteTime = Date.now();
+      safeSetLocalStorage(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState));
+      if (typeof markDirtyAndPush === 'function') markDirtyAndPush('savedCalcsState', true);
     }
 
     function getCalculationSnapshot() {
@@ -1985,10 +2253,11 @@
             <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОГ: <strong>${item.og}</strong> см</span>
             <span style="background:rgba(0,0,0,0.3); padding:3px 8px; border-radius:5px;">ОБ: <strong>${item.ob}</strong> см</span>
           </div>
-          <div style="display:flex; gap:6px; margin-top:4px; justify-content:flex-end;">
-            <button class="btn btn-primary load-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">⚡ Загрузить</button>
-            <button class="btn copy-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem;">📋 Копия</button>
-            <button class="btn delete-calc-btn" data-index="${index}" style="padding:5px 8px; font-size:0.74rem; color:#f87171;" title="Удалить">🗑</button>
+          <div style="display:flex; gap:6px; margin-top:4px; justify-content:flex-end; flex-wrap:wrap;">
+            <button class="btn btn-primary load-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem; flex:0 0 auto;">⚡ Загрузить</button>
+            <button class="btn print-saved-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem; flex:0 0 auto;" title="Печать / PDF">🖨 PDF</button>
+            <button class="btn copy-calc-btn" data-index="${index}" style="padding:5px 10px; font-size:0.74rem; flex:0 0 auto;">📋 Копия</button>
+            <button class="btn delete-calc-btn" data-index="${index}" style="padding:5px 8px; font-size:0.74rem; color:#f87171; flex:0 0 auto;" title="Удалить">🗑</button>
           </div>
         `;
         savedCalcsList.appendChild(card);
@@ -1999,13 +2268,22 @@
           const idx = parseInt(btn.getAttribute('data-index'));
           const item = savedCalcsState[idx];
           if (item) {
+            lastLocalWriteTime = Date.now();
             heightInput.value = item.h;
             bustInput.value = item.og;
             hipsInput.value = item.ob;
-            calculate();
+            calculate(false);
             showToast(`Расчет «${item.name}» загружен!`);
             document.getElementById('heightInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
+        });
+      });
+
+      savedCalcsList.querySelectorAll('.print-saved-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          const item = savedCalcsState[idx];
+          if (item) printCalculationSheet(item.name, item);
         });
       });
 
@@ -2057,21 +2335,31 @@
     });
 
     // ==========================================
-    // 3.2 MODELING / PROJECTS ENGINE + PHOTO ZOOM
+    // 3.2 MODELING / PROJECTS ENGINE + STATUSES & INDEXEDDB
     // ==========================================
     const PROJECTS_STORAGE_KEY = 'alena_grass_projects_folders_v1';
     let projectsState = [];
 
-    function loadProjectsState() {
+    async function loadProjectsState() {
       try {
+        const idbData = await idbGet(PROJECTS_STORAGE_KEY);
+        if (idbData && Array.isArray(idbData)) {
+          projectsState = idbData;
+          return;
+        }
         const saved = localStorage.getItem(PROJECTS_STORAGE_KEY);
-        if (saved) projectsState = JSON.parse(saved);
+        if (saved) {
+          projectsState = JSON.parse(saved);
+          idbSet(PROJECTS_STORAGE_KEY, projectsState);
+        }
       } catch (e) { console.error(e); }
     }
 
-    function saveProjectsState() {
-      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projectsState));
-      if (typeof pushToCloud === 'function') pushToCloud(false);
+    function saveProjectsState(immediatePush = false) {
+      lastLocalWriteTime = Date.now();
+      idbSet(PROJECTS_STORAGE_KEY, projectsState);
+      safeSetLocalStorage(PROJECTS_STORAGE_KEY, JSON.stringify(projectsState));
+      if (typeof markDirtyAndPush === 'function') markDirtyAndPush('projectsState', immediatePush);
     }
 
     function renderProjects() {
@@ -2087,32 +2375,45 @@
       }
 
       projectsState.forEach((proj, pIdx) => {
+        const projStatus = proj.status || 'active';
         const card = document.createElement('div');
-        card.className = 'project-folder-card';
+        card.className = `project-folder-card status-${projStatus}`;
 
         let attemptsHtml = '';
         (proj.attempts || []).forEach((att, aIdx) => {
+          const attStatus = att.status || 'work';
+          const stBadgeClass = attStatus === 'approved' ? 'st-approved' : (attStatus === 'defect' ? 'st-defect' : 'st-work');
+
           const photosHtml = (att.photos || []).map((img, imgIdx) => `
             <div class="photo-thumb-wrapper">
               <img src="${img}" class="photo-thumb" onclick="openPhotoModal(${pIdx}, ${aIdx}, ${imgIdx})" title="Нажмите для открытия и увеличения">
-              <button class="photo-delete-btn" onclick="deleteAttemptPhoto(${pIdx}, ${aIdx}, ${imgIdx})" title="Удалить фото">✕</button>
+              <button type="button" class="photo-delete-btn" onclick="deleteAttemptPhoto(${pIdx}, ${aIdx}, ${imgIdx})" title="Удалить фото">✕</button>
             </div>
           `).join('');
 
+          const fileInputId = `fileInput_p${pIdx}_a${aIdx}`;
+
           attemptsHtml += `
-            <div class="attempt-card">
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; color:var(--accent); font-weight:700; margin-bottom:6px;">
-                <span>Попытка моделирования №${aIdx + 1}</span>
-                <span style="cursor:pointer; color:#f87171;" onclick="deleteAttempt(${pIdx}, ${aIdx})">✕ Удалить попытку</span>
+            <div class="attempt-card att-status-${attStatus}">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+                <span style="font-size:0.78rem; color:var(--accent); font-weight:700;">Попытка №${aIdx + 1}</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <select class="status-select-badge ${stBadgeClass}" onchange="updateAttemptStatus(${pIdx}, ${aIdx}, this.value)">
+                    <option value="work" ${attStatus === 'work' ? 'selected' : ''}>🟡 Макет / В работе</option>
+                    <option value="defect" ${attStatus === 'defect' ? 'selected' : ''}>🔴 Дефект посадки</option>
+                    <option value="approved" ${attStatus === 'approved' ? 'selected' : ''}>🟢 В раскрой (Удачно)</option>
+                  </select>
+                  <span style="cursor:pointer; color:#f87171; font-size:0.75rem; font-weight:700;" onclick="deleteAttempt(${pIdx}, ${aIdx})" title="Удалить попытку">✕</span>
+                </div>
               </div>
               <textarea class="modeling-textarea" placeholder="Описание моделирования, корректировки лекал, заметки..." oninput="updateAttemptText(${pIdx}, ${aIdx}, this.value)">${att.text || ''}</textarea>
               <div class="photo-upload-container">
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
-                  <span style="font-size:0.72rem; color:var(--text-muted);">📷 Фотографии результата:</span>
-                  <label class="btn" style="flex:0 0 auto; width:auto; padding:5px 10px; font-size:0.72rem; cursor:pointer; color:#fff;">
+                  <span style="font-size:0.72rem; color:var(--text-muted);">📷 Фотографии (${(att.photos || []).length}):</span>
+                  <input type="file" id="${fileInputId}" accept="image/*" multiple onclick="markFilePickerOpen()" onchange="uploadAttemptPhoto(event, ${pIdx}, ${aIdx})" style="display:none;">
+                  <button type="button" class="btn" onclick="document.getElementById('${fileInputId}').click()" style="flex:0 0 auto; width:auto; padding:6px 12px; font-size:0.74rem; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
                     + Загрузить фото
-                    <input type="file" accept="image/*" onchange="uploadAttemptPhoto(event, ${pIdx}, ${aIdx})" style="display:none;">
-                  </label>
+                  </button>
                 </div>
                 <div class="photo-preview-grid">${photosHtml}</div>
               </div>
@@ -2120,9 +2421,11 @@
           `;
         });
 
+        const projBadgeClass = projStatus === 'done' ? 'st-approved' : (projStatus === 'fitting' ? 'st-work' : (projStatus === 'archive' ? 'st-archive' : 'st-active'));
+
         card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:180px;">
               <select class="modeling-select" onchange="updateProjectEmoji(${pIdx}, this.value)">
                 <option value="👗" ${proj.emoji === '👗' ? 'selected' : ''}>👗</option>
                 <option value="🧥" ${proj.emoji === '🧥' ? 'selected' : ''}>🧥</option>
@@ -2133,30 +2436,42 @@
               </select>
               <input type="text" class="modeling-input" value="${proj.name}" placeholder="Название проекта..." oninput="updateProjectName(${pIdx}, this.value)">
             </div>
-            <div style="display:flex; gap:4px; flex-shrink:0;">
-              <button class="btn" onclick="moveProject(${pIdx}, -1)" style="padding:4px 7px; font-size:0.72rem; flex:0 0 auto;" title="Переместить выше">▲</button>
-              <button class="btn" onclick="moveProject(${pIdx}, 1)" style="padding:4px 7px; font-size:0.72rem; flex:0 0 auto;" title="Переместить ниже">▼</button>
-              <button class="btn" onclick="deleteProject(${pIdx})" style="color:#f87171; padding:4px 7px; font-size:0.72rem; flex:0 0 auto;" title="Удалить папку">🗑</button>
+            <div style="display:flex; gap:4px; align-items:center; flex-shrink:0;">
+              <select class="status-select-badge ${projBadgeClass}" onchange="updateProjectStatus(${pIdx}, this.value)" title="Статус проекта">
+                <option value="active" ${projStatus === 'active' ? 'selected' : ''}>🔵 В работе</option>
+                <option value="fitting" ${projStatus === 'fitting' ? 'selected' : ''}>🟡 Примерка</option>
+                <option value="done" ${projStatus === 'done' ? 'selected' : ''}>🟢 Готово</option>
+                <option value="archive" ${projStatus === 'archive' ? 'selected' : ''}>⚪ Архив</option>
+              </select>
+              <button type="button" class="btn" onclick="printProjectPDF(${pIdx})" style="padding:4px 7px; font-size:0.72rem; flex:0 0 auto;" title="Экспорт проекта в PDF / Печать">🖨</button>
+              <button type="button" class="btn" onclick="moveProject(${pIdx}, -1)" style="padding:4px 7px; font-size:0.72rem; flex:0 0 auto;" title="Переместить выше">▲</button>
+              <button type="button" class="btn" onclick="moveProject(${pIdx}, 1)" style="padding:4px 7px; font-size:0.72rem; flex:0 0 auto;" title="Переместить ниже">▼</button>
+              <button type="button" class="btn" onclick="deleteProject(${pIdx})" style="color:#f87171; padding:4px 7px; font-size:0.72rem; flex:0 0 auto;" title="Удалить папку">🗑</button>
             </div>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
             <span style="font-size:0.72rem; color:var(--text-muted);">Попыток: ${(proj.attempts || []).length}</span>
-            <button class="btn" onclick="toggleProjectBody(${pIdx})" id="toggleBtn_${pIdx}" style="font-size:0.72rem; padding:4px 10px; flex:0 0 auto; width:auto;">
+            <button type="button" class="btn" onclick="toggleProjectBody(${pIdx})" id="toggleBtn_${pIdx}" style="font-size:0.72rem; padding:4px 10px; flex:0 0 auto; width:auto;">
               ${proj.isOpen ? '▲ Свернуть' : '▼ Свернуть'}
             </button>
           </div>
           <div class="project-attempts-box" id="projBody_${pIdx}" style="display:${proj.isOpen ? 'flex' : 'none'};">
             ${attemptsHtml}
-            <button class="btn btn-primary" onclick="addAttempt(${pIdx})" style="margin-top:2px; font-size:0.76rem; padding:8px;">+ Добавить попытку моделирования</button>
+            <button type="button" class="btn btn-primary" onclick="addAttempt(${pIdx})" style="margin-top:2px; font-size:0.76rem; padding:8px;">+ Добавить попытку моделирования</button>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
+    window.markFilePickerOpen = function() {
+      isFilePickerOpen = true;
+      lastLocalWriteTime = Date.now();
+    };
+
     window.addProject = function() {
-      projectsState.push({ name: "Новый проект", emoji: "👗", isOpen: true, attempts: [{ text: "", photos: [] }] });
-      saveProjectsState();
+      projectsState.push({ name: "Новый проект", emoji: "👗", status: "active", isOpen: true, attempts: [{ text: "", status: "work", photos: [] }] });
+      saveProjectsState(true);
       renderProjects();
       showToast('Папка проекта создана!');
     };
@@ -2164,19 +2479,31 @@
     window.deleteProject = function(pIdx) {
       if (confirm(`Удалить проект «${projectsState[pIdx].name}» со всеми попытками?`)) {
         projectsState.splice(pIdx, 1);
-        saveProjectsState();
+        saveProjectsState(true);
         renderProjects();
       }
     };
 
     window.updateProjectName = function(pIdx, val) {
       projectsState[pIdx].name = val;
-      saveProjectsState();
+      saveProjectsState(false);
     };
 
     window.updateProjectEmoji = function(pIdx, val) {
       projectsState[pIdx].emoji = val;
-      saveProjectsState();
+      saveProjectsState(false);
+    };
+
+    window.updateProjectStatus = function(pIdx, val) {
+      projectsState[pIdx].status = val;
+      saveProjectsState(true);
+      renderProjects();
+    };
+
+    window.updateAttemptStatus = function(pIdx, aIdx, val) {
+      projectsState[pIdx].attempts[aIdx].status = val;
+      saveProjectsState(true);
+      renderProjects();
     };
 
     window.toggleProjectBody = function(pIdx) {
@@ -2185,7 +2512,7 @@
       const btn = document.getElementById(`toggleBtn_${pIdx}`);
       if (el) el.style.display = projectsState[pIdx].isOpen ? 'flex' : 'none';
       if (btn) btn.textContent = projectsState[pIdx].isOpen ? '▲ Свернуть' : '▼ Свернуть';
-      saveProjectsState();
+      saveProjectsState(false);
     };
 
     window.moveProject = function(pIdx, dir) {
@@ -2194,65 +2521,98 @@
       const temp = projectsState[pIdx];
       projectsState[pIdx] = projectsState[target];
       projectsState[target] = temp;
-      saveProjectsState();
+      saveProjectsState(true);
       renderProjects();
     };
 
     window.addAttempt = function(pIdx) {
       if (!projectsState[pIdx].attempts) projectsState[pIdx].attempts = [];
-      projectsState[pIdx].attempts.push({ text: "", photos: [] });
-      saveProjectsState();
+      projectsState[pIdx].attempts.push({ text: "", status: "work", photos: [] });
+      saveProjectsState(true);
       renderProjects();
     };
 
     window.deleteAttempt = function(pIdx, aIdx) {
       if (confirm(`Удалить попытку №${aIdx + 1}?`)) {
         projectsState[pIdx].attempts.splice(aIdx, 1);
-        saveProjectsState();
+        saveProjectsState(true);
         renderProjects();
       }
     };
 
     window.updateAttemptText = function(pIdx, aIdx, val) {
       projectsState[pIdx].attempts[aIdx].text = val;
-      saveProjectsState();
+      saveProjectsState(false);
     };
 
-    window.uploadAttemptPhoto = function(e, pIdx, aIdx) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxDim = 1200;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-            else { w = Math.round(w * maxDim / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
-
-          if (!projectsState[pIdx].attempts[aIdx].photos) projectsState[pIdx].attempts[aIdx].photos = [];
-          projectsState[pIdx].attempts[aIdx].photos.push(compressedDataUrl);
-          saveProjectsState();
-          renderProjects();
-          showToast('Фото добавлено!');
+    function compressImageFile(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              const maxDim = 900;
+              let w = img.naturalWidth || img.width || 800;
+              let h = img.naturalHeight || img.height || 800;
+              if (w > maxDim || h > maxDim) {
+                if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                else { w = Math.round(w * maxDim / h); h = maxDim; }
+              }
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              const compressed = canvas.toDataURL('image/jpeg', 0.72);
+              resolve(compressed && compressed.length > 100 ? compressed : dataUrl);
+            } catch (err) {
+              resolve(dataUrl);
+            }
+          };
+          img.onerror = () => resolve(dataUrl);
+          img.src = dataUrl;
         };
-        img.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    window.uploadAttemptPhoto = async function(e, pIdx, aIdx) {
+      isFilePickerOpen = false;
+      lastLocalWriteTime = Date.now();
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+
+      showToast('Обработка фото...');
+      if (!projectsState[pIdx].attempts[aIdx].photos) {
+        projectsState[pIdx].attempts[aIdx].photos = [];
+      }
+
+      let addedCount = 0;
+      for (const file of files) {
+        const resultDataUrl = await compressImageFile(file);
+        if (resultDataUrl) {
+          projectsState[pIdx].attempts[aIdx].photos.push(resultDataUrl);
+          addedCount++;
+        }
+      }
+
+      e.target.value = '';
+      if (addedCount > 0) {
+        renderProjects();
+        saveProjectsState(true);
+        showToast(`Добавлено фото: ${addedCount} шт.`);
+      } else {
+        showToast('Не удалось прочитать файл');
+      }
     };
 
     window.deleteAttemptPhoto = function(pIdx, aIdx, imgIdx) {
       if (confirm('Удалить это изображение?')) {
         projectsState[pIdx].attempts[aIdx].photos.splice(imgIdx, 1);
-        saveProjectsState();
+        saveProjectsState(true);
         renderProjects();
       }
     };
@@ -2260,14 +2620,18 @@
     document.getElementById('addProjectBtn').addEventListener('click', window.addProject);
 
     // ==========================================
-    // 3.3 PHOTO VIEWER WITH ZOOM & PAN
+    // 3.3 PHOTO VIEWER WITH GALLERY SWIPE, PINCH-TO-ZOOM & DOWNLOAD
     // ==========================================
     const photoModal = document.getElementById('photoModal');
     const photoModalViewport = document.getElementById('photoModalViewport');
     const modalImage = document.getElementById('modalImage');
+    const photoCounterBadge = document.getElementById('photoCounterBadge');
+    const prevPhotoBtn = document.getElementById('prevPhotoBtn');
+    const nextPhotoBtn = document.getElementById('nextPhotoBtn');
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
     const zoomResetBtn = document.getElementById('zoomResetBtn');
+    const downloadPhotoBtn = document.getElementById('downloadPhotoBtn');
     const closePhotoModalBtn = document.getElementById('closePhotoModalBtn');
     const zoomLevelText = document.getElementById('zoomLevelText');
 
@@ -2275,20 +2639,34 @@
     let panX = 0, panY = 0;
     let isPanning = false;
     let startPanX = 0, startPanY = 0;
+    let swipeStartX = null;
+    let initialPinchDistance = null;
+    let initialPinchZoom = 1;
+    let activePhotoMeta = { pIdx: 0, aIdx: 0, imgIdx: 0 };
 
     function updatePhotoTransform() {
       modalImage.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
       zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
     }
 
-    window.openPhotoModal = function(pIdx, aIdx, imgIdx) {
-      const src = projectsState[pIdx] && projectsState[pIdx].attempts[aIdx] && projectsState[pIdx].attempts[aIdx].photos[imgIdx];
-      if (!src) return;
-      modalImage.src = src;
+    function updateGalleryView() {
+      const photos = (projectsState[activePhotoMeta.pIdx] && projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx] && projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx].photos) || [];
+      if (!photos.length) return;
+      const total = photos.length;
+      activePhotoMeta.imgIdx = (activePhotoMeta.imgIdx + total) % total;
+      modalImage.src = photos[activePhotoMeta.imgIdx];
+      photoCounterBadge.textContent = `${activePhotoMeta.imgIdx + 1} / ${total}`;
+      prevPhotoBtn.style.display = total > 1 ? 'flex' : 'none';
+      nextPhotoBtn.style.display = total > 1 ? 'flex' : 'none';
       currentZoom = 1;
       panX = 0;
       panY = 0;
       updatePhotoTransform();
+    }
+
+    window.openPhotoModal = function(pIdx, aIdx, imgIdx) {
+      activePhotoMeta = { pIdx, aIdx, imgIdx };
+      updateGalleryView();
       photoModal.style.display = 'flex';
     };
 
@@ -2297,9 +2675,28 @@
       modalImage.src = '';
     }
 
+    prevPhotoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      activePhotoMeta.imgIdx--;
+      updateGalleryView();
+    });
+
+    nextPhotoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      activePhotoMeta.imgIdx++;
+      updateGalleryView();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (photoModal.style.display !== 'flex') return;
+      if (e.key === 'ArrowLeft') { activePhotoMeta.imgIdx--; updateGalleryView(); }
+      else if (e.key === 'ArrowRight') { activePhotoMeta.imgIdx++; updateGalleryView(); }
+      else if (e.key === 'Escape') closePhotoViewer();
+    });
+
     zoomInBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      currentZoom = Math.min(5, currentZoom + 0.4);
+      currentZoom = Math.min(6, currentZoom + 0.4);
       updatePhotoTransform();
     });
 
@@ -2316,6 +2713,20 @@
       panX = 0;
       panY = 0;
       updatePhotoTransform();
+    });
+
+    downloadPhotoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!modalImage.src) return;
+      const projName = (projectsState[activePhotoMeta.pIdx] && projectsState[activePhotoMeta.pIdx].name) || 'project';
+      const safeName = projName.replace(/[^a-zA-Zа-яА-Я0-9_-]/g, '_');
+      const a = document.createElement('a');
+      a.href = modalImage.src;
+      a.download = `${safeName}_попытка_${activePhotoMeta.aIdx + 1}_фото_${activePhotoMeta.imgIdx + 1}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Фото сохранено на устройство!');
     });
 
     closePhotoModalBtn.addEventListener('click', (e) => {
@@ -2342,12 +2753,12 @@
     photoModalViewport.addEventListener('wheel', (e) => {
       e.preventDefault();
       const delta = e.deltaY < 0 ? 0.25 : -0.25;
-      currentZoom = Math.min(5, Math.max(0.5, currentZoom + delta));
+      currentZoom = Math.min(6, Math.max(0.5, currentZoom + delta));
       if (currentZoom <= 1) { panX = 0; panY = 0; }
       updatePhotoTransform();
     }, { passive: false });
 
-    // Mouse Dragging for Pan
+    // Mouse Dragging for Pan (Desktop)
     modalImage.addEventListener('mousedown', (e) => {
       if (currentZoom <= 1) return;
       e.preventDefault();
@@ -2365,24 +2776,65 @@
 
     window.addEventListener('mouseup', () => { isPanning = false; });
 
-    // Touch Dragging for Mobile Pan
-    modalImage.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1 && currentZoom > 1) {
-        isPanning = true;
-        startPanX = e.touches[0].clientX - panX;
-        startPanY = e.touches[0].clientY - panY;
-      }
-    }, { passive: true });
+    // Mobile Touch: 2-Finger Pinch-to-Zoom, 1-Finger Pan & Gallery Swipe
+    function getTouchDistance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.hypot(dx, dy);
+    }
 
-    modalImage.addEventListener('touchmove', (e) => {
-      if (!isPanning || e.touches.length !== 1) return;
-      e.preventDefault();
-      panX = e.touches[0].clientX - startPanX;
-      panY = e.touches[0].clientY - startPanY;
-      updatePhotoTransform();
+    photoModalViewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        isPanning = false;
+        swipeStartX = null;
+        initialPinchDistance = getTouchDistance(e.touches);
+        initialPinchZoom = currentZoom;
+      } else if (e.touches.length === 1) {
+        if (currentZoom > 1) {
+          isPanning = true;
+          startPanX = e.touches[0].clientX - panX;
+          startPanY = e.touches[0].clientY - panY;
+        } else {
+          swipeStartX = e.touches[0].clientX;
+        }
+      }
     }, { passive: false });
 
-    modalImage.addEventListener('touchend', () => { isPanning = false; });
+    photoModalViewport.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2 && initialPinchDistance) {
+        e.preventDefault();
+        const newDist = getTouchDistance(e.touches);
+        const scaleFactor = newDist / initialPinchDistance;
+        currentZoom = Math.min(6, Math.max(0.5, initialPinchZoom * scaleFactor));
+        if (currentZoom <= 1) { panX = 0; panY = 0; }
+        updatePhotoTransform();
+      } else if (e.touches.length === 1 && isPanning && currentZoom > 1) {
+        e.preventDefault();
+        panX = e.touches[0].clientX - startPanX;
+        panY = e.touches[0].clientY - startPanY;
+        updatePhotoTransform();
+      }
+    }, { passive: false });
+
+    photoModalViewport.addEventListener('touchend', (e) => {
+      if (e.touches.length === 0 && swipeStartX !== null && currentZoom <= 1) {
+        const endX = e.changedTouches[0].clientX;
+        const diffX = endX - swipeStartX;
+        if (Math.abs(diffX) > 60) {
+          if (diffX < 0) activePhotoMeta.imgIdx++;
+          else activePhotoMeta.imgIdx--;
+          updateGalleryView();
+        }
+        swipeStartX = null;
+      }
+      if (e.touches.length < 2) {
+        initialPinchDistance = null;
+      }
+      if (e.touches.length === 0) {
+        isPanning = false;
+      }
+    });
 
     // ==========================================
     // 4. DIARY & TRACKER LOGIC
@@ -2409,8 +2861,13 @@
     }
 
     function saveDiaryState() {
-      localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
-      localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+      lastLocalWriteTime = Date.now();
+      safeSetLocalStorage(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+      safeSetLocalStorage(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState));
+      if (typeof markDirtyAndPush === 'function') {
+        markDirtyAndPush('lessonsState', false);
+        markDirtyAndPush('collapsedState', false);
+      }
     }
 
     function calculateDeadlineBadge(deadlineStr, isBlockDone) {
@@ -2519,7 +2976,7 @@
     document.getElementById('resetDiaryBtn').addEventListener('click', () => { if(confirm('Сбросить прогресс уроков?')) { lessonsState={}; collapsedState={}; saveDiaryState(); renderDiary(); } });
 
     // ==========================================
-    // 6. FIREBASE REALTIME DATABASE AUTO-SYNC
+    // 6. GRANULAR FIREBASE PATCH AUTO-SYNC ENGINE
     // ==========================================
     const FIREBASE_SYNC_ENDPOINT = 'https://alena-grass-default-rtdb.europe-west1.firebasedatabase.app/user_data.json';
     const syncBadge = document.getElementById('syncBadge');
@@ -2537,18 +2994,20 @@
 
     let isSyncInProgress = false;
     let pushDebounceTimer = null;
+    const dirtyBranches = new Set();
 
-    function setVisualStatus(state, label) {
+    function setVisualStatus(state, timeText) {
+      const nowTime = timeText || new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
       if (state === 'synced') {
         syncDot.style.background = '#10b981';
         syncDot.style.boxShadow = '0 0 8px #10b981';
-        syncStatusLabel.textContent = label || 'Синхр.';
+        syncStatusLabel.textContent = nowTime;
         syncStatusLabel.style.color = '#10b981';
         if (modalSyncStatus) { modalSyncStatus.textContent = '🟢 Синхронизировано'; modalSyncStatus.style.color = '#10b981'; }
       } else if (state === 'syncing') {
         syncDot.style.background = '#f59e0b';
         syncDot.style.boxShadow = '0 0 8px #f59e0b';
-        syncStatusLabel.textContent = 'Синхр...';
+        syncStatusLabel.textContent = '...';
         syncStatusLabel.style.color = '#f59e0b';
       } else if (state === 'error') {
         syncDot.style.background = '#f87171';
@@ -2559,33 +3018,61 @@
       if (modalLastSyncTime) modalLastSyncTime.textContent = 'Время: ' + new Date().toLocaleTimeString('ru-RU');
     }
 
-    async function pushToCloud(isImmediate = false) {
+    function markDirtyAndPush(branch, isImmediate = false) {
+      dirtyBranches.add(branch);
+      pushToCloud(isImmediate);
+    }
+
+    async function pushToCloud(isImmediate = false, forceFull = false) {
       clearTimeout(pushDebounceTimer);
+      lastLocalWriteTime = Date.now();
       const execPush = async () => {
         if (isSyncInProgress) return;
         isSyncInProgress = true;
         setVisualStatus('syncing');
         try {
-          const payload = {
-            app: 'ALENA_GRASS',
-            updatedAt: Date.now(),
-            calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value },
-            lessonsState,
-            collapsedState,
-            savedCalcsState,
-            projectsState
-          };
-          const res = await fetch(FIREBASE_SYNC_ENDPOINT, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-          if (res.ok) setVisualStatus('synced', 'Синхр: ' + new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }));
-          else setVisualStatus('error');
-        } catch (e) { setVisualStatus('error'); } finally { isSyncInProgress = false; }
+          const payload = { app: 'ALENA_GRASS', updatedAt: Date.now() };
+          if (forceFull || dirtyBranches.size === 0) {
+            payload.calc = { h: heightInput.value, og: bustInput.value, ob: hipsInput.value };
+            payload.lessonsState = lessonsState;
+            payload.collapsedState = collapsedState;
+            payload.savedCalcsState = savedCalcsState;
+            payload.projectsState = projectsState;
+          } else {
+            if (dirtyBranches.has('calc')) payload.calc = { h: heightInput.value, og: bustInput.value, ob: hipsInput.value };
+            if (dirtyBranches.has('lessonsState')) payload.lessonsState = lessonsState;
+            if (dirtyBranches.has('collapsedState')) payload.collapsedState = collapsedState;
+            if (dirtyBranches.has('savedCalcsState')) payload.savedCalcsState = savedCalcsState;
+            if (dirtyBranches.has('projectsState')) payload.projectsState = projectsState;
+          }
+          dirtyBranches.clear();
+
+          // PATCH updates only changed keys in Firebase without re-uploading untouched heavy photo arrays
+          const res = await fetch(FIREBASE_SYNC_ENDPOINT, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            setVisualStatus('synced', timeStr);
+          } else {
+            setVisualStatus('error');
+          }
+        } catch (e) {
+          setVisualStatus('error');
+        } finally {
+          isSyncInProgress = false;
+        }
       };
       if (isImmediate) await execPush();
       else pushDebounceTimer = setTimeout(execPush, 350);
     }
 
     async function pullFromCloud(showNotice = false) {
-      if (isSyncInProgress) return;
+      if (isSyncInProgress || isFilePickerOpen) return;
+      if (!showNotice && (Date.now() - lastLocalWriteTime < 6000)) return;
+
       isSyncInProgress = true;
       setVisualStatus('syncing');
       try {
@@ -2593,22 +3080,28 @@
         if (res.ok) {
           const data = await res.json();
           if (data && typeof data === 'object') {
-            if (data.lessonsState) { lessonsState = data.lessonsState; localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState)); }
-            if (data.collapsedState) { collapsedState = data.collapsedState; localStorage.setItem(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState)); }
+            if (!showNotice && (Date.now() - lastLocalWriteTime < 6000)) {
+              isSyncInProgress = false;
+              return;
+            }
+            if (data.lessonsState) { lessonsState = data.lessonsState; safeSetLocalStorage(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState)); }
+            if (data.collapsedState) { collapsedState = data.collapsedState; safeSetLocalStorage(COLLAPSED_STORAGE_KEY, JSON.stringify(collapsedState)); }
             renderDiary();
-            if (data.savedCalcsState) { savedCalcsState = data.savedCalcsState; localStorage.setItem(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState)); renderSavedCalcs(); }
+            if (data.savedCalcsState) { savedCalcsState = data.savedCalcsState; safeSetLocalStorage(SAVED_CALCS_STORAGE_KEY, JSON.stringify(savedCalcsState)); renderSavedCalcs(); }
             if (data.projectsState || data.projects) {
               projectsState = data.projectsState || data.projects;
-              localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projectsState));
+              idbSet(PROJECTS_STORAGE_KEY, projectsState);
+              safeSetLocalStorage(PROJECTS_STORAGE_KEY, JSON.stringify(projectsState));
               renderProjects();
             }
             if (data.calc) {
               if (data.calc.h) heightInput.value = data.calc.h;
               if (data.calc.og) bustInput.value = data.calc.og;
               if (data.calc.ob) hipsInput.value = data.calc.ob;
-              calculate();
+              calculate(true);
             }
-            setVisualStatus('synced', 'Синхр: ' + new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }));
+            const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            setVisualStatus('synced', timeStr);
             if (showNotice) showToast('Данные успешно загружены!');
           }
         } else { setVisualStatus('error'); }
@@ -2619,7 +3112,7 @@
     closeSyncSettingsBtn.addEventListener('click', () => { syncSettingsModal.style.display = 'none'; });
     syncSettingsModal.addEventListener('click', (e) => { if (e.target === syncSettingsModal) syncSettingsModal.style.display = 'none'; });
     modalForcePullBtn.addEventListener('click', () => pullFromCloud(true));
-    modalForcePushBtn.addEventListener('click', async () => { await pushToCloud(true); showToast('Отправлено в облако!'); });
+    modalForcePushBtn.addEventListener('click', async () => { await pushToCloud(true, true); showToast('Отправлено в облако!'); });
 
     exportBackupFileBtn.addEventListener('click', () => {
       const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState, projectsState };
@@ -2648,8 +3141,9 @@
               if (imported.calc.og) bustInput.value = imported.calc.og;
               if (imported.calc.ob) hipsInput.value = imported.calc.ob;
             }
-            saveDiaryState(); saveSavedCalcsState(); saveProjectsState(); saveCalcState();
-            renderDiary(); renderSavedCalcs(); renderProjects(); calculate();
+            saveDiaryState(); saveSavedCalcsState(); saveProjectsState(true); saveCalcState();
+            renderDiary(); renderSavedCalcs(); renderProjects(); calculate(true);
+            pushToCloud(true, true);
             showToast('Резервная копия восстановлена!');
             syncSettingsModal.style.display = 'none';
           }
@@ -2658,22 +3152,24 @@
       reader.readAsText(file);
     });
 
-    const origSaveDiary = saveDiaryState; saveDiaryState = function() { origSaveDiary(); pushToCloud(false); };
-    const origSaveCalc = saveCalcState; saveCalcState = function() { origSaveCalc(); pushToCloud(false); };
-    const origSaveSavedCalcs = saveSavedCalcsState; saveSavedCalcsState = function() { origSaveSavedCalcs(); pushToCloud(true); };
+    // Init App
+    (async function initApp() {
+      loadCalcState();
+      calculate(true);
+      loadSavedCalcsState();
+      renderSavedCalcs();
+      await loadProjectsState();
+      renderProjects();
+      loadDiaryState();
+      renderDiary();
+      setTimeout(() => pullFromCloud(false), 250);
+    })();
 
-    window.addEventListener('load', () => setTimeout(() => pullFromCloud(false), 200));
-    window.addEventListener('focus', () => pullFromCloud(false));
-    setInterval(() => { if (document.visibilityState === 'visible' && !isSyncInProgress) pullFromCloud(false); }, 20000);
-
-    loadCalcState();
-    calculate();
-    loadSavedCalcsState();
-    renderSavedCalcs();
-    loadProjectsState();
-    renderProjects();
-    loadDiaryState();
-    renderDiary();
+    setInterval(() => {
+      if (document.visibilityState === 'visible' && !isSyncInProgress && !isFilePickerOpen) {
+        pullFromCloud(false);
+      }
+    }, 25000);
   </script>
 </body>
 </html>
