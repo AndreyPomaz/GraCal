@@ -89,7 +89,7 @@ tabBtnProjects.addEventListener('click', () => activateTab(tabBtnProjects, tabCo
 tabBtnDiary.addEventListener('click', () => activateTab(tabBtnDiary, tabContentDiary));
 
 // ==========================================
-// 3. ЛОГИКА КАЛЬКУЛЯТОРА (23 МЕРКИ)
+// 3. КАЛЬКУЛЯТОР И WEB SHARE API
 // ==========================================
 const heightInput = document.getElementById('heightInput');
 const bustInput = document.getElementById('bustInput');
@@ -254,31 +254,52 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   showToast('Сброшено на 163-84-94');
 });
 
-document.getElementById('copyBtn').addEventListener('click', () => {
+function getCalculationTextString() {
   const snap = getCalculationSnapshot();
-  let text = `ALËNA GRASS РАСЧЕТ\nПараметры: Рост ${snap.h} см, ОГ ${snap.og} см, ОБ ${snap.ob} см (Полнота: ${snap.fullnessGroup}-я гр.)\n\n`;
+  let text = `📐 ALËNA GRASS РАСЧЕТ\nПараметры: Рост ${snap.h} см, ОГ ${snap.og} см, ОБ ${snap.ob} см (${snap.fullnessGroup}-я гр.)\n\n`;
   snap.results.forEach(r => {
     const fullExtra = r.code.startsWith('С') ? ` [Полный О${r.code.slice(1)}: ${(parseFloat(r.val) * 2).toFixed(2)} см]` : '';
     text += `${r.code} (${r.name}): ${r.val} см${fullExtra}\n`;
   });
+  return text;
+}
 
-  navigator.clipboard.writeText(text).then(() => {
+document.getElementById('copyBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(getCalculationTextString()).then(() => {
     showToast('Все 23 мерки скопированы!');
   }).catch(() => {
     showToast('Ошибка копирования');
   });
 });
 
+// Нативная интеграция Web Share API (Поделиться)
+document.getElementById('shareCalcBtn').addEventListener('click', async () => {
+  const textData = getCalculationTextString();
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'ALËNA GRASS — Расчет мерок',
+        text: textData
+      });
+      return;
+    } catch (err) {
+      if (err.name !== 'AbortError') console.warn('Share error:', err);
+    }
+  }
+  // Fallback если share не поддерживается
+  navigator.clipboard.writeText(textData).then(() => {
+    showToast('Скопировано в буфер (Share API недоступен)');
+  });
+});
+
 // ==========================================
-// 3.1 ПРЯМАЯ ПЕЧАТЬ И ЭКСПОРТ В PDF (@media print)
+// 3.1 ПЕЧАТЬ И PDF (@media print)
 // ==========================================
 const printArea = document.getElementById('printArea');
 
 function triggerNativePrint(htmlContent) {
   printArea.innerHTML = htmlContent;
-  setTimeout(() => {
-    window.print();
-  }, 150);
+  setTimeout(() => window.print(), 150);
 }
 
 function printCalculationSheet(customTitle, snapData) {
@@ -335,17 +356,8 @@ document.getElementById('printCalcBtn').addEventListener('click', () => {
 function printProjectPDF(pIdx) {
   const proj = projectsState[pIdx];
   if (!proj) return;
-  const statusMap = {
-    active: '🔵 В работе',
-    fitting: '🟡 На примерке',
-    done: '🟢 Готово',
-    archive: '⚪ Архив'
-  };
-  const attStatusMap = {
-    work: '🟡 Макет / В работе',
-    defect: '🔴 Дефект посадки',
-    approved: '🟢 В раскрой (Удачно)'
-  };
+  const statusMap = { active: '🔵 В работе', fitting: '🟡 На примерке', done: '🟢 Готово', archive: '⚪ Архив' };
+  const attStatusMap = { work: '🟡 Макет / В работе', defect: '🔴 Дефект посадки', approved: '🟢 В раскрой (Удачно)' };
 
   const attemptsHtml = (proj.attempts || []).map((att, aIdx) => {
     const stLabel = attStatusMap[att.status || 'work'] || '🟡 В работе';
@@ -470,7 +482,6 @@ function renderSavedCalcs() {
   });
 }
 
-// Делегирование событий для сохраненных расчетов
 savedCalcsList.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-saved-action]');
   if (!btn) return;
@@ -525,7 +536,7 @@ confirmSaveCalcBtn.addEventListener('click', () => {
 });
 
 // ==========================================
-// 3.3 МОДЕЛИРОВАНИЕ (ТОЧЕЧНЫЙ DOM + WEBP + ДЕЛЕГИРОВАНИЕ)
+// 3.3 МОДЕЛИРОВАНИЕ + РИСОВАНИЕ CANVAS
 // ==========================================
 const PROJECTS_STORAGE_KEY = 'alena_grass_projects_folders_v1';
 let projectsState = [];
@@ -557,9 +568,7 @@ function saveProjectsState(immediatePush = false) {
 function saveProjectsStateDebounced() {
   lastLocalWriteTime = Date.now();
   clearTimeout(textSaveDebounce);
-  textSaveDebounce = setTimeout(() => {
-    saveProjectsState(false);
-  }, 600);
+  textSaveDebounce = setTimeout(() => saveProjectsState(false), 600);
 }
 
 function buildProjectCardElement(proj, pIdx) {
@@ -575,7 +584,7 @@ function buildProjectCardElement(proj, pIdx) {
 
     const photosHtml = (att.photos || []).map((img, imgIdx) => `
       <div class="photo-thumb-wrapper">
-        <img src="${img}" class="photo-thumb" loading="lazy" decoding="async" data-proj-action="open-photo" data-pidx="${pIdx}" data-aidx="${aIdx}" data-imgidx="${imgIdx}" title="Нажмите для открытия и увеличения">
+        <img src="${img}" class="photo-thumb" loading="lazy" decoding="async" data-proj-action="open-photo" data-pidx="${pIdx}" data-aidx="${aIdx}" data-imgidx="${imgIdx}" title="Нажмите для открытия и рисования">
         <button type="button" class="photo-delete-btn" data-proj-action="delete-photo" data-pidx="${pIdx}" data-aidx="${aIdx}" data-imgidx="${imgIdx}" title="Удалить фото">✕</button>
       </div>
     `).join('');
@@ -599,7 +608,7 @@ function buildProjectCardElement(proj, pIdx) {
         <div class="photo-upload-container">
           <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
             <span style="font-size:0.72rem; color:var(--text-muted);">📷 Фотографии (${(att.photos || []).length}):</span>
-            <input type="file" id="${fileInputId}" accept="image/*" multiple data-proj-file="upload" data-pidx="${pIdx}" data-aidx="${aIdx}" style="display:none;">
+            <input type="file" id="${fileInputId}" accept="image/*" multiple onclick="markFilePickerOpen()" onchange="uploadAttemptPhoto(event, ${pIdx}, ${aIdx})" style="display:none;">
             <button type="button" class="btn" data-proj-action="trigger-file" data-target="${fileInputId}" style="flex:0 0 auto; width:auto; padding:6px 12px; font-size:0.74rem; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
               + Загрузить фото
             </button>
@@ -652,7 +661,6 @@ function buildProjectCardElement(proj, pIdx) {
   return card;
 }
 
-// Точечное обновление одной карточки проекта без перерисовки всего списка
 function updateSingleProjectDOM(pIdx) {
   const existing = document.getElementById(`projectCard_${pIdx}`);
   if (!existing || !projectsState[pIdx]) {
@@ -679,45 +687,11 @@ function renderProjects() {
   });
 }
 
-// Сжатие фото в легкий формат WebP (с резервным откатом на JPEG)
-function compressImageFile(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target.result;
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          const maxDim = 900;
-          let w = img.naturalWidth || img.width || 800;
-          let h = img.naturalHeight || img.height || 800;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-            else { w = Math.round(w * maxDim / h); h = maxDim; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          let compressed = canvas.toDataURL('image/webp', 0.75);
-          if (!compressed || !compressed.startsWith('data:image/webp')) {
-            compressed = canvas.toDataURL('image/jpeg', 0.72);
-          }
-          resolve(compressed && compressed.length > 100 ? compressed : dataUrl);
-        } catch (err) {
-          resolve(dataUrl);
-        }
-      };
-      img.onerror = () => resolve(dataUrl);
-      img.src = dataUrl;
-    };
-    reader.onerror = () => resolve(null);
-    reader.readAsDataURL(file);
-  });
-}
+window.markFilePickerOpen = function() {
+  isFilePickerOpen = true;
+  lastLocalWriteTime = Date.now();
+};
 
-// Единое делегирование событий для списка проектов
 projectsListContainer.addEventListener('click', (e) => {
   const actionEl = e.target.closest('[data-proj-action]');
   if (!actionEl) return;
@@ -853,17 +827,25 @@ document.getElementById('addProjectBtn').addEventListener('click', () => {
 });
 
 // ==========================================
-// 3.4 ПРОСМОТРЩИК ФОТО (СВАЙП ГАЛЕРЕИ + ЩИПОК + СКАЧИВАНИЕ)
+// 3.4 ПРОСМОТРЩИК ФОТО С CANVAS РИСОВАНИЕМ
 // ==========================================
 const photoModal = document.getElementById('photoModal');
 const photoModalViewport = document.getElementById('photoModalViewport');
 const modalImage = document.getElementById('modalImage');
+const drawCanvas = document.getElementById('drawCanvas');
+const drawToolbar = document.getElementById('drawToolbar');
 const photoCounterBadge = document.getElementById('photoCounterBadge');
 const prevPhotoBtn = document.getElementById('prevPhotoBtn');
 const nextPhotoBtn = document.getElementById('nextPhotoBtn');
 const zoomInBtn = document.getElementById('zoomInBtn');
 const zoomOutBtn = document.getElementById('zoomOutBtn');
 const zoomResetBtn = document.getElementById('zoomResetBtn');
+const toggleDrawBtn = document.getElementById('toggleDrawBtn');
+const drawColorRed = document.getElementById('drawColorRed');
+const drawColorBlue = document.getElementById('drawColorBlue');
+const drawColorYellow = document.getElementById('drawColorYellow');
+const clearCanvasBtn = document.getElementById('clearCanvasBtn');
+const saveCanvasBtn = document.getElementById('saveCanvasBtn');
 const downloadPhotoBtn = document.getElementById('downloadPhotoBtn');
 const closePhotoModalBtn = document.getElementById('closePhotoModalBtn');
 const zoomLevelText = document.getElementById('zoomLevelText');
@@ -877,9 +859,29 @@ let initialPinchDistance = null;
 let initialPinchZoom = 1;
 let activePhotoMeta = { pIdx: 0, aIdx: 0, imgIdx: 0 };
 
+let isDrawingMode = false;
+let isUserDrawing = false;
+let drawCtx = null;
+let currentDrawColor = '#ef4444'; // красный по умолчанию
+let canvasBaseImage = null;
+
 function updatePhotoTransform() {
   modalImage.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+  drawCanvas.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
   zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
+}
+
+function resizeCanvasToImage() {
+  if (!modalImage.naturalWidth) return;
+  drawCanvas.width = modalImage.naturalWidth;
+  drawCanvas.height = modalImage.naturalHeight;
+  drawCanvas.style.width = modalImage.clientWidth + 'px';
+  drawCanvas.style.height = modalImage.clientHeight + 'px';
+  drawCtx = drawCanvas.getContext('2d');
+  drawCtx.strokeStyle = currentDrawColor;
+  drawCtx.lineWidth = Math.max(3, Math.round(modalImage.naturalWidth / 250));
+  drawCtx.lineCap = 'round';
+  drawCtx.lineJoin = 'round';
 }
 
 function updateGalleryView() {
@@ -887,6 +889,12 @@ function updateGalleryView() {
   if (!photos.length) return;
   const total = photos.length;
   activePhotoMeta.imgIdx = (activePhotoMeta.imgIdx + total) % total;
+  
+  if (isDrawingMode) toggleDrawingMode(false);
+
+  modalImage.onload = () => {
+    resizeCanvasToImage();
+  };
   modalImage.src = photos[activePhotoMeta.imgIdx];
   photoCounterBadge.textContent = `${activePhotoMeta.imgIdx + 1} / ${total}`;
   prevPhotoBtn.style.display = total > 1 ? 'flex' : 'none';
@@ -904,21 +912,112 @@ function openPhotoModal(pIdx, aIdx, imgIdx) {
 }
 
 function closePhotoViewer() {
+  if (isDrawingMode) toggleDrawingMode(false);
   photoModal.style.display = 'none';
   modalImage.src = '';
 }
 
-prevPhotoBtn.addEventListener('click', (e) => {
+function toggleDrawingMode(forceState) {
+  isDrawingMode = forceState !== undefined ? forceState : !isDrawingMode;
+  if (isDrawingMode) {
+    drawCanvas.classList.add('active-drawing');
+    drawToolbar.style.display = 'flex';
+    toggleDrawBtn.style.background = 'var(--accent)';
+    toggleDrawBtn.style.color = '#0f172a';
+    currentZoom = 1; panX = 0; panY = 0;
+    updatePhotoTransform();
+    resizeCanvasToImage();
+  } else {
+    drawCanvas.classList.remove('active-drawing');
+    drawToolbar.style.display = 'none';
+    toggleDrawBtn.style.background = 'var(--input-bg)';
+    toggleDrawBtn.style.color = '#fff';
+    if (drawCtx) drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  }
+}
+
+toggleDrawBtn.addEventListener('click', (e) => {
   e.stopPropagation();
-  activePhotoMeta.imgIdx--;
-  updateGalleryView();
+  toggleDrawingMode();
 });
 
-nextPhotoBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  activePhotoMeta.imgIdx++;
-  updateGalleryView();
+drawColorRed.addEventListener('click', () => { currentDrawColor = '#ef4444'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
+drawColorBlue.addEventListener('click', () => { currentDrawColor = '#38bdf8'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
+drawColorYellow.addEventListener('click', () => { currentDrawColor = '#f59e0b'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
+
+clearCanvasBtn.addEventListener('click', () => {
+  if (drawCtx) drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
 });
+
+saveCanvasBtn.addEventListener('click', () => {
+  if (!drawCtx) return;
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = modalImage.naturalWidth;
+  tempCanvas.height = modalImage.naturalHeight;
+  const tCtx = tempCanvas.getContext('2d');
+  tCtx.drawImage(modalImage, 0, 0);
+  tCtx.drawImage(drawCanvas, 0, 0);
+  const updatedDataUrl = tempCanvas.toDataURL('image/webp', 0.8) || tempCanvas.toDataURL('image/jpeg', 0.75);
+
+  if (projectsState[activePhotoMeta.pIdx] && projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx]) {
+    projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx].photos[activePhotoMeta.imgIdx] = updatedDataUrl;
+    saveProjectsState(true);
+    updateSingleProjectDOM(activePhotoMeta.pIdx);
+    modalImage.src = updatedDataUrl;
+    toggleDrawingMode(false);
+    showToast('Пометки успешно сохранены на фото!');
+  }
+});
+
+// Рисование мышкой / пальцем на холсте
+function getCanvasCoords(e) {
+  const rect = drawCanvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const scaleX = drawCanvas.width / rect.width;
+  const scaleY = drawCanvas.height / rect.height;
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY
+  };
+}
+
+drawCanvas.addEventListener('mousedown', (e) => {
+  if (!isDrawingMode) return;
+  isUserDrawing = true;
+  const pos = getCanvasCoords(e);
+  drawCtx.beginPath();
+  drawCtx.moveTo(pos.x, pos.y);
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isDrawingMode || !isUserDrawing) return;
+  const pos = getCanvasCoords(e);
+  drawCtx.lineTo(pos.x, pos.y);
+  drawCtx.stroke();
+});
+
+window.addEventListener('mouseup', () => { isUserDrawing = false; });
+
+drawCanvas.addEventListener('touchstart', (e) => {
+  if (!isDrawingMode || e.touches.length !== 1) return;
+  isUserDrawing = true;
+  const pos = getCanvasCoords(e);
+  drawCtx.beginPath();
+  drawCtx.moveTo(pos.x, pos.y);
+}, { passive: true });
+
+drawCanvas.addEventListener('touchmove', (e) => {
+  if (!isDrawingMode || !isUserDrawing || e.touches.length !== 1) return;
+  const pos = getCanvasCoords(e);
+  drawCtx.lineTo(pos.x, pos.y);
+  drawCtx.stroke();
+}, { passive: true });
+
+drawCanvas.addEventListener('touchend', () => { isUserDrawing = false; });
+
+prevPhotoBtn.addEventListener('click', (e) => { e.stopPropagation(); activePhotoMeta.imgIdx--; updateGalleryView(); });
+nextPhotoBtn.addEventListener('click', (e) => { e.stopPropagation(); activePhotoMeta.imgIdx++; updateGalleryView(); });
 
 window.addEventListener('keydown', (e) => {
   if (photoModal.style.display !== 'flex') return;
@@ -927,26 +1026,9 @@ window.addEventListener('keydown', (e) => {
   else if (e.key === 'Escape') closePhotoViewer();
 });
 
-zoomInBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  currentZoom = Math.min(6, currentZoom + 0.4);
-  updatePhotoTransform();
-});
-
-zoomOutBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  currentZoom = Math.max(0.5, currentZoom - 0.4);
-  if (currentZoom <= 1) { panX = 0; panY = 0; }
-  updatePhotoTransform();
-});
-
-zoomResetBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  currentZoom = 1;
-  panX = 0;
-  panY = 0;
-  updatePhotoTransform();
-});
+zoomInBtn.addEventListener('click', (e) => { e.stopPropagation(); currentZoom = Math.min(6, currentZoom + 0.4); updatePhotoTransform(); });
+zoomOutBtn.addEventListener('click', (e) => { e.stopPropagation(); currentZoom = Math.max(0.5, currentZoom - 0.4); if (currentZoom <= 1) { panX = 0; panY = 0; } updatePhotoTransform(); });
+zoomResetBtn.addEventListener('click', (e) => { e.stopPropagation(); currentZoom = 1; panX = 0; panY = 0; updatePhotoTransform(); });
 
 downloadPhotoBtn.addEventListener('click', (e) => {
   e.stopPropagation();
@@ -963,28 +1045,19 @@ downloadPhotoBtn.addEventListener('click', (e) => {
   showToast('Фото сохранено на устройство!');
 });
 
-closePhotoModalBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  closePhotoViewer();
-});
-
-photoModalViewport.addEventListener('click', (e) => {
-  if (e.target === photoModalViewport) closePhotoViewer();
-});
+closePhotoModalBtn.addEventListener('click', (e) => { e.stopPropagation(); closePhotoViewer(); });
+photoModalViewport.addEventListener('click', (e) => { if (e.target === photoModalViewport) closePhotoViewer(); });
 
 modalImage.addEventListener('dblclick', (e) => {
   e.stopPropagation();
-  if (currentZoom > 1) {
-    currentZoom = 1;
-    panX = 0;
-    panY = 0;
-  } else {
-    currentZoom = 2.5;
-  }
+  if (isDrawingMode) return;
+  if (currentZoom > 1) { currentZoom = 1; panX = 0; panY = 0; }
+  else { currentZoom = 2.5; }
   updatePhotoTransform();
 });
 
 photoModalViewport.addEventListener('wheel', (e) => {
+  if (isDrawingMode) return;
   e.preventDefault();
   const delta = e.deltaY < 0 ? 0.25 : -0.25;
   currentZoom = Math.min(6, Math.max(0.5, currentZoom + delta));
@@ -993,7 +1066,7 @@ photoModalViewport.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 modalImage.addEventListener('mousedown', (e) => {
-  if (currentZoom <= 1) return;
+  if (isDrawingMode || currentZoom <= 1) return;
   e.preventDefault();
   isPanning = true;
   startPanX = e.clientX - panX;
@@ -1001,7 +1074,7 @@ modalImage.addEventListener('mousedown', (e) => {
 });
 
 window.addEventListener('mousemove', (e) => {
-  if (!isPanning) return;
+  if (!isPanning || isDrawingMode) return;
   panX = e.clientX - startPanX;
   panY = e.clientY - startPanY;
   updatePhotoTransform();
@@ -1016,10 +1089,10 @@ function getTouchDistance(touches) {
 }
 
 photoModalViewport.addEventListener('touchstart', (e) => {
+  if (isDrawingMode) return;
   if (e.touches.length === 2) {
     e.preventDefault();
-    isPanning = false;
-    swipeStartX = null;
+    isPanning = false; swipeStartX = null;
     initialPinchDistance = getTouchDistance(e.touches);
     initialPinchZoom = currentZoom;
   } else if (e.touches.length === 1) {
@@ -1034,6 +1107,7 @@ photoModalViewport.addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 photoModalViewport.addEventListener('touchmove', (e) => {
+  if (isDrawingMode) return;
   if (e.touches.length === 2 && initialPinchDistance) {
     e.preventDefault();
     const newDist = getTouchDistance(e.touches);
@@ -1050,6 +1124,7 @@ photoModalViewport.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 photoModalViewport.addEventListener('touchend', (e) => {
+  if (isDrawingMode) return;
   if (e.touches.length === 0 && swipeStartX !== null && currentZoom <= 1) {
     const endX = e.changedTouches[0].clientX;
     const diffX = endX - swipeStartX;
@@ -1060,16 +1135,12 @@ photoModalViewport.addEventListener('touchend', (e) => {
     }
     swipeStartX = null;
   }
-  if (e.touches.length < 2) {
-    initialPinchDistance = null;
-  }
-  if (e.touches.length === 0) {
-    isPanning = false;
-  }
+  if (e.touches.length < 2) initialPinchDistance = null;
+  if (e.touches.length === 0) isPanning = false;
 });
 
 // ==========================================
-// 4. ДНЕВНИК КУРСА (19 БЛОКОВ, 144 УРОКА)
+// 4. ДНЕВНИК КУРСА
 // ==========================================
 const courseBlocksContainer = document.getElementById('courseBlocksContainer');
 const searchDiaryInput = document.getElementById('searchDiaryInput');
@@ -1103,8 +1174,8 @@ function saveDiaryState() {
 function calculateDeadlineBadge(deadlineStr, isBlockDone) {
   if (isBlockDone) return { text: '✔ Завершен', class: 'done' };
   if (!deadlineStr) return { text: 'В процессе', class: 'normal' };
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const targetDate = new Date(deadlineStr); targetDate.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const targetDate = new Date(deadlineStr); targetDate.setHours(0,0,0,0);
   const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
   if (diffDays < 0) return { text: `⚠️ Просрочен (${Math.abs(diffDays)} дн.)`, class: 'urgent' };
   if (diffDays === 0) return { text: '🔥 Дедлайн сегодня!', class: 'urgent' };
@@ -1177,7 +1248,6 @@ function renderDiary() {
   navProgressBadge.textContent = `${overallPercent}%`;
 }
 
-// Делегирование событий для дневника курса
 courseBlocksContainer.addEventListener('click', (e) => {
   const checkBlock = e.target.closest('[data-diary-action="check-block"]');
   if (checkBlock) {
@@ -1215,10 +1285,10 @@ courseBlocksContainer.addEventListener('click', (e) => {
 searchDiaryInput.addEventListener('input', renderDiary);
 document.getElementById('collapseAllBtn').addEventListener('click', () => { window.courseBlocksData.forEach(b => collapsedState[b.id] = true); saveDiaryState(); renderDiary(); });
 document.getElementById('expandAllBtn').addEventListener('click', () => { window.courseBlocksData.forEach(b => collapsedState[b.id] = false); saveDiaryState(); renderDiary(); });
-document.getElementById('resetDiaryBtn').addEventListener('click', () => { if (confirm('Сбросить прогресс уроков?')) { lessonsState = {}; collapsedState = {}; saveDiaryState(); renderDiary(); } });
+document.getElementById('resetDiaryBtn').addEventListener('click', () => { if(confirm('Сбросить прогресс уроков?')) { lessonsState={}; collapsedState={}; saveDiaryState(); renderDiary(); } });
 
 // ==========================================
-// 5. УМНАЯ СИНХРОНИЗАЦИЯ FIREBASE (PATCH + ПРОВЕРКА UPDATEDAT)
+// 5. УМНАЯ СИНХРОНИЗАЦИЯ FIREBASE + JSZip БЭКАПЫ
 // ==========================================
 const FIREBASE_BASE_URL = 'https://alena-grass-default-rtdb.europe-west1.firebasedatabase.app/user_data';
 const FIREBASE_SYNC_ENDPOINT = `${FIREBASE_BASE_URL}.json`;
@@ -1234,6 +1304,7 @@ const modalLastSyncTime = document.getElementById('modalLastSyncTime');
 const modalForcePullBtn = document.getElementById('modalForcePullBtn');
 const modalForcePushBtn = document.getElementById('modalForcePushBtn');
 const exportBackupFileBtn = document.getElementById('exportBackupFileBtn');
+const exportZipBtn = document.getElementById('exportZipBtn');
 const importBackupFileBtn = document.getElementById('importBackupFileBtn');
 const modalBackupFileInput = document.getElementById('modalBackupFileInput');
 
@@ -1316,7 +1387,6 @@ async function pushToCloud(isImmediate = false, forceFull = false) {
   else pushDebounceTimer = setTimeout(execPush, 350);
 }
 
-// Умный пулл: сначала проверяем 15-байтный updatedAt.json, чтобы не качать мегабайты фото вхолостую
 async function pullFromCloud(forceFullPull = false) {
   if (isSyncInProgress || isFilePickerOpen) return;
   if (!forceFullPull && (Date.now() - lastLocalWriteTime < 6000)) return;
@@ -1369,14 +1439,8 @@ async function pullFromCloud(forceFullPull = false) {
         setVisualStatus('synced', timeStr);
         if (forceFullPull) showToast('Данные успешно загружены!');
       }
-    } else {
-      setVisualStatus('error');
-    }
-  } catch (e) {
-    setVisualStatus('error');
-  } finally {
-    isSyncInProgress = false;
-  }
+    } else { setVisualStatus('error'); }
+  } catch (e) { setVisualStatus('error'); } finally { isSyncInProgress = false; }
 }
 
 syncBadge.addEventListener('click', () => { syncSettingsModal.style.display = 'flex'; });
@@ -1384,6 +1448,50 @@ closeSyncSettingsBtn.addEventListener('click', () => { syncSettingsModal.style.d
 syncSettingsModal.addEventListener('click', (e) => { if (e.target === syncSettingsModal) syncSettingsModal.style.display = 'none'; });
 modalForcePullBtn.addEventListener('click', () => pullFromCloud(true));
 modalForcePushBtn.addEventListener('click', async () => { await pushToCloud(true, true); showToast('Отправлено в облако!'); });
+
+// Экспорт в виде ZIP-архива с JSZip (включая JSON данных и папки с фото)
+exportZipBtn.addEventListener('click', async () => {
+  if (!window.JSZip) {
+    alert('Библиотека JSZip не загружена');
+    return;
+  }
+  showToast('Формирование ZIP архива...');
+  const zip = new JSZip();
+  const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState, projectsState };
+  
+  zip.file("data.json", JSON.stringify(payload, null, 2));
+  
+  // Добавляем фотографии по папкам проектов
+  const imgFolder = zip.folder("photos");
+  projectsState.forEach((proj, pIdx) => {
+    const projFolderName = `${pIdx + 1}_${(proj.name || 'project').replace(/[^a-zA-Zа-яА-Я0-9_-]/g, '_')}`;
+    const pFolder = imgFolder.folder(projFolderName);
+    (proj.attempts || []).forEach((att, aIdx) => {
+      (att.photos || []).forEach((imgDataUrl, imgIdx) => {
+        if (imgDataUrl && imgDataUrl.includes('base64,')) {
+          const base64Data = imgDataUrl.split('base64,')[1];
+          const ext = imgDataUrl.includes('image/webp') ? 'webp' : 'jpg';
+          pFolder.file(`attempt_${aIdx + 1}_photo_${imgIdx + 1}.${ext}`, base64Data, { base64: true });
+        }
+      });
+    });
+  });
+
+  try {
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `alena_grass_archive_${new Date().toISOString().slice(0, 10)}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('ZIP архив успешно создан!');
+  } catch (err) {
+    alert('Ошибка создания ZIP: ' + err.message);
+  }
+});
 
 exportBackupFileBtn.addEventListener('click', () => {
   const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState, projectsState };
@@ -1398,23 +1506,40 @@ importBackupFileBtn.addEventListener('click', () => modalBackupFileInput.click()
 modalBackupFileInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
+  
+  if (file.name.endsWith('.zip')) {
+    // Импорт из ZIP с использованием JSZip
+    if (!window.JSZip) { alert('JSZip не загружен'); return; }
+    showToast('Чтение ZIP архива...');
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const zip = new JSZip();
+        const zipContent = await zip.loadAsync(event.target.result);
+        if (zipContent.files["data.json"]) {
+          const jsonStr = await zipContent.files["data.json"].async("text");
+          const imported = JSON.parse(jsonStr);
+          applyImportedData(imported);
+          showToast('ZIP архив успешно восстановлен!');
+          syncSettingsModal.style.display = 'none';
+        } else {
+          alert('В архиве не найден файл data.json');
+        }
+      } catch (err) {
+        alert('Ошибка распаковки ZIP: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    return;
+  }
+
+  // Обычный JSON импорт
   const reader = new FileReader();
   reader.onload = (event) => {
     try {
       const imported = JSON.parse(event.target.result);
       if (imported) {
-        if (imported.lessonsState) lessonsState = imported.lessonsState;
-        if (imported.collapsedState) collapsedState = imported.collapsedState;
-        if (imported.savedCalcsState) savedCalcsState = imported.savedCalcsState;
-        if (imported.projectsState || imported.projects) projectsState = imported.projectsState || imported.projects;
-        if (imported.calc) {
-          if (imported.calc.h) heightInput.value = imported.calc.h;
-          if (imported.calc.og) bustInput.value = imported.calc.og;
-          if (imported.calc.ob) hipsInput.value = imported.calc.ob;
-        }
-        saveDiaryState(); saveSavedCalcsState(); saveProjectsState(true); saveCalcState();
-        renderDiary(); renderSavedCalcs(); renderProjects(); calculate(true);
-        pushToCloud(true, true);
+        applyImportedData(imported);
         showToast('Резервная копия восстановлена!');
         syncSettingsModal.style.display = 'none';
       }
@@ -1423,34 +1548,27 @@ modalBackupFileInput.addEventListener('change', (e) => {
   reader.readAsText(file);
 });
 
+function applyImportedData(imported) {
+  if (imported.lessonsState) lessonsState = imported.lessonsState;
+  if (imported.collapsedState) collapsedState = imported.collapsedState;
+  if (imported.savedCalcsState) savedCalcsState = imported.savedCalcsState;
+  if (imported.projectsState || imported.projects) projectsState = imported.projectsState || imported.projects;
+  if (imported.calc) {
+    if (imported.calc.h) heightInput.value = imported.calc.h;
+    if (imported.calc.og) bustInput.value = imported.calc.og;
+    if (imported.calc.ob) hipsInput.value = imported.calc.ob;
+  }
+  saveDiaryState(); saveSavedCalcsState(); saveProjectsState(true); saveCalcState();
+  renderDiary(); renderSavedCalcs(); renderProjects(); calculate(true);
+  pushToCloud(true, true);
+}
+
 // ==========================================
-// 6. PWA SERVICE WORKER И ЗАПУСК
+// 6. ИНИЦИАЛИЗАЦИЯ
 // ==========================================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
-  });
-}
-
-let deferredPrompt;
-const pwaBanner = document.getElementById('pwaBanner');
-const installBtn = document.getElementById('installBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (pwaBanner) pwaBanner.classList.add('show');
-});
-
-if (installBtn) {
-  installBtn.addEventListener('click', () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choice) => {
-        if (choice.outcome === 'accepted') pwaBanner.classList.remove('show');
-        deferredPrompt = null;
-      });
-    }
   });
 }
 
