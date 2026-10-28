@@ -272,25 +272,26 @@ document.getElementById('copyBtn').addEventListener('click', () => {
   });
 });
 
-// Нативная интеграция Web Share API (Поделиться)
-document.getElementById('shareCalcBtn').addEventListener('click', async () => {
-  const textData = getCalculationTextString();
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'ALËNA GRASS — Расчет мерок',
-        text: textData
-      });
-      return;
-    } catch (err) {
-      if (err.name !== 'AbortError') console.warn('Share error:', err);
+const shareCalcBtn = document.getElementById('shareCalcBtn');
+if (shareCalcBtn) {
+  shareCalcBtn.addEventListener('click', async () => {
+    const textData = getCalculationTextString();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'ALËNA GRASS — Расчет мерок',
+          text: textData
+        });
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') console.warn('Share error:', err);
+      }
     }
-  }
-  // Fallback если share не поддерживается
-  navigator.clipboard.writeText(textData).then(() => {
-    showToast('Скопировано в буфер (Share API недоступен)');
+    navigator.clipboard.writeText(textData).then(() => {
+      showToast('Скопировано в буфер');
+    });
   });
-});
+}
 
 // ==========================================
 // 3.1 ПЕЧАТЬ И PDF (@media print)
@@ -536,7 +537,7 @@ confirmSaveCalcBtn.addEventListener('click', () => {
 });
 
 // ==========================================
-// 3.3 МОДЕЛИРОВАНИЕ + РИСОВАНИЕ CANVAS
+// 3.3 МОДЕЛИРОВАНИЕ + ЗАГРУЗКА И СЖАТИЕ ФОТО (ИСПРАВЛЕНО)
 // ==========================================
 const PROJECTS_STORAGE_KEY = 'alena_grass_projects_folders_v1';
 let projectsState = [];
@@ -570,6 +571,83 @@ function saveProjectsStateDebounced() {
   clearTimeout(textSaveDebounce);
   textSaveDebounce = setTimeout(() => saveProjectsState(false), 600);
 }
+
+// Сжатие фото в легкий формат WebP (с резервным откатом на JPEG)
+function compressImageFile(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          const maxDim = 900;
+          let w = img.naturalWidth || img.width || 800;
+          let h = img.naturalHeight || img.height || 800;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          let compressed = canvas.toDataURL('image/webp', 0.75);
+          if (!compressed || !compressed.startsWith('data:image/webp')) {
+            compressed = canvas.toDataURL('image/jpeg', 0.72);
+          }
+          resolve(compressed && compressed.length > 100 ? compressed : dataUrl);
+        } catch (err) {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    };
+    reader.onerror = () => resolve(null);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handlePhotoFilesUpload(filesList, pIdx, aIdx, inputElement) {
+  isFilePickerOpen = false;
+  lastLocalWriteTime = Date.now();
+  const files = Array.from(filesList || []);
+  if (files.length === 0) return;
+
+  showToast('Обработка фото...');
+  if (!projectsState[pIdx].attempts[aIdx].photos) {
+    projectsState[pIdx].attempts[aIdx].photos = [];
+  }
+
+  let addedCount = 0;
+  for (const file of files) {
+    const resultDataUrl = await compressImageFile(file);
+    if (resultDataUrl) {
+      projectsState[pIdx].attempts[aIdx].photos.push(resultDataUrl);
+      addedCount++;
+    }
+  }
+
+  if (inputElement) inputElement.value = '';
+  if (addedCount > 0) {
+    updateSingleProjectDOM(pIdx);
+    saveProjectsState(true);
+    showToast(`Добавлено фото: ${addedCount} шт.`);
+  } else {
+    showToast('Не удалось прочитать файл');
+  }
+}
+
+window.uploadAttemptPhoto = function(e, pIdx, aIdx) {
+  handlePhotoFilesUpload(e.target.files, pIdx, aIdx, e.target);
+};
+
+window.markFilePickerOpen = function() {
+  isFilePickerOpen = true;
+  lastLocalWriteTime = Date.now();
+};
 
 function buildProjectCardElement(proj, pIdx) {
   const projStatus = proj.status || 'active';
@@ -608,7 +686,7 @@ function buildProjectCardElement(proj, pIdx) {
         <div class="photo-upload-container">
           <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
             <span style="font-size:0.72rem; color:var(--text-muted);">📷 Фотографии (${(att.photos || []).length}):</span>
-            <input type="file" id="${fileInputId}" accept="image/*" multiple onclick="markFilePickerOpen()" onchange="uploadAttemptPhoto(event, ${pIdx}, ${aIdx})" style="display:none;">
+            <input type="file" id="${fileInputId}" accept="image/*" multiple data-proj-file="upload" data-pidx="${pIdx}" data-aidx="${aIdx}" style="display:none;">
             <button type="button" class="btn" data-proj-action="trigger-file" data-target="${fileInputId}" style="flex:0 0 auto; width:auto; padding:6px 12px; font-size:0.74rem; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
               + Загрузить фото
             </button>
@@ -686,11 +764,6 @@ function renderProjects() {
     projectsListContainer.appendChild(buildProjectCardElement(proj, pIdx));
   });
 }
-
-window.markFilePickerOpen = function() {
-  isFilePickerOpen = true;
-  lastLocalWriteTime = Date.now();
-};
 
 projectsListContainer.addEventListener('click', (e) => {
   const actionEl = e.target.closest('[data-proj-action]');
@@ -787,35 +860,9 @@ projectsListContainer.addEventListener('change', async (e) => {
   }
 
   if (e.target.dataset.projFile === 'upload') {
-    isFilePickerOpen = false;
-    lastLocalWriteTime = Date.now();
     const pIdx = parseInt(e.target.dataset.pidx, 10);
     const aIdx = parseInt(e.target.dataset.aidx, 10);
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-
-    showToast('Обработка фото...');
-    if (!projectsState[pIdx].attempts[aIdx].photos) {
-      projectsState[pIdx].attempts[aIdx].photos = [];
-    }
-
-    let addedCount = 0;
-    for (const file of files) {
-      const resultDataUrl = await compressImageFile(file);
-      if (resultDataUrl) {
-        projectsState[pIdx].attempts[aIdx].photos.push(resultDataUrl);
-        addedCount++;
-      }
-    }
-
-    e.target.value = '';
-    if (addedCount > 0) {
-      updateSingleProjectDOM(pIdx);
-      saveProjectsState(true);
-      showToast(`Добавлено фото: ${addedCount} шт.`);
-    } else {
-      showToast('Не удалось прочитать файл');
-    }
+    await handlePhotoFilesUpload(e.target.files, pIdx, aIdx, e.target);
   }
 });
 
@@ -862,24 +909,25 @@ let activePhotoMeta = { pIdx: 0, aIdx: 0, imgIdx: 0 };
 let isDrawingMode = false;
 let isUserDrawing = false;
 let drawCtx = null;
-let currentDrawColor = '#ef4444'; // красный по умолчанию
-let canvasBaseImage = null;
+let currentDrawColor = '#ef4444';
 
 function updatePhotoTransform() {
   modalImage.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
-  drawCanvas.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+  if (drawCanvas) {
+    drawCanvas.style.transform = `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${currentZoom})`;
+  }
   zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
 }
 
 function resizeCanvasToImage() {
-  if (!modalImage.naturalWidth) return;
+  if (!drawCanvas || !modalImage.naturalWidth) return;
   drawCanvas.width = modalImage.naturalWidth;
   drawCanvas.height = modalImage.naturalHeight;
   drawCanvas.style.width = modalImage.clientWidth + 'px';
   drawCanvas.style.height = modalImage.clientHeight + 'px';
   drawCtx = drawCanvas.getContext('2d');
   drawCtx.strokeStyle = currentDrawColor;
-  drawCtx.lineWidth = Math.max(3, Math.round(modalImage.naturalWidth / 250));
+  drawCtx.lineWidth = Math.max(3, Math.round(modalImage.naturalWidth / 220));
   drawCtx.lineCap = 'round';
   drawCtx.lineJoin = 'round';
 }
@@ -918,6 +966,7 @@ function closePhotoViewer() {
 }
 
 function toggleDrawingMode(forceState) {
+  if (!drawCanvas || !drawToolbar || !toggleDrawBtn) return;
   isDrawingMode = forceState !== undefined ? forceState : !isDrawingMode;
   if (isDrawingMode) {
     drawCanvas.classList.add('active-drawing');
@@ -936,40 +985,48 @@ function toggleDrawingMode(forceState) {
   }
 }
 
-toggleDrawBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  toggleDrawingMode();
-});
+if (toggleDrawBtn) {
+  toggleDrawBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDrawingMode();
+  });
+}
 
-drawColorRed.addEventListener('click', () => { currentDrawColor = '#ef4444'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
-drawColorBlue.addEventListener('click', () => { currentDrawColor = '#38bdf8'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
-drawColorYellow.addEventListener('click', () => { currentDrawColor = '#f59e0b'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
+if (drawColorRed) drawColorRed.addEventListener('click', () => { currentDrawColor = '#ef4444'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
+if (drawColorBlue) drawColorBlue.addEventListener('click', () => { currentDrawColor = '#38bdf8'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
+if (drawColorYellow) drawColorYellow.addEventListener('click', () => { currentDrawColor = '#f59e0b'; if (drawCtx) drawCtx.strokeStyle = currentDrawColor; });
 
-clearCanvasBtn.addEventListener('click', () => {
-  if (drawCtx) drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-});
+if (clearCanvasBtn) {
+  clearCanvasBtn.addEventListener('click', () => {
+    if (drawCtx) drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  });
+}
 
-saveCanvasBtn.addEventListener('click', () => {
-  if (!drawCtx) return;
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = modalImage.naturalWidth;
-  tempCanvas.height = modalImage.naturalHeight;
-  const tCtx = tempCanvas.getContext('2d');
-  tCtx.drawImage(modalImage, 0, 0);
-  tCtx.drawImage(drawCanvas, 0, 0);
-  const updatedDataUrl = tempCanvas.toDataURL('image/webp', 0.8) || tempCanvas.toDataURL('image/jpeg', 0.75);
+if (saveCanvasBtn) {
+  saveCanvasBtn.addEventListener('click', () => {
+    if (!drawCtx) return;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = modalImage.naturalWidth;
+    tempCanvas.height = modalImage.naturalHeight;
+    const tCtx = tempCanvas.getContext('2d');
+    tCtx.drawImage(modalImage, 0, 0);
+    tCtx.drawImage(drawCanvas, 0, 0);
+    let updatedDataUrl = tempCanvas.toDataURL('image/webp', 0.8);
+    if (!updatedDataUrl || !updatedDataUrl.startsWith('data:image/webp')) {
+      updatedDataUrl = tempCanvas.toDataURL('image/jpeg', 0.75);
+    }
 
-  if (projectsState[activePhotoMeta.pIdx] && projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx]) {
-    projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx].photos[activePhotoMeta.imgIdx] = updatedDataUrl;
-    saveProjectsState(true);
-    updateSingleProjectDOM(activePhotoMeta.pIdx);
-    modalImage.src = updatedDataUrl;
-    toggleDrawingMode(false);
-    showToast('Пометки успешно сохранены на фото!');
-  }
-});
+    if (projectsState[activePhotoMeta.pIdx] && projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx]) {
+      projectsState[activePhotoMeta.pIdx].attempts[activePhotoMeta.aIdx].photos[activePhotoMeta.imgIdx] = updatedDataUrl;
+      saveProjectsState(true);
+      updateSingleProjectDOM(activePhotoMeta.pIdx);
+      modalImage.src = updatedDataUrl;
+      toggleDrawingMode(false);
+      showToast('Пометки успешно сохранены на фото!');
+    }
+  });
+}
 
-// Рисование мышкой / пальцем на холсте
 function getCanvasCoords(e) {
   const rect = drawCanvas.getBoundingClientRect();
   const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -982,39 +1039,43 @@ function getCanvasCoords(e) {
   };
 }
 
-drawCanvas.addEventListener('mousedown', (e) => {
-  if (!isDrawingMode) return;
-  isUserDrawing = true;
-  const pos = getCanvasCoords(e);
-  drawCtx.beginPath();
-  drawCtx.moveTo(pos.x, pos.y);
-});
+if (drawCanvas) {
+  drawCanvas.addEventListener('mousedown', (e) => {
+    if (!isDrawingMode) return;
+    isUserDrawing = true;
+    const pos = getCanvasCoords(e);
+    drawCtx.beginPath();
+    drawCtx.moveTo(pos.x, pos.y);
+  });
 
-window.addEventListener('mousemove', (e) => {
-  if (!isDrawingMode || !isUserDrawing) return;
-  const pos = getCanvasCoords(e);
-  drawCtx.lineTo(pos.x, pos.y);
-  drawCtx.stroke();
-});
+  window.addEventListener('mousemove', (e) => {
+    if (!isDrawingMode || !isUserDrawing) return;
+    const pos = getCanvasCoords(e);
+    drawCtx.lineTo(pos.x, pos.y);
+    drawCtx.stroke();
+  });
 
-window.addEventListener('mouseup', () => { isUserDrawing = false; });
+  window.addEventListener('mouseup', () => { isUserDrawing = false; });
 
-drawCanvas.addEventListener('touchstart', (e) => {
-  if (!isDrawingMode || e.touches.length !== 1) return;
-  isUserDrawing = true;
-  const pos = getCanvasCoords(e);
-  drawCtx.beginPath();
-  drawCtx.moveTo(pos.x, pos.y);
-}, { passive: true });
+  drawCanvas.addEventListener('touchstart', (e) => {
+    if (!isDrawingMode || e.touches.length !== 1) return;
+    e.preventDefault();
+    isUserDrawing = true;
+    const pos = getCanvasCoords(e);
+    drawCtx.beginPath();
+    drawCtx.moveTo(pos.x, pos.y);
+  }, { passive: false });
 
-drawCanvas.addEventListener('touchmove', (e) => {
-  if (!isDrawingMode || !isUserDrawing || e.touches.length !== 1) return;
-  const pos = getCanvasCoords(e);
-  drawCtx.lineTo(pos.x, pos.y);
-  drawCtx.stroke();
-}, { passive: true });
+  drawCanvas.addEventListener('touchmove', (e) => {
+    if (!isDrawingMode || !isUserDrawing || e.touches.length !== 1) return;
+    e.preventDefault();
+    const pos = getCanvasCoords(e);
+    drawCtx.lineTo(pos.x, pos.y);
+    drawCtx.stroke();
+  }, { passive: false });
 
-drawCanvas.addEventListener('touchend', () => { isUserDrawing = false; });
+  drawCanvas.addEventListener('touchend', () => { isUserDrawing = false; });
+}
 
 prevPhotoBtn.addEventListener('click', (e) => { e.stopPropagation(); activePhotoMeta.imgIdx--; updateGalleryView(); });
 nextPhotoBtn.addEventListener('click', (e) => { e.stopPropagation(); activePhotoMeta.imgIdx++; updateGalleryView(); });
@@ -1449,49 +1510,49 @@ syncSettingsModal.addEventListener('click', (e) => { if (e.target === syncSettin
 modalForcePullBtn.addEventListener('click', () => pullFromCloud(true));
 modalForcePushBtn.addEventListener('click', async () => { await pushToCloud(true, true); showToast('Отправлено в облако!'); });
 
-// Экспорт в виде ZIP-архива с JSZip (включая JSON данных и папки с фото)
-exportZipBtn.addEventListener('click', async () => {
-  if (!window.JSZip) {
-    alert('Библиотека JSZip не загружена');
-    return;
-  }
-  showToast('Формирование ZIP архива...');
-  const zip = new JSZip();
-  const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState, projectsState };
-  
-  zip.file("data.json", JSON.stringify(payload, null, 2));
-  
-  // Добавляем фотографии по папкам проектов
-  const imgFolder = zip.folder("photos");
-  projectsState.forEach((proj, pIdx) => {
-    const projFolderName = `${pIdx + 1}_${(proj.name || 'project').replace(/[^a-zA-Zа-яА-Я0-9_-]/g, '_')}`;
-    const pFolder = imgFolder.folder(projFolderName);
-    (proj.attempts || []).forEach((att, aIdx) => {
-      (att.photos || []).forEach((imgDataUrl, imgIdx) => {
-        if (imgDataUrl && imgDataUrl.includes('base64,')) {
-          const base64Data = imgDataUrl.split('base64,')[1];
-          const ext = imgDataUrl.includes('image/webp') ? 'webp' : 'jpg';
-          pFolder.file(`attempt_${aIdx + 1}_photo_${imgIdx + 1}.${ext}`, base64Data, { base64: true });
-        }
+if (exportZipBtn) {
+  exportZipBtn.addEventListener('click', async () => {
+    if (!window.JSZip) {
+      alert('Библиотека JSZip не загружена');
+      return;
+    }
+    showToast('Формирование ZIP архива...');
+    const zip = new JSZip();
+    const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState, projectsState };
+    
+    zip.file("data.json", JSON.stringify(payload, null, 2));
+    
+    const imgFolder = zip.folder("photos");
+    projectsState.forEach((proj, pIdx) => {
+      const projFolderName = `${pIdx + 1}_${(proj.name || 'project').replace(/[^a-zA-Zа-яА-Я0-9_-]/g, '_')}`;
+      const pFolder = imgFolder.folder(projFolderName);
+      (proj.attempts || []).forEach((att, aIdx) => {
+        (att.photos || []).forEach((imgDataUrl, imgIdx) => {
+          if (imgDataUrl && imgDataUrl.includes('base64,')) {
+            const base64Data = imgDataUrl.split('base64,')[1];
+            const ext = imgDataUrl.includes('image/webp') ? 'webp' : 'jpg';
+            pFolder.file(`attempt_${aIdx + 1}_photo_${imgIdx + 1}.${ext}`, base64Data, { base64: true });
+          }
+        });
       });
     });
-  });
 
-  try {
-    const content = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(content);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `alena_grass_archive_${new Date().toISOString().slice(0, 10)}.zip`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('ZIP архив успешно создан!');
-  } catch (err) {
-    alert('Ошибка создания ZIP: ' + err.message);
-  }
-});
+    try {
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `alena_grass_archive_${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('ZIP архив успешно создан!');
+    } catch (err) {
+      alert('Ошибка создания ZIP: ' + err.message);
+    }
+  });
+}
 
 exportBackupFileBtn.addEventListener('click', () => {
   const payload = { app: 'ALENA_GRASS', updatedAt: Date.now(), calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value }, lessonsState, collapsedState, savedCalcsState, projectsState };
@@ -1508,7 +1569,6 @@ modalBackupFileInput.addEventListener('change', (e) => {
   if (!file) return;
   
   if (file.name.endsWith('.zip')) {
-    // Импорт из ZIP с использованием JSZip
     if (!window.JSZip) { alert('JSZip не загружен'); return; }
     showToast('Чтение ZIP архива...');
     const reader = new FileReader();
@@ -1533,7 +1593,6 @@ modalBackupFileInput.addEventListener('change', (e) => {
     return;
   }
 
-  // Обычный JSON импорт
   const reader = new FileReader();
   reader.onload = (event) => {
     try {
@@ -1555,13 +1614,26 @@ function applyImportedData(imported) {
   if (imported.projectsState || imported.projects) projectsState = imported.projectsState || imported.projects;
   if (imported.calc) {
     if (imported.calc.h) heightInput.value = imported.calc.h;
-    if (imported.calc.og) bustInput.value = imported.calc.og;
-    if (imported.calc.ob) hipsInput.value = imported.calc.ob;
+    if (dataCalcCheck(imported.calc.og)) bustInput.value = imported.calc.og;
+    if (dataCalcCheck(imported.calc.ob)) hipsInput.value = imported.calc.ob;
   }
   saveDiaryState(); saveSavedCalcsState(); saveProjectsState(true); saveCalcState();
   renderDiary(); renderSavedCalcs(); renderProjects(); calculate(true);
   pushToCloud(true, true);
 }
+
+function dataCalcCheck(val) {
+  return val !== undefined && val !== null;
+}
+
+// Автоматическая фоновая отправка при восстановлении интернета (Offline-first)
+window.addEventListener('online', () => {
+  if (dirtyBranches.size > 0) {
+    pushToCloud(true, false);
+  } else {
+    pullFromCloud(false);
+  }
+});
 
 // ==========================================
 // 6. ИНИЦИАЛИЗАЦИЯ
