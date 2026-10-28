@@ -12,6 +12,8 @@
   <link rel="icon" type="image/svg+xml" href="icon-512.svg">
   <link rel="apple-touch-icon" href="icon-512.png">
   <link rel="stylesheet" href="styles.css">
+  <!-- Подключение JSZip для создания ZIP-архивов с проектами и фото -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -31,7 +33,7 @@
     </div>
   </header>
 
-  <!-- Навигация (2 строки на мобильных, 3 колонки на ПК) -->
+  <!-- Навигация -->
   <div class="top-nav">
     <button class="tab-btn active" id="tabBtnCalc" type="button">📐 Калькулятор</button>
     <button class="tab-btn" id="tabBtnProjects" type="button">✂️ Моделирование</button>
@@ -42,7 +44,7 @@
 
   <div class="container">
     
-    <!-- PWA Баннер установки -->
+    <!-- PWA Баннер -->
     <div id="pwaBanner" class="pwa-banner">
       <div>
         <div style="font-weight: 600; font-size: 0.85rem;">📱 Установить на экран</div>
@@ -99,8 +101,7 @@
         <div class="formula-info">
           <strong>Формула Grasser Final v3.1:</strong><br>
           Полнота = ((ОБ - ОГ) + 2) / 4 → определяет динамическую базу (0–5 группа).<br>
-          Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.<br>
-          <em>Динамический сдвиг: Ст и Дтп2 рассчитываются с учетом полноты и порога ОГ &gt; 108 см.</em>
+          Итог = База[полнота] + (k_рост × ΔР) + Сдвиг_ОГ.
         </div>
       </div>
 
@@ -116,8 +117,9 @@
         <div class="actions-bar">
           <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск мерки или кода...">
           <div class="btn-group">
-            <button class="btn" id="copyBtn" type="button">📋 Копия</button>
-            <button class="btn" id="printCalcBtn" type="button" title="Печать или сохранение в PDF">🖨 PDF / Печать</button>
+            <button class="btn" id="copyBtn" type="button" title="Копировать мерки">📋 Копия</button>
+            <button class="btn" id="shareCalcBtn" type="button" title="Поделиться расчетом">🔗 Поделиться</button>
+            <button class="btn" id="printCalcBtn" type="button" title="Печать или сохранение в PDF">🖨 PDF</button>
             <button class="btn" id="resetBtn" type="button">↺ Сброс</button>
           </div>
         </div>
@@ -214,20 +216,32 @@
 
   </div>
 
-  <!-- Модальное окно просмотра фото (Галерея + Щипок + Скачивание) -->
+  <!-- Модальное окно просмотра и рисования поверх фото -->
   <div id="photoModal">
     <div class="photo-modal-counter" id="photoCounterBadge">1 / 1</div>
     <div class="photo-modal-viewport" id="photoModalViewport">
       <img id="modalImage" src="" alt="Просмотр фото">
+      <canvas id="drawCanvas"></canvas>
     </div>
+    
+    <!-- Панель инструментов рисования -->
+    <div id="drawToolbar" class="photo-zoom-controls" style="bottom: 74px; display: none;">
+      <button class="zoom-ctrl-btn" id="drawColorRed" style="background:#ef4444;" title="Красный маркер">🔴</button>
+      <button class="zoom-ctrl-btn" id="drawColorBlue" style="background:#38bdf8;" title="Синий маркер">🔵</button>
+      <button class="zoom-ctrl-btn" id="drawColorYellow" style="background:#f59e0b;" title="Желтый маркер">🟡</button>
+      <button class="zoom-ctrl-btn" id="clearCanvasBtn" title="Очистить рисунок">🗑️</button>
+      <button class="zoom-ctrl-btn zoom-btn-accent" id="saveCanvasBtn" title="Сохранить пометки">💾</button>
+    </div>
+
     <div class="photo-zoom-controls">
       <button class="zoom-ctrl-btn" id="prevPhotoBtn" type="button" title="Предыдущее фото">◀</button>
       <button class="zoom-ctrl-btn" id="zoomOutBtn" type="button" title="Отдалить">➖</button>
       <span class="zoom-level-badge" id="zoomLevelText">100%</span>
       <button class="zoom-ctrl-btn" id="zoomInBtn" type="button" title="Приблизить">➕</button>
       <button class="zoom-ctrl-btn" id="zoomResetBtn" type="button" title="Сбросить масштаб">↺</button>
+      <button class="zoom-ctrl-btn" id="toggleDrawBtn" type="button" title="Режим рисования пометки">✏️</button>
       <button class="zoom-ctrl-btn" id="nextPhotoBtn" type="button" title="Следующее фото">▶</button>
-      <button class="zoom-ctrl-btn zoom-btn-accent" id="downloadPhotoBtn" type="button" title="Скачать фото на устройство">📥</button>
+      <button class="zoom-ctrl-btn zoom-btn-accent" id="downloadPhotoBtn" type="button" title="Скачать фото">📥</button>
       <button class="zoom-ctrl-btn zoom-btn-danger" id="closePhotoModalBtn" type="button" title="Закрыть">✕</button>
     </div>
   </div>
@@ -253,7 +267,7 @@
     </div>
   </div>
 
-  <!-- Модальное окно синхронизации -->
+  <!-- Модальное окно синхронизации и бэкапов (с поддержкой ZIP) -->
   <div id="syncSettingsModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">
@@ -268,23 +282,22 @@
         <div style="font-size:0.72rem; color:#64748b;" id="modalLastSyncTime">Время: только что</div>
       </div>
       <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <button class="btn btn-primary" id="modalForcePullBtn" type="button" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📥 Загрузить из облака</button>
-        <button class="btn" id="modalForcePushBtn" type="button" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📤 Отправить в облако</button>
+        <button class="btn btn-primary" id="modalForcePullBtn" type="button" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📥 Загрузить</button>
+        <button class="btn" id="modalForcePushBtn" type="button" style="flex:1; justify-content:center; padding:10px; font-size:0.8rem;">📤 Отправить</button>
       </div>
       <div style="border-top:1px dashed #334155; padding-top:12px;">
-        <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px;">Резервная копия в файл:</div>
+        <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px;">Резервная копия со всеми фото (ZIP или JSON):</div>
         <div style="display:flex; gap:6px;">
-          <button class="btn" id="exportBackupFileBtn" type="button" style="flex:1; justify-content:center; font-size:0.75rem;">📥 Бэкап</button>
-          <button class="btn" id="importBackupFileBtn" type="button" style="flex:1; justify-content:center; font-size:0.75rem;">📤 Восстановить</button>
-          <input type="file" id="modalBackupFileInput" accept=".json" style="display:none;">
+          <button class="btn btn-primary" id="exportZipBtn" type="button" style="flex:1; justify-content:center; font-size:0.75rem;">📦 Скачать ZIP</button>
+          <button class="btn" id="exportBackupFileBtn" type="button" style="font-size:0.75rem;">📄 JSON</button>
+          <button class="btn" id="importBackupFileBtn" type="button" style="font-size:0.75rem;">📤 Загрузить</button>
+          <input type="file" id="modalBackupFileInput" accept=".json,.zip" style="display:none;">
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Область для прямой печати и сохранения в PDF (@media print) -->
   <div id="printArea" aria-hidden="true"></div>
-
   <div id="toast" class="toast">Сохранено!</div>
 
   <script src="data.js"></script>
