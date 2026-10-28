@@ -693,7 +693,7 @@ button.btn-primary, label.btn-primary {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* === МОДАЛЬНОЕ ОКНО ФОТО (ЗУМ И ГАЛЕРЕЯ) === */
+/* === МОДАЛЬНОЕ ОКНО ФОТО И ЦЕНТРИРОВАННЫЙ CANVAS === */
 #photoModal {
   display: none;
   position: fixed;
@@ -727,28 +727,49 @@ button.btn-primary, label.btn-primary {
 }
 
 .photo-modal-viewport {
+  position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   touch-action: none;
 }
 
 #modalImage {
-  max-width: 92%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: 92vw;
   max-height: 80vh;
+  width: auto;
+  height: auto;
   border-radius: 8px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
   transform-origin: center center;
+  transform: translate(-50%, -50%) scale(1);
   cursor: grab;
   touch-action: none;
   will-change: transform;
+  display: block;
 }
 
 #modalImage:active {
   cursor: grabbing;
+}
+
+#drawCanvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: none;
+  z-index: 505;
+  border-radius: 8px;
+}
+
+#drawCanvas.active-drawing {
+  pointer-events: auto;
+  cursor: crosshair;
 }
 
 .photo-zoom-controls {
@@ -1259,22 +1280,4 @@ button.btn-primary, label.btn-primary {
     border: 1px solid #94a3b8;
     object-fit: cover;
   }
-  /* Добавления для Canvas рисования поверх фото */
-#photoModalViewport {
-  position: relative;
-}
-
-#drawCanvas {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 505;
-  border-radius: 8px;
-}
-
-#drawCanvas.active-drawing {
-  pointer-events: auto;
-  cursor: crosshair;
 }
