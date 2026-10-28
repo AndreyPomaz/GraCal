@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ALËNA GRASS">
   <link rel="manifest" href="manifest.json">
-  <title>ALËNA GRASS | Калькулятор и Дневник курса</title>
+  <title>ALËNA GRASS | Калькулятор, Моделирование и Дневник курса</title>
   <link rel="icon" type="image/svg+xml" href="icon-512.svg">
   <link rel="apple-touch-icon" href="icon-512.png">
   <style>
@@ -113,7 +113,7 @@
       color: var(--text-muted);
       border: 1px solid var(--card-border);
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -461,7 +461,7 @@
       color: #cbd5e1;
     }
 
-    /* Projects styling */
+    /* Projects / Modeling styling */
     .project-folder-card {
       background: var(--row-alt);
       border: 1px solid var(--card-border);
@@ -499,6 +499,11 @@
       flex-wrap: wrap;
     }
 
+    .photo-thumb-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
     .photo-thumb {
       width: 64px;
       height: 64px;
@@ -506,6 +511,25 @@
       object-fit: cover;
       border: 1px solid var(--card-border);
       cursor: pointer;
+    }
+
+    .photo-delete-btn {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     /* Diary / Tracker styling */
@@ -676,10 +700,10 @@
     </div>
   </header>
 
-  <!-- Navigation Tabs: Калькулятор | Проекты | Дневник курса -->
+  <!-- Navigation Tabs: Калькулятор | Моделирование | Дневник курса -->
   <div class="top-nav">
     <button class="tab-btn active" id="tabBtnCalc">📐 Калькулятор</button>
-    <button class="tab-btn" id="tabBtnProjects">📁 Проекты</button>
+    <button class="tab-btn" id="tabBtnProjects">✂️ Моделирование</button>
     <button class="tab-btn" id="tabBtnDiary">📚 Дневник курса <span id="navProgressBadge" style="font-size:0.7rem; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:10px;">0%</span></button>
   </div>
 
@@ -765,11 +789,11 @@
 
     </div>
 
-    <!-- ==================== TAB 2: PROJECTS ==================== -->
+    <!-- ==================== TAB 2: MODELING / PROJECTS ==================== -->
     <div id="tabContentProjects" class="tab-content">
       <div class="card">
         <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span>📁 Папки проектов</span>
+          <span>✂️ Проекты моделирования</span>
           <button class="btn btn-primary" id="addProjectBtn" style="width:auto; padding:6px 12px; font-size:0.78rem;">+ Новый проект</button>
         </div>
         <div id="projectsList" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -840,31 +864,9 @@
     </div>
   </div>
 
-  <!-- Cloud Sync Settings Modal -->
-  <div id="syncSettingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:300; align-items:center; justify-content:center; padding:16px;">
-    <div style="background:#1e293b; border:1px solid #38bdf8; border-radius:14px; max-width:440px; width:100%; padding:20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:700;">☁️ Статус синхронизации</h3>
-        <button id="closeSyncSettingsBtn" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
-      </div>
-      <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:8px; border:1px solid #334155; margin-bottom:14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:4px;">
-          <span style="color:#94a3b8;">Состояние:</span>
-          <span id="modalSyncStatus" style="font-weight:700; color:#10b981;">🟢 Синхронизировано</span>
-        </div>
-        <div style="font-size:0.72rem; color:#64748b;" id="modalLastSyncTime">Время: только что</div>
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" id="modalForcePullBtn" style="flex:1;">📥 Загрузить</button>
-        <button class="btn" id="modalForcePushBtn" style="flex:1;">📤 Отправить</button>
-      </div>
-    </div>
-  </div>
-
   <div id="toast" class="toast">Сохранено!</div>
 
   <script>
-    // 1. Data Definitions (All 23 measurements)
     const measurementsData = [
       { code: "P", name: "Рост", bases: [164, 164, 164, 164, 164, 164], dH: 6.0, dB: 6.0 },
       { code: "Сш", name: "Полуобхват шеи", bases: [17.4, 17.4, 17.4, 17.4, 17.4, 17.4], dH: 0.0, dB: 0.4 },
@@ -1007,7 +1009,7 @@
       });
     }
 
-    // Projects logic
+    // Projects / Modeling logic
     let projectsState = JSON.parse(localStorage.getItem('projects_folders_v1') || '[]');
 
     function renderProjects() {
@@ -1034,7 +1036,12 @@
               <div class="photo-upload-container">
                 <input type="file" accept="image/*" onchange="uploadAttemptPhoto(event, ${pIdx}, ${aIdx})" style="font-size:0.7rem; color:var(--text-muted);">
                 <div class="photo-preview-grid">
-                  ${(att.photos || []).map(img => `<img src="${img}" class="photo-thumb" onclick="window.open('${img}')">`).join('')}
+                  ${(att.photos || []).map((img, imgIdx) => `
+                    <div class="photo-thumb-wrapper">
+                      <img src="${img}" class="photo-thumb" onclick="window.open('${img}')">
+                      <button class="photo-delete-btn" onclick="deleteAttemptPhoto(${pIdx}, ${aIdx}, ${imgIdx})" title="Удалить фото">✕</button>
+                    </div>
+                  `).join('')}
                 </div>
               </div>
             </div>
@@ -1061,7 +1068,7 @@
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
             <span style="font-size:0.72rem; color:var(--text-muted);">Попыток: ${(proj.attempts || []).length}</span>
-            <button class="btn" onclick="toggleProjectBody(${pIdx})" style="font-size:0.7rem; padding:2px 8px;">📁 Папка</button>
+            <button class="btn" onclick="toggleProjectBody(${pIdx})" style="font-size:0.7rem; padding:2px 8px;" id="toggleBtn_${pIdx}">${proj.isOpen ? '▲ Свернуть' : '▼ Свернуть'}</button>
           </div>
           <div class="project-attempts-box" id="projBody_${pIdx}" style="display:${proj.isOpen ? 'flex' : 'none'};">
             ${attemptsHtml}
@@ -1083,7 +1090,9 @@
     window.toggleProjectBody = function(pIdx) {
       projectsState[pIdx].isOpen = !projectsState[pIdx].isOpen;
       const el = document.getElementById(`projBody_${pIdx}`);
+      const btn = document.getElementById(`toggleBtn_${pIdx}`);
       if (el) el.style.display = projectsState[pIdx].isOpen ? 'flex' : 'none';
+      if (btn) btn.textContent = projectsState[pIdx].isOpen ? '▲ Свернуть' : '▼ Свернуть';
       saveState();
     };
     window.moveProject = function(pIdx, dir) {
@@ -1112,15 +1121,33 @@
       };
       reader.readAsDataURL(file);
     };
+    window.deleteAttemptPhoto = function(pIdx, aIdx, imgIdx) {
+      projectsState[pIdx].attempts[aIdx].photos.splice(imgIdx, 1);
+      renderProjects();
+    };
 
     document.getElementById('addProjectBtn').addEventListener('click', window.addProject);
 
-    // Diary logic (All 19 blocks)
+    // Diary logic (All 19 blocks with correct storage key)
+    const LESSONS_STORAGE_KEY = 'alena_grass_lessons_status_v1';
+    let lessonsState = {};
+
+    function loadDiaryState() {
+      try {
+        const savedLessons = localStorage.getItem(LESSONS_STORAGE_KEY);
+        if (savedLessons) lessonsState = JSON.parse(savedLessons);
+      } catch (e) { console.error(e); }
+    }
+
+    function saveDiaryState() {
+      localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState));
+      saveState();
+    }
+
     function renderDiary() {
       const filter = document.getElementById('searchDiaryInput').value.toLowerCase().trim();
       const container = document.getElementById('courseBlocksContainer');
       container.innerHTML = '';
-      const lessonsState = JSON.parse(localStorage.getItem('lessons_state_v1') || '{}');
       let totalCount = 0, completedCount = 0;
 
       courseBlocksData.forEach(block => {
@@ -1163,11 +1190,9 @@
     }
 
     window.toggleLesson = function(k) {
-      const st = JSON.parse(localStorage.getItem('lessons_state_v1') || '{}');
-      st[k] = !st[k];
-      localStorage.setItem('lessons_state_v1', JSON.stringify(st));
+      lessonsState[k] = !lessonsState[k];
+      saveDiaryState();
       renderDiary();
-      saveState();
     };
 
     document.getElementById('searchDiaryInput').addEventListener('input', renderDiary);
@@ -1178,7 +1203,7 @@
       document.querySelectorAll('.block-card').forEach(c => c.classList.remove('collapsed'));
     });
     document.getElementById('resetDiaryBtn').addEventListener('click', () => {
-      if(confirm('Сбросить прогресс уроков?')) { localStorage.removeItem('lessons_state_v1'); renderDiary(); }
+      if(confirm('Сбросить прогресс уроков?')) { lessonsState = {}; saveDiaryState(); renderDiary(); }
     });
 
     function showToast(msg) {
@@ -1206,7 +1231,7 @@
           const payload = {
             calc: { h: heightInput.value, og: bustInput.value, ob: hipsInput.value },
             projects: projectsState,
-            lessons: JSON.parse(localStorage.getItem('lessons_state_v1') || '{}')
+            lessonsState: lessonsState
           };
           await fetch(FIREBASE_URL, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
           document.getElementById('syncDot').style.background = '#10b981';
@@ -1222,7 +1247,7 @@
           if (data) {
             if (data.calc) { heightInput.value = data.calc.h; bustInput.value = data.calc.og; hipsInput.value = data.calc.ob; }
             if (data.projects) { projectsState = data.projects; localStorage.setItem('projects_folders_v1', JSON.stringify(projectsState)); }
-            if (data.lessons) { localStorage.setItem('lessons_state_v1', JSON.stringify(data.lessons)); }
+            if (data.lessonsState) { lessonsState = data.lessonsState; localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessonsState)); }
             calculate(); renderProjects(); renderDiary();
             showToast('Данные синхронизированы!');
           }
@@ -1257,7 +1282,10 @@
     if (localStorage.getItem('grass_calc_og')) bustInput.value = localStorage.getItem('grass_calc_og');
     if (localStorage.getItem('grass_calc_ob')) hipsInput.value = localStorage.getItem('grass_calc_ob');
 
-    calculate(); renderProjects(); renderDiary();
+    loadDiaryState();
+    calculate(); 
+    renderProjects(); 
+    renderDiary();
     pullFromCloud();
   </script>
 </body>
