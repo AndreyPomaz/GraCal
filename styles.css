@@ -1259,4 +1259,22 @@ button.btn-primary, label.btn-primary {
     border: 1px solid #94a3b8;
     object-fit: cover;
   }
+  /* Добавления для Canvas рисования поверх фото */
+#photoModalViewport {
+  position: relative;
+}
+
+#drawCanvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 505;
+  border-radius: 8px;
+}
+
+#drawCanvas.active-drawing {
+  pointer-events: auto;
+  cursor: crosshair;
 }
